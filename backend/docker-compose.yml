@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: blog_postgres
+
+    restart: always
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: blog_app
+
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    container_name: blog_redis
+
+    restart: always
+
+    ports:
+      - "6379:6379"
