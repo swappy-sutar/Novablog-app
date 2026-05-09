@@ -1,98 +1,264 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Blog App Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS backend API for a blog platform with authentication, blog posts, comments, likes, bookmarks, Redis-backed services, email jobs, S3 image uploads, and Prisma/PostgreSQL persistence.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tech Stack
 
-## Description
+- **Runtime:** Node.js
+- **Framework:** NestJS
+- **Database:** PostgreSQL with Prisma ORM
+- **Cache / queues:** Redis, BullMQ
+- **Authentication:** JWT access and refresh tokens
+- **File uploads:** Multer + AWS S3
+- **Email:** Resend
+- **Validation:** class-validator, class-transformer, Joi
+- **Testing:** Jest
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Project Structure
 
-## Project setup
-
-```bash
-$ npm install
+```text
+backend/
+  docker/                 Dockerfile and Docker ignore rules
+  prisma/                 Prisma schema and database models
+  src/
+    common/               Shared decorators, filters, helpers, interceptors, utils
+    config/               Prisma, Redis, BullMQ, S3, Resend, and upload config
+    jobs/                 Background job processors and services
+    modules/
+      auth/               Register, login, JWT profile, refresh token, logout
+      blog/               Create, read, update, delete blog posts
+      bookmark/           Toggle and list user bookmarks
+      comments/           Create, list, update, delete comments
+      like/               Toggle likes and get like counts
+    providers/            Provider integrations
+    templates/            Email templates
 ```
 
-## Compile and run the project
+## Prerequisites
 
-```bash
-# development
-$ npm run start
+- Node.js 20+
+- npm
+- PostgreSQL database
+- Redis server
+- AWS S3 bucket credentials for image uploads
+- Resend API key for email support
 
-# watch mode
-$ npm run start:dev
+## Environment Variables
 
-# production mode
-$ npm run start:prod
+Create a `.env` file in the `backend` directory.
+
+```env
+PORT=8000
+
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
+
+JWT_ACCESS_SECRET="your-access-token-secret"
+JWT_REFRESH_SECRET="your-refresh-token-secret"
+ACCESS_TOKEN_EXPIRES_IN="15m"
+REFRESH_TOKEN_EXPIRES_IN="7d"
+
+REDIS_HOST="localhost"
+REDIS_PORT=6379
+
+AWS_REGION="ap-south-1"
+AWS_ACCESS_KEY_ID="your-aws-access-key"
+AWS_SECRET_ACCESS_KEY="your-aws-secret-key"
+AWS_BUCKET_NAME="your-s3-bucket"
+
+RESEND_API_KEY="your-resend-api-key"
 ```
 
-## Run tests
+The app validates the core runtime variables on startup using Joi.
+
+## Installation
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Generate the Prisma client:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npx prisma generate
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Apply database migrations or push the schema:
 
-## Resources
+```bash
+npx prisma migrate dev
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+or:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+npx prisma db push
+```
 
-## Support
+## Running Locally
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Start the development server:
 
-## Stay in touch
+```bash
+npm run start:dev
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+The API uses the global prefix:
+
+```text
+http://localhost:8000/api/v1
+```
+
+If `PORT` is set in `.env`, use that port instead.
+
+## Running With Docker
+
+The Docker Compose setup starts the backend and Redis.
+
+```bash
+docker compose up --build
+```
+
+By default, the compose file maps:
+
+```text
+http://localhost:3000
+```
+
+Make sure your `.env` is available in the `backend` directory before starting the containers.
+
+## Available Scripts
+
+```bash
+npm run build        # Build the NestJS app
+npm run start        # Start the app
+npm run start:dev    # Start in watch mode
+npm run start:debug  # Start in debug watch mode
+npm run start:prod   # Run compiled dist output
+npm run lint         # Run ESLint with auto-fix
+npm run format       # Format source and test files
+npm run test         # Run unit tests
+npm run test:watch   # Run tests in watch mode
+npm run test:cov     # Run tests with coverage
+npm run test:e2e     # Run end-to-end tests
+```
+
+## API Overview
+
+All routes are prefixed with `/api/v1`.
+
+### Auth
+
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/auth/register` | No | Register a new user |
+| POST | `/auth/login` | No | Login and receive tokens |
+| GET | `/auth/profile` | Yes | Get current user profile |
+| POST | `/auth/upload-profile` | Yes | Upload profile image |
+| POST | `/auth/refresh-token` | No | Refresh access token |
+| POST | `/auth/logout` | Yes | Logout current user |
+
+### Blog
+
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/blog/create-blog` | Yes | Create a blog post with optional thumbnail |
+| GET | `/blog/get-all-blogs` | No | List blogs with pagination and search |
+| GET | `/blog/get-blog/:id` | No | Get a blog by ID |
+| PATCH | `/blog/update-blog/:id` | Yes | Update own blog post |
+| DELETE | `/blog/delete-blog/:id` | Yes | Delete own blog post |
+
+### Comments
+
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/comments/create-comment/:blogId` | Yes | Add a comment to a blog |
+| GET | `/comments/get-comment/:blogId` | Yes | List comments for a blog |
+| PATCH | `/comments/update-comment/:commentId` | Yes | Update own comment |
+| DELETE | `/comments/delete-comment/:commentId` | Yes | Delete own comment |
+
+### Likes
+
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/likes/toggle/:blogId` | Yes | Like or unlike a blog |
+| GET | `/likes/get-count/:blogId` | No | Get like count for a blog |
+
+### Bookmarks
+
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/bookmarks/toggle/:blogId` | Yes | Bookmark or remove bookmark |
+| GET | `/bookmarks/my-bookmarks` | Yes | List current user's bookmarks |
+
+## Common Request Examples
+
+Register:
+
+```bash
+curl -X POST http://localhost:8000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstname": "Jane",
+    "lastname": "Doe",
+    "username": "janedoe",
+    "email": "jane@example.com",
+    "password": "password123"
+  }'
+```
+
+Login:
+
+```bash
+curl -X POST http://localhost:8000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "jane@example.com",
+    "password": "password123"
+  }'
+```
+
+Create a blog:
+
+```bash
+curl -X POST http://localhost:8000/api/v1/blog/create-blog \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -F "title=My First Blog" \
+  -F "content=This is the blog content." \
+  -F "status=PUBLISHED" \
+  -F "thumbnail=@/path/to/image.png"
+```
+
+## Database Models
+
+The Prisma schema includes:
+
+- `User`
+- `Blog`
+- `Comment`
+- `Like`
+- `Bookmark`
+- `Category`
+- `Tag`
+- `BlogTag`
+- `Follow`
+- `Notification`
+- `BlogAnalytics`
+
+Main enums:
+
+- `Role`: `USER`, `ADMIN`
+- `BlogStatus`: `DRAFT`, `PUBLISHED`, `ARCHIVED`
+- `NotificationType`: `LIKE`, `COMMENT`, `FOLLOW`, `BLOG_PUBLISHED`
+
+## Development Notes
+
+- Global API prefix is configured in `src/main.ts` as `/api/v1`.
+- Responses are wrapped by a global response interceptor.
+- HTTP exceptions are handled by a global exception filter.
+- Request bodies are validated globally with whitelist and transform enabled.
+- Protected routes use `JwtAuthGuard`.
+- Blog thumbnails and profile images are uploaded through S3.
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is currently marked as `UNLICENSED`.
