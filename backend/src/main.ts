@@ -11,7 +11,7 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new ResponseInterceptor());
 
-  // Global exception filter
+
   app.useGlobalFilters(new HttpExceptionFilter());
 
   app.useGlobalPipes(

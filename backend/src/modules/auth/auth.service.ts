@@ -12,9 +12,11 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { comparePassword, hashPassword } from '../../common/utils/hash.util';
 import { successResponse } from 'src/common/helpers/response.helper';
-import { CacheService } from 'src/config/redis.config/cache.service';
-import { REDIS_KEYS } from 'src/config/redis.config/redis.keys';
-import { S3Service } from 'src/config/s3.config/s3.service';
+import { CacheService } from 'src/config/redis/cache.service';
+import { REDIS_KEYS } from 'src/config/redis/redis.keys';
+import { CACHE_TTL } from 'src/config/redis/redis.ttl';
+import { S3Service } from 'src/config/s3/s3.service';
+import { EmailService } from 'src/jobs/email/email.service';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +26,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly cacheService: CacheService,
     private readonly s3Service: S3Service,
+    private readonly emailService: EmailService,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -65,6 +68,10 @@ export class AuthService {
 
     await this.cacheService.del(REDIS_KEYS.USER(user.id));
 
+    await this.cacheService.del(REDIS_KEYS.USER_PROFILE(user.id));
+
+    await this.emailService.sendWelcomeEmail(user.email, user.firstname);
+
     return successResponse(
       'User registered successfully',
       {
@@ -72,12 +79,14 @@ export class AuthService {
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
       },
-      201,
+      HttpStatus.CREATED,
     );
   }
 
   async login(loginDto: LoginDto) {
-    const user = await this.usersRepository.findByEmail(loginDto.email);
+    const email = loginDto.email.toLowerCase().trim();
+
+    const user = await this.usersRepository.findByEmail(email);
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
@@ -102,31 +111,35 @@ export class AuthService {
 
     const { password, refreshToken, ...safeUser } = user;
 
-    await this.cacheService.set(REDIS_KEYS.USER(user.id), safeUser, 300);
+    await this.cacheService.set(
+      REDIS_KEYS.USER_PROFILE(user.id),
+      safeUser,
+      CACHE_TTL.USER_PROFILE,
+    );
 
     return successResponse(
       'Login successful',
       {
         user: safeUser,
+
         accessToken: tokens.accessToken,
+
         refreshToken: tokens.refreshToken,
       },
-      200,
+      HttpStatus.OK,
     );
   }
 
   async getProfile(userId: string) {
-    const cacheKey = REDIS_KEYS.USER(userId);
+    const cacheKey = REDIS_KEYS.USER_PROFILE(userId);
 
     const cachedUser = await this.cacheService.get(cacheKey);
 
     if (cachedUser) {
-      console.log('⚡ User profile from Redis cache');
-
       return successResponse(
         'User profile fetched successfully',
         cachedUser,
-        200,
+        HttpStatus.OK,
       );
     }
 
@@ -138,9 +151,13 @@ export class AuthService {
 
     const { password, refreshToken, ...safeUser } = user;
 
-    await this.cacheService.set(cacheKey, safeUser, 300);
+    await this.cacheService.set(cacheKey, safeUser, CACHE_TTL.USER_PROFILE);
 
-    return successResponse('User profile fetched successfully', safeUser, 200);
+    return successResponse(
+      'User profile fetched successfully',
+      safeUser,
+      HttpStatus.OK,
+    );
   }
 
   async refreshToken(refreshToken: string) {
@@ -172,7 +189,11 @@ export class AuthService {
         refreshToken: hashedRefreshToken,
       });
 
-      return successResponse('Token refreshed successfully', tokens, 200);
+      return successResponse(
+        'Token refreshed successfully',
+        tokens,
+        HttpStatus.OK,
+      );
     } catch (error) {
       throw new UnauthorizedException('Invalid refresh token');
     }
@@ -185,7 +206,9 @@ export class AuthService {
 
     await this.cacheService.del(REDIS_KEYS.USER(userId));
 
-    return successResponse('Logout successful', null, 200);
+    await this.cacheService.del(REDIS_KEYS.USER_PROFILE(userId));
+
+    return successResponse('Logout successful', null, HttpStatus.OK);
   }
 
   async uploadProfilePic(userId: string, file: Express.Multer.File) {
@@ -199,13 +222,21 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
-    const imageUrl = await this.s3Service.uploadFile(file, 'profile-pics');
+    let imageUrl: string;
+
+    try {
+      imageUrl = await this.s3Service.uploadFile(file, 'profile-pics');
+    } catch (error) {
+      throw new BadRequestException('Profile image upload failed');
+    }
 
     const updatedUser = await this.usersRepository.update(userId, {
       avatar: imageUrl,
     });
 
     await this.cacheService.del(REDIS_KEYS.USER(userId));
+
+    await this.cacheService.del(REDIS_KEYS.USER_PROFILE(userId));
 
     const { password, refreshToken, ...safeUser } = updatedUser;
 
@@ -226,13 +257,13 @@ export class AuthService {
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_ACCESS_SECRET')!,
 
-      expiresIn: Number(this.configService.get('ACCESS_TOKEN_EXPIRES_IN')),
+      expiresIn: this.configService.get('ACCESS_TOKEN_EXPIRES_IN') as any,
     });
 
     const refreshToken = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_REFRESH_SECRET')!,
 
-      expiresIn: Number(this.configService.get('REFRESH_TOKEN_EXPIRES_IN')),
+      expiresIn: this.configService.get('REFRESH_TOKEN_EXPIRES_IN') as any,
     });
 
     return {
