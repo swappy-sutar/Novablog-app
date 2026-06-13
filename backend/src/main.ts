@@ -11,7 +11,6 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new ResponseInterceptor());
 
-
   app.useGlobalFilters(new HttpExceptionFilter());
 
   app.useGlobalPipes(
@@ -23,7 +22,8 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: true,
+    origin: ['http://localhost:5173','http://localhost:5174', 'http://127.0.0.1:5173'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
 

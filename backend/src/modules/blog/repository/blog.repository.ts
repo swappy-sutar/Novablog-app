@@ -148,6 +148,53 @@ export class BlogsRepository {
     });
   }
 
+  async findManyByAuthor(authorId: string, page: number = 1, limit: number = 10, search?: string) {
+    const skip = (page - 1) * limit;
+
+    const whereClause: Prisma.BlogWhereInput = {
+      authorId,
+      ...(search && {
+        OR: [
+          { title: { contains: search, mode: 'insensitive' } },
+          { content: { contains: search, mode: 'insensitive' } },
+        ],
+      }),
+    };
+
+    return this.prisma.blog.findMany({
+      where: whereClause,
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        category: true,
+        _count: {
+          select: {
+            comments: true,
+            likes: true,
+            bookmarks: true,
+          },
+        },
+      },
+    });
+  }
+
+  async countByAuthor(authorId: string, search?: string) {
+    const whereClause: Prisma.BlogWhereInput = {
+      authorId,
+      ...(search && {
+        OR: [
+          { title: { contains: search, mode: 'insensitive' } },
+          { content: { contains: search, mode: 'insensitive' } },
+        ],
+      }),
+    };
+
+    return this.prisma.blog.count({
+      where: whereClause,
+    });
+  }
+
   async update(id: string, data: Prisma.BlogUpdateInput) {
     return this.prisma.blog.update({
       where: {

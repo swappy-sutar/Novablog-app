@@ -38,6 +38,12 @@ export class BlogController {
     return this.blogService.getAllBlogs(query);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('my-blogs')
+  async getMyBlogs(@Query() query: QueryBlogDto, @CurrentUser() user: any) {
+    return this.blogService.getMyBlogs(user.id, query);
+  }
+
   @Get('get-blog/:id')
   async getBlogById(@Param('id') id: string) {
     return this.blogService.getBlogById(id);

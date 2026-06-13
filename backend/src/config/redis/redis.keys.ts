@@ -37,7 +37,7 @@ export const REDIS_KEYS = {
   USER_BOOKMARKS: (
     userId: string,
     page: number | string,
-    limit: number | string,
+    limit: number | string,  
   ) => `user-bookmarks:${userId}:${page}:${limit}`,
 
   BLOG_VIEWS: (blogId: string) => `blog-views:${blogId}`,

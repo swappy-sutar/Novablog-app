@@ -1,1 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-brand-purple: #8b5cf6;
+  --color-brand-blue: #3b82f6;
+  --color-brand-cyan: #06b6d4;
+  --color-bg-base: #05050f;
+  --color-bg-card: rgba(15, 15, 30, 0.6);
+  --color-bg-card-hover: rgba(25, 25, 45, 0.8);
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  :root.light-mode {
+    color-scheme: light;
+    --color-bg-base: #f8fafc;
+    --color-bg-card: rgba(255, 255, 255, 0.7);
+    --color-bg-card-hover: rgba(255, 255, 255, 1);
+    --color-border-subtle: rgba(0, 0, 0, 0.1);
+
+    /* Invert tailwind standard colors used in the app */
+    --color-white: #0f172a;
+    --color-black: #ffffff;
+    --color-gray-200: #334155;
+    --color-gray-300: #475569;
+    --color-gray-400: #64748b;
+    --color-gray-500: #94a3b8;
+    --color-gray-800: #cbd5e1;
+  }
+
+  body {
+    @apply bg-bg-base text-gray-200 antialiased transition-colors duration-500;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-bg-base;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-800 rounded-full hover:bg-gray-700 transition-colors;
+  }
+
+  /* Horizontal scrollbar specific for the toolbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-border-subtle rounded-full;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-bg-card backdrop-blur-xl border border-border-subtle rounded-2xl transition-colors duration-500;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-cyan via-brand-blue to-brand-purple;
+  }
+
+  .bg-gradient-premium {
+    @apply bg-gradient-to-r from-brand-cyan via-brand-blue to-brand-purple;
+  }
+}

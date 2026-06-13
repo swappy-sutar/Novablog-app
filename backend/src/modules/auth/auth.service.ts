@@ -7,9 +7,11 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { Prisma } from '@prisma/client';
 import { UsersRepository } from './repositories/users.repository';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { comparePassword, hashPassword } from '../../common/utils/hash.util';
 import { successResponse } from 'src/common/helpers/response.helper';
 import { CacheService } from 'src/config/redis/cache.service';
@@ -121,9 +123,7 @@ export class AuthService {
       'Login successful',
       {
         user: safeUser,
-
         accessToken: tokens.accessToken,
-
         refreshToken: tokens.refreshToken,
       },
       HttpStatus.OK,
@@ -155,6 +155,58 @@ export class AuthService {
 
     return successResponse(
       'User profile fetched successfully',
+      safeUser,
+      HttpStatus.OK,
+    );
+  }
+
+  async updateProfile(userId: string, dto: UpdateProfileDto) {
+    const user = await this.usersRepository.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const data: Prisma.UserUpdateInput = {};
+
+    if (dto.firstname !== undefined) {
+      const t = dto.firstname.trim();
+      if (!t) {
+        throw new BadRequestException('First name cannot be empty');
+      }
+      data.firstname = t;
+    }
+
+    if (dto.lastname !== undefined) {
+      data.lastname = dto.lastname.trim() || null;
+    }
+
+    if (dto.bio !== undefined) {
+      data.bio = dto.bio.trim() || null;
+    }
+
+    if (dto.websiteUrl !== undefined) {
+      data.websiteUrl = dto.websiteUrl.trim() || null;
+    }
+
+    if (dto.githubUrl !== undefined) {
+      data.githubUrl = dto.githubUrl.trim() || null;
+    }
+
+    if (Object.keys(data).length === 0) {
+      const { password, refreshToken, ...safeUser } = user;
+      return successResponse('Profile unchanged', safeUser, HttpStatus.OK);
+    }
+
+    const updatedUser = await this.usersRepository.update(userId, data);
+
+    await this.cacheService.del(REDIS_KEYS.USER(userId));
+    await this.cacheService.del(REDIS_KEYS.USER_PROFILE(userId));
+
+    const { password, refreshToken, ...safeUser } = updatedUser;
+
+    return successResponse(
+      'Profile updated successfully',
       safeUser,
       HttpStatus.OK,
     );

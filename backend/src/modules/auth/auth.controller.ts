@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Patch,
   Post,
   UploadedFile,
   UseGuards,
@@ -10,6 +11,7 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from 'src/common/decorator/current-user.decorator';
 import { ImageUpload } from 'src/common/decorator/image-upload.decorator';
@@ -35,8 +37,17 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Patch('profile')
+  async updateProfile(
+    @CurrentUser() user: any,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ) {
+    return this.authService.updateProfile(user.id, updateProfileDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('upload-profile')
-  @ImageUpload()
+  @ImageUpload('image')
   async uploadProfilePic(
     @UploadedFile()
     file: Express.Multer.File,

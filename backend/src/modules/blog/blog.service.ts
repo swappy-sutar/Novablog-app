@@ -118,6 +118,29 @@ export class BlogService {
     return successResponse('Blogs fetched successfully', response);
   }
 
+  async getMyBlogs(userId: string, query: QueryBlogDto) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const search = query.search;
+
+    const [blogs, total] = await Promise.all([
+      this.blogsRepository.findManyByAuthor(userId, page, limit, search),
+      this.blogsRepository.countByAuthor(userId, search),
+    ]);
+
+    const response = {
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      blogs,
+    };
+
+    return successResponse('User blogs fetched successfully', response);
+  }
+
   async getBlogById(id: string) {
     const cacheKey = REDIS_KEYS.BLOG(id);
 

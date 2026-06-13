@@ -34,6 +34,8 @@ model User {
   password      String
   bio           String?
   avatar        String?
+  websiteUrl    String?
+  githubUrl     String?
   role          Role           @default(USER)
   isVerified    Boolean        @default(false)
   isActive      Boolean        @default(true)
