@@ -1,83 +1,354 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { MessageSquare, CornerDownRight, Trash2, Send } from 'lucide-react';
 import GlassCard from '../ui/GlassCard';
 import Button from '../ui/Button';
+import { commentsAPI } from '../../lib/api';
 
-const Discussion = () => {
+const Discussion = ({ blog }) => {
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [newCommentText, setNewCommentText] = useState("");
+  const [replyingToId, setReplyingToId] = useState(null);
+  const [replyText, setReplyText] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
+
+  // Get current logged-in user
+  const storedUser = localStorage.getItem('user');
+  const currentUser = storedUser && storedUser !== "undefined" ? JSON.parse(storedUser) : null;
+
+  const loadComments = useCallback(async () => {
+    if (!currentUser) return;
+    setLoading(true);
+    try {
+      const res = await commentsAPI.getCommentsByBlog(blog.id);
+      if (res.success && res.data) {
+        setComments(res.data.comments || []);
+      }
+    } catch (e) {
+      console.error("Load comments error:", e);
+    } finally {
+      setLoading(false);
+    }
+  }, [blog.id, currentUser]);
+
+  useEffect(() => {
+    loadComments();
+  }, [loadComments]);
+
+  // Handle post main comment
+  const handlePostComment = async (e) => {
+    e.preventDefault();
+    if (!newCommentText.trim()) return;
+    try {
+      const res = await commentsAPI.createComment(blog.id, { content: newCommentText });
+      if (res.success) {
+        toast.success("Comment posted!");
+        setNewCommentText("");
+        loadComments();
+      }
+    } catch (e) {
+      toast.error("Failed to post comment.");
+      console.error(e);
+    }
+  };
+
+  // Handle post reply
+  const handlePostReply = async (e, parentId) => {
+    e.preventDefault();
+    if (!replyText.trim()) return;
+    try {
+      const res = await commentsAPI.createComment(blog.id, {
+        content: replyText,
+        parentId
+      });
+      if (res.success) {
+        toast.success("Reply posted!");
+        setReplyText("");
+        setReplyingToId(null);
+        loadComments();
+      }
+    } catch (e) {
+      toast.error("Failed to post reply.");
+      console.error(e);
+    }
+  };
+
+  // Handle delete comment
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm("Delete this comment permanently?")) return;
+    try {
+      const res = await commentsAPI.deleteComment(commentId);
+      if (res.success) {
+        toast.success("Comment deleted.");
+        loadComments();
+      }
+    } catch (e) {
+      toast.error("Failed to delete comment.");
+      console.error(e);
+    }
+  };
+
+  // Format relative time helper
+  const formatTime = (dateStr) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 1) return "just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${diffDays}d ago`;
+  };
+
+  const renderAvatar = (userObj, sizeClass = "w-8 h-8") => {
+    if (userObj?.avatar) {
+      return (
+        <img 
+          src={userObj.avatar} 
+          alt="Avatar" 
+          className={`${sizeClass} rounded-full object-cover border border-white/5`} 
+        />
+      );
+    }
+    const initials = `${userObj?.firstname?.[0] || ''}${userObj?.lastname?.[0] || ''}`.toUpperCase() || userObj?.username?.[0]?.toUpperCase() || 'U';
+    return (
+      <div className={`${sizeClass} rounded-full bg-gradient-to-br from-brand-purple/40 to-brand-cyan/20 flex items-center justify-center text-[10px] font-bold text-white border border-white/5`}>
+        {initials}
+      </div>
+    );
+  };
+
+  const getUserName = (userObj) => {
+    if (!userObj) return "Anonymous";
+    const name = `${userObj.firstname || ''} ${userObj.lastname || ''}`.trim();
+    return name || userObj.username || "Member";
+  };
+
+  // Sort and process comments locally
+  const sortedComments = React.useMemo(() => {
+    const list = [...comments];
+    if (sortBy === "newest") {
+      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } else {
+      list.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    }
+    return list;
+  }, [comments, sortBy]);
+
+  // If user is not logged in, show login wall card
+  if (!currentUser) {
+    return (
+      <section id="discussion-section" className="mt-20 pt-10 border-t border-border-subtle max-w-3xl">
+        <h3 className="text-2xl font-bold text-white mb-6">Discussions</h3>
+        <GlassCard className="p-8 text-center border-dashed border-brand-cyan/25 flex flex-col items-center gap-4">
+          <MessageSquare className="w-10 h-10 text-gray-500 mb-2" />
+          <h4 className="text-base font-bold text-white">Join the discussion</h4>
+          <p className="text-xs text-gray-400 max-w-sm leading-relaxed">
+            NovaBlog threads are developer-curated. Register or login to comment, share insights, and engage with the author.
+          </p>
+          <div className="flex gap-3 mt-2">
+            <Link to="/signin">
+              <Button variant="primary" className="!rounded-xl text-xs py-2 px-5">
+                Sign In
+              </Button>
+            </Link>
+            <Link to="/signup">
+              <Button variant="secondary" className="!rounded-xl text-xs py-2 px-5">
+                Sign Up
+              </Button>
+            </Link>
+          </div>
+        </GlassCard>
+      </section>
+    );
+  }
+
   return (
-    <section className="mt-20 pt-10 border-t border-border-subtle max-w-3xl">
+    <section id="discussion-section" className="mt-20 pt-10 border-t border-border-subtle max-w-3xl">
       <div className="flex items-center justify-between mb-8">
         <h3 className="text-2xl font-bold text-white flex items-center gap-3">
-          Discussions <span className="bg-brand-blue/20 text-brand-blue text-xs py-1 px-2 rounded-full">124</span>
+          Discussions <span className="bg-brand-blue/20 text-brand-blue text-xs py-1 px-2.5 rounded-full">{comments.length}</span>
         </h3>
-        <select className="bg-bg-base border border-border-subtle text-sm text-gray-400 p-2 rounded-lg focus:outline-none focus:border-brand-cyan">
-          <option>Sort by: Newest</option>
-          <option>Sort by: Top</option>
+        <select 
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value === "Newest" || e.target.value === "newest" ? "newest" : "oldest")}
+          className="bg-bg-base border border-border-subtle text-xs text-gray-400 py-1.5 px-3 rounded-lg focus:outline-none focus:border-brand-cyan cursor-pointer"
+        >
+          <option value="newest">Sort by: Newest</option>
+          <option value="oldest">Sort by: Oldest</option>
         </select>
       </div>
 
-      {/* Comment Input */}
+      {/* Main Comment Input */}
       <GlassCard className="p-6 mb-10 border-brand-cyan/20">
         <div className="flex gap-4">
-          <img src="https://i.pravatar.cc/100?img=11" alt="You" className="w-10 h-10 rounded-full" />
-          <div className="flex-1">
-            <textarea 
-              className="w-full bg-black/40 border border-border-subtle rounded-lg p-4 text-sm text-white placeholder-gray-500 focus:border-brand-cyan focus:outline-none min-h-[100px] resize-none"
-              placeholder="Add to the discussion..."
-            ></textarea>
-            <div className="flex items-center justify-between mt-3">
-              <div className="flex items-center gap-2 text-gray-400">
-                <button className="hover:text-white transition-colors"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg></button>
-                <button className="hover:text-white transition-colors"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></button>
+          {renderAvatar(currentUser, "w-10 h-10")}
+          <div className="flex-grow">
+            <form onSubmit={handlePostComment}>
+              <textarea 
+                value={newCommentText}
+                onChange={(e) => setNewCommentText(e.target.value)}
+                className="w-full bg-black/40 border border-border-subtle rounded-xl p-4 text-sm text-white placeholder-gray-500 focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan/10 focus:outline-none min-h-[90px] resize-none"
+                placeholder="Add to the discussion..."
+                required
+              />
+              <div className="flex items-center justify-between mt-3">
+                <span className="text-[10px] text-gray-500">markdown supported</span>
+                <Button type="submit" variant="primary" className="!rounded-xl !py-2 !px-5 text-xs">
+                  Post Comment
+                </Button>
               </div>
-              <Button variant="primary" className="py-2 px-6 text-sm">Post Comment</Button>
-            </div>
+            </form>
           </div>
         </div>
       </GlassCard>
 
       {/* Comment Thread */}
-      <div className="space-y-8">
-        <div className="flex gap-4">
-          <img src="https://i.pravatar.cc/100?img=5" alt="User" className="w-10 h-10 rounded-full" />
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-white text-sm">Sarah Chen</span>
-                <span className="text-xs text-brand-purple bg-brand-purple/10 px-2 py-0.5 rounded">Author</span>
-                <span className="text-xs text-gray-500">2h ago</span>
-              </div>
-              <button className="text-gray-500 hover:text-white"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" /></svg></button>
-            </div>
-            <p className="text-sm text-gray-300 leading-relaxed mb-3">
-              The approach to predictive prefetching is fascinating. I'm curious if you've encountered any specific race conditions when dealing with cold-start shards in the virtualization layer?
-            </p>
-            <div className="flex items-center gap-4 text-xs text-gray-500">
-              <button className="flex items-center gap-1 hover:text-white"><svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.514" /></svg> 24</button>
-              <button className="flex items-center gap-1 hover:text-white"><svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg> Reply</button>
-            </div>
-
-            {/* Nested Reply */}
-            <div className="mt-4 flex gap-4 bg-bg-card p-4 rounded-xl border border-border-subtle">
-              <img src="https://i.pravatar.cc/100?img=33" alt="Alex" className="w-8 h-8 rounded-full" />
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-semibold text-white text-sm">Alex Rivera</span>
-                  <span className="text-xs text-brand-cyan bg-brand-cyan/10 px-2 py-0.5 rounded">Maintainer</span>
-                  <span className="text-xs text-gray-500">1h ago</span>
-                </div>
-                <p className="text-sm text-gray-300 leading-relaxed mb-2">
-                  Great question. It definitely exists! We solved it by implementing a ghost-routing layer that keeps a shadow copy of the state in memory over WASM before it hits.
-                </p>
-                <button className="flex items-center gap-1 hover:text-white text-xs text-gray-500"><svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.514" /></svg> 12</button>
-              </div>
-            </div>
-          </div>
+      {loading && comments.length === 0 ? (
+        <div className="flex justify-center py-10">
+          <div className="w-6 h-6 border-2 border-brand-cyan border-t-transparent rounded-full animate-spin" />
         </div>
-      </div>
+      ) : (
+        <div className="space-y-6">
+          {sortedComments.map((comment) => {
+            const isBlogAuthor = comment.userId === blog.authorId;
+            const isCommentOwner = comment.userId === currentUser.id;
 
-      <button className="w-full mt-8 py-3 text-sm text-gray-400 hover:text-white border border-border-subtle hover:border-gray-500 rounded-lg transition-colors">
-        Load more comments
-      </button>
+            return (
+              <div key={comment.id} className="flex gap-4 group/comment">
+                {renderAvatar(comment.user, "w-10 h-10")}
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-white text-sm">
+                        {getUserName(comment.user)}
+                      </span>
+                      {isBlogAuthor && (
+                        <span className="text-[9px] font-extrabold uppercase tracking-wide text-brand-purple bg-brand-purple/10 border border-brand-purple/20 px-2 py-0.5 rounded">
+                          Author
+                        </span>
+                      )}
+                      <span className="text-[10px] text-gray-500">
+                        {formatTime(comment.createdAt)}
+                      </span>
+                    </div>
+                    {isCommentOwner && (
+                      <button 
+                        onClick={() => handleDeleteComment(comment.id)}
+                        className="text-gray-600 hover:text-red-400 p-1 opacity-0 group-hover/comment:opacity-100 transition-opacity"
+                        title="Delete comment"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  
+                  <p className="text-sm text-gray-300 leading-relaxed mt-1 mb-2 whitespace-pre-line">
+                    {comment.content}
+                  </p>
+
+                  <div className="flex items-center gap-4 text-xs text-gray-500">
+                    <button 
+                      onClick={() => {
+                        setReplyingToId(replyingToId === comment.id ? null : comment.id);
+                        setReplyText("");
+                      }}
+                      className="flex items-center gap-1 hover:text-white transition-colors"
+                    >
+                      <MessageSquare className="w-3 h-3" /> Reply
+                    </button>
+                  </div>
+
+                  {/* Reply Input Box */}
+                  {replyingToId === comment.id && (
+                    <form 
+                      onSubmit={(e) => handlePostReply(e, comment.id)}
+                      className="mt-4 flex gap-3 bg-[#0c0d1c]/40 border border-border-subtle p-4 rounded-xl"
+                    >
+                      {renderAvatar(currentUser, "w-7 h-7")}
+                      <div className="flex-grow">
+                        <textarea
+                          value={replyText}
+                          onChange={(e) => setReplyText(e.target.value)}
+                          placeholder="Type reply..."
+                          required
+                          className="w-full bg-black/40 border border-border-subtle rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500 focus:border-brand-cyan focus:outline-none min-h-[50px] resize-none"
+                        />
+                        <div className="flex justify-end gap-2 mt-2">
+                          <button
+                            type="button"
+                            onClick={() => setReplyingToId(null)}
+                            className="px-3 py-1.5 rounded-lg text-[10px] text-gray-400 hover:text-white"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="px-3 py-1.5 rounded-lg bg-brand-cyan text-black text-[10px] font-bold flex items-center gap-1.5 hover:opacity-90"
+                          >
+                            <Send className="w-3 h-3" /> Reply
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  )}
+
+                  {/* Nested Replies Loop */}
+                  {comment.replies && comment.replies.length > 0 && (
+                    <div className="mt-4 space-y-4 border-l border-border-subtle/50 pl-4 ml-1">
+                      {comment.replies.map((reply) => {
+                        const isReplyBlogAuthor = reply.userId === blog.authorId;
+                        const isReplyOwner = reply.userId === currentUser.id;
+
+                        return (
+                          <div key={reply.id} className="flex gap-3 group/reply">
+                            {renderAvatar(reply.user, "w-7 h-7")}
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-0.5">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="font-semibold text-white text-xs">
+                                    {getUserName(reply.user)}
+                                  </span>
+                                  {isReplyBlogAuthor && (
+                                    <span className="text-[8px] font-extrabold uppercase tracking-wide text-brand-purple bg-brand-purple/10 border border-brand-purple/20 px-1.5 py-0.5 rounded">
+                                      Author
+                                    </span>
+                                  )}
+                                  <span className="text-[9px] text-gray-500">
+                                    {formatTime(reply.createdAt)}
+                                  </span>
+                                </div>
+                                {isReplyOwner && (
+                                  <button 
+                                    onClick={() => handleDeleteComment(reply.id)}
+                                    className="text-gray-600 hover:text-red-400 p-1 opacity-0 group-hover/reply:opacity-100 transition-opacity"
+                                    title="Delete reply"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </button>
+                                )}
+                              </div>
+                              <p className="text-xs text-gray-300 leading-relaxed mt-1 whitespace-pre-line">
+                                {reply.content}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 };

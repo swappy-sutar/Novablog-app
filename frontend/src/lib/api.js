@@ -76,6 +76,56 @@ export const blogAPI = {
   getMyBlogs: async (params = { page: 1, limit: 10 }) => {
     const response = await api.get('/blog/my-blogs', { params });
     return response.data;
+  },
+
+  updateBlog: async (id, formData) => {
+    const response = await api.patch(`/blog/update-blog/${id}`, formData);
+    return response.data;
+  },
+
+  deleteBlog: async (id) => {
+    const response = await api.delete(`/blog/delete-blog/${id}`);
+    return response.data;
+  },
+
+  getBlogById: async (id) => {
+    const response = await api.get(`/blog/get-blog/${id}`);
+    return response.data;
+  },
+
+  getAllBlogs: async (params = { page: 1, limit: 10 }) => {
+    const response = await api.get('/blog/get-all-blogs', { params });
+    return response.data;
+  }
+};
+
+export const likeAPI = {
+  toggleLike: async (blogId) => {
+    const response = await api.post(`/likes/toggle/${blogId}`);
+    return response.data;
+  },
+  getLikeCount: async (blogId) => {
+    const response = await api.get(`/likes/get-count/${blogId}`);
+    return response.data;
+  }
+};
+
+export const commentsAPI = {
+  getCommentsByBlog: async (blogId, params = { page: 1, limit: 50 }) => {
+    const response = await api.get(`/comments/get-comment/${blogId}`, { params });
+    return response.data;
+  },
+  createComment: async (blogId, payload) => {
+    const response = await api.post(`/comments/create-comment/${blogId}`, payload);
+    return response.data;
+  },
+  updateComment: async (commentId, payload) => {
+    const response = await api.patch(`/comments/update-comment/${commentId}`, payload);
+    return response.data;
+  },
+  deleteComment: async (commentId) => {
+    const response = await api.delete(`/comments/delete-comment/${commentId}`);
+    return response.data;
   }
 };
 

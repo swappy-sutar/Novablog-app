@@ -1,13 +1,96 @@
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import BlogHero from '../components/blog/BlogHero';
 import Sidebar from '../components/blog/Sidebar';
 import ArticleContent from '../components/blog/ArticleContent';
 import ShareToolbar from '../components/blog/ShareToolbar';
 import Discussion from '../components/blog/Discussion';
 import GlassCard from '../components/ui/GlassCard';
+import { blogAPI, likeAPI } from '../lib/api';
 
 const BlogDetailsPage = () => {
+  const { id } = useParams();
+  const [blog, setBlog] = useState(null);
+  const [likeCount, setLikeCount] = useState(0);
+  const [userLiked, setUserLiked] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const loadBlogData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await blogAPI.getBlogById(id);
+      if (res.success && res.data) {
+        setBlog(res.data);
+        setLikeCount(res.data._count?.likes || 0);
+        
+        // Check if current user liked this blog
+        // We can fetch the like count explicitly to sync
+        const countRes = await likeAPI.getLikeCount(id);
+        if (countRes.success && countRes.data) {
+          setLikeCount(countRes.data.count);
+        }
+      } else {
+        setError("Post not found.");
+      }
+    } catch (e) {
+      console.error(e);
+      setError(e.response?.data?.message || e.message || "Failed to load post.");
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    loadBlogData();
+  }, [loadBlogData]);
+
+  const handleToggleLike = async () => {
+    try {
+      const res = await likeAPI.toggleLike(id);
+      if (res.success && res.data) {
+        const liked = res.data.liked;
+        setUserLiked(liked);
+        setLikeCount((prev) => (liked ? prev + 1 : Math.max(0, prev - 1)));
+        toast.success(liked ? "Post liked!" : "Post unliked.");
+      }
+    } catch (e) {
+      console.error(e);
+      // Check if user is logged in
+      if (e.response?.status === 401) {
+        toast.error("Please log in to like posts.");
+      } else {
+        toast.error("Failed to toggle like.");
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col items-center justify-center min-h-[60vh] gap-4 pt-24">
+        <div className="w-10 h-10 border-2 border-brand-cyan border-t-transparent rounded-full animate-spin" />
+        <p className="text-gray-500 text-sm">Retrieving article details...</p>
+      </div>
+    );
+  }
+
+  if (error || !blog) {
+    return (
+      <div className="max-w-7xl mx-auto px-6 text-center py-24 pt-32">
+        <p className="text-gray-400 mb-6 text-lg">{error || "Article not found."}</p>
+        <button 
+          onClick={loadBlogData}
+          className="px-6 py-2.5 rounded-xl bg-white text-black font-semibold text-sm hover:bg-gray-200 transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -16,14 +99,20 @@ const BlogDetailsPage = () => {
       transition={{ duration: 0.5 }}
       className="pb-20 relative"
     >
-      <BlogHero />
-      <ShareToolbar />
+      <BlogHero blog={blog} />
+      
+      <ShareToolbar 
+        blog={blog} 
+        likeCount={likeCount} 
+        userLiked={userLiked} 
+        onToggleLike={handleToggleLike} 
+      />
 
-      <div className="max-w-7xl mx-auto px-6 flex items-start gap-16 relative">
-        <Sidebar />
+      <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-start gap-12 lg:gap-16 relative">
+        <Sidebar blog={blog} />
         
-        <div className="flex-1 max-w-3xl">
-          <ArticleContent />
+        <div className="flex-grow w-full max-w-3xl min-w-0">
+          <ArticleContent blog={blog} />
           
           {/* Related Articles Section */}
           <section className="mt-20 border-t border-border-subtle pt-12">
@@ -53,7 +142,7 @@ const BlogDetailsPage = () => {
             </div>
           </section>
 
-          <Discussion />
+          <Discussion blog={blog} />
         </div>
       </div>
     </motion.div>

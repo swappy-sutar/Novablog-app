@@ -1,14 +1,19 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-import EditorNavbar from "../components/layout/EditorNavbar";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import Navbar from "../components/layout/Navbar";
 import EditorToolbar from "../components/editor/EditorToolbar";
 import { blogAPI } from "../lib/api";
 
 const WritePage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get("edit");
+  
   const editorRef = useRef(null);
   const [isPublishing, setIsPublishing] = useState(false);
+  const [isLoadingBlog, setIsLoadingBlog] = useState(false);
+  
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState([]);
@@ -16,6 +21,47 @@ const WritePage = () => {
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState("");
   const [isFeatured, setIsFeatured] = useState(false);
+
+  // Load blog post for editing
+  useEffect(() => {
+    if (!editId) return;
+
+    const fetchBlog = async () => {
+      setIsLoadingBlog(true);
+      try {
+        const res = await blogAPI.getBlogById(editId);
+        if (res.success && res.data) {
+          const blog = res.data;
+          setTitle(blog.title);
+          setContent(blog.content);
+          setIsFeatured(blog.isFeatured);
+          if (blog.thumbnail) {
+            setThumbnailPreview(blog.thumbnail);
+          }
+          if (blog.tags) {
+            setTags(blog.tags.map((t) => t.tag?.name).filter(Boolean));
+          }
+          if (editorRef.current) {
+            editorRef.current.innerHTML = blog.content;
+          }
+        }
+      } catch (e) {
+        toast.error("Failed to load blog post for editing.");
+        console.error("Load edit blog error:", e);
+      } finally {
+        setIsLoadingBlog(false);
+      }
+    };
+
+    fetchBlog();
+  }, [editId]);
+
+  // Sync content with contentEditable editor box once loaded
+  useEffect(() => {
+    if (editorRef.current && content && editorRef.current.innerHTML !== content) {
+      editorRef.current.innerHTML = content;
+    }
+  }, [content]);
 
   const handlePublish = async () => {
     if (!title || !content) {
@@ -41,14 +87,20 @@ const WritePage = () => {
       formData.append("status", "PUBLISHED");
       formData.append("isFeatured", isFeatured.toString());
 
-      if (thumbnail) {
+      // Only append if a new file was uploaded
+      if (thumbnail instanceof File) {
         formData.append("thumbnail", thumbnail);
       }
 
-      const response = await blogAPI.createBlog(formData);
+      let response;
+      if (editId) {
+        response = await blogAPI.updateBlog(editId, formData);
+      } else {
+        response = await blogAPI.createBlog(formData);
+      }
 
       if (response.success) {
-        toast.success("Blog published successfully!");
+        toast.success(editId ? "Blog updated successfully!" : "Blog published successfully!");
         navigate(`/post/${response.data.id}`);
       }
     } catch (error) {
@@ -74,10 +126,31 @@ const WritePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-bg-base flex flex-col font-sans">
-      <EditorNavbar onPublish={handlePublish} isPublishing={isPublishing} />
+    <div className="min-h-screen bg-bg-base flex flex-col font-sans pt-20">
+      <Navbar />
 
-      <main className="flex-grow w-full max-w-6xl mx-auto px-4 sm:px-8 pt-6 sm:pt-12 pb-24">
+      <main className="flex-grow w-full max-w-6xl mx-auto px-4 sm:px-8 pt-8 pb-24">
+        {/* Editor Workspace Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-subtle pb-6 mb-6">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              {editId ? "Edit Post" : "Write a New Post"}
+            </h1>
+            <p className="text-xs sm:text-sm text-gray-400 mt-1.5">
+              Draft your technical story, add a cover image, and publish it to the technical frontiers.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handlePublish}
+              disabled={isPublishing}
+              className="bg-brand-cyan hover:opacity-90 text-black text-xs sm:text-sm font-semibold py-2.5 px-6 rounded-xl transition-all disabled:opacity-50 cursor-pointer shadow-md shadow-brand-cyan/10 flex items-center gap-2"
+            >
+              {isPublishing ? "Publishing..." : "Publish Article"}
+            </button>
+          </div>
+        </div>
+
         <div className="glass-panel p-4 sm:p-8 md:p-12 flex flex-col gap-4 sm:gap-6">
           {/* Thumbnail Upload */}
           <div className="w-full">

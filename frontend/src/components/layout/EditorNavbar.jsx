@@ -53,7 +53,7 @@ const EditorNavbar = ({ onPublish, isPublishing, showPublish = true }) => {
           to="/my-blogs" 
           className={location.pathname === '/my-blogs' ? "text-brand-cyan relative after:absolute after:-bottom-2 after:left-0 after:w-full after:h-0.5 after:bg-brand-cyan after:rounded-full" : "text-gray-400 hover:text-white transition-colors"}
         >
-          my-blogs
+          My Blogs
         </Link>
       </div>
 
