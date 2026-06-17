@@ -17,4 +17,10 @@ export class LikeController {
   async getLikesCount(@Param('blogId') blogId: string) {
     return this.likesService.getLikesCount(blogId);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('check/:blogId')
+  async checkLikeStatus(@Param('blogId') blogId: string, @CurrentUser() user: any) {
+    return this.likesService.checkLikeStatus(blogId, user.id);
+  }
 }
