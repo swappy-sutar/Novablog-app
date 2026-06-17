@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -15,6 +16,8 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateEmailDto } from './dto/update-email.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from './guards/optional-jwt.guard';
 import { CurrentUser } from 'src/common/decorator/current-user.decorator';
@@ -97,5 +100,35 @@ export class AuthController {
   @Post('reset-password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('change-password')
+  async changePassword(
+    @CurrentUser() user: any,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    return this.authService.changePassword(user.id, changePasswordDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('update-email')
+  async updateEmail(
+    @CurrentUser() user: any,
+    @Body() updateEmailDto: UpdateEmailDto,
+  ) {
+    return this.authService.updateEmail(user.id, updateEmailDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('delete-account')
+  async deleteAccount(@CurrentUser() user: any) {
+    return this.authService.deleteAccount(user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('export-data')
+  async exportData(@CurrentUser() user: any) {
+    return this.authService.exportData(user.id);
   }
 }

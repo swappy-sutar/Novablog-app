@@ -3,6 +3,8 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-serif: 'Inter', system-ui, sans-serif;
   --color-brand-purple: #8b5cf6;
   --color-brand-blue: #3b82f6;
   --color-brand-cyan: #06b6d4;
@@ -73,23 +75,63 @@
     font-family: 'Inter', system-ui, sans-serif;
   }
 
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
+  /* Custom scrollbar for Webkit browsers (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar,
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  *::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
 
-  ::-webkit-scrollbar-track {
-    @apply bg-bg-base;
+  ::-webkit-scrollbar-track,
+  html::-webkit-scrollbar-track,
+  body::-webkit-scrollbar-track,
+  *::-webkit-scrollbar-track {
+    background: transparent;
   }
 
-  ::-webkit-scrollbar-thumb {
-    @apply bg-gray-800 rounded-full hover:bg-gray-700 transition-colors;
+  ::-webkit-scrollbar-thumb,
+  html::-webkit-scrollbar-thumb,
+  body::-webkit-scrollbar-thumb,
+  *::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 9999px;
+  }
+
+  :root.light-mode ::-webkit-scrollbar-thumb,
+  :root.light-mode html::-webkit-scrollbar-thumb,
+  :root.light-mode body::-webkit-scrollbar-thumb,
+  :root.light-mode *::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.25);
+  }
+
+  /* Standard CSS Scrollbars only for Firefox to avoid overriding Webkit styling in Chrome */
+  @supports not selector(::-webkit-scrollbar) {
+    html, body, * {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+
+    :root.light-mode html, :root.light-mode body, :root.light-mode * {
+      scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+    }
   }
 
   /* Horizontal scrollbar specific for the toolbar */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+  }
+
+  :root.light-mode .custom-scrollbar {
+    scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+  }
+
   .custom-scrollbar::-webkit-scrollbar {
-    height: 4px;
+    height: 5px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
@@ -97,7 +139,12 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-border-subtle rounded-full;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 9999px;
+  }
+
+  :root.light-mode .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.25);
   }
 }
 

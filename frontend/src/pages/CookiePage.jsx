@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Shield, Eye, HelpCircle, Mail, RotateCcw, AlertCircle, Info, Settings } from "lucide-react";
+import { useState } from "react";
+import { Shield, Eye, Mail, RotateCcw, Settings } from "lucide-react";
 import toast from "react-hot-toast";
 
 const CookiePage = () => {

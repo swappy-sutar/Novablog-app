@@ -1,7 +1,6 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Layout, Cpu, CheckCircle2, ShieldCheck, Heart, ArrowRight } from "lucide-react";
+import { Layout, Cpu, CheckCircle2, ShieldCheck, Heart } from "lucide-react";
 import GlassCard from "../components/ui/GlassCard";
 import Button from "../components/ui/Button";
 

@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { Clock } from "lucide-react";
 import GlassCard from "../ui/GlassCard";

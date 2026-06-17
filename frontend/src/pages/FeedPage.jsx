@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import FeaturedPostCard from "../components/feed/FeaturedPostCard";
 import PostCard from "../components/feed/PostCard";
 import Button from "../components/ui/Button";
@@ -19,7 +19,7 @@ const FeedPage = () => {
     const fetchTags = async () => {
       try {
         const res = await blogAPI.getTags();
-        if (res.success && res.data) {
+        if (res.success && res.data && res.data.length > 0) {
           const names = res.data.map((t) => t.name);
           setTagsList(["All", ...names]);
         }
@@ -80,8 +80,11 @@ const FeedPage = () => {
 
   // 3. Trigger reload on filters changes
   useEffect(() => {
-    setPage(1);
-    fetchFeedPosts(1, activeTab, selectedTag, false);
+    const timer = setTimeout(() => {
+      setPage(1);
+      fetchFeedPosts(1, activeTab, selectedTag, false);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [activeTab, selectedTag, fetchFeedPosts]);
 
   const handleLoadMore = () => {
@@ -97,7 +100,7 @@ const FeedPage = () => {
   const gridPosts = posts.slice(3);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-10 font-sans">
+    <div className="max-w-7xl mx-auto px-4 md:px-6 pt-12 pb-16 space-y-10 font-sans">
       
       {/* 1. Header & Filter/Sort Bar */}
       <div className="space-y-6">

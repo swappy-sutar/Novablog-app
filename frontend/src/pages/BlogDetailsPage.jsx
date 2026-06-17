@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -66,7 +66,10 @@ const BlogDetailsPage = () => {
   }, [id]);
 
   useEffect(() => {
-    loadBlogData();
+    const timer = setTimeout(() => {
+      loadBlogData();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [loadBlogData]);
 
   useEffect(() => {

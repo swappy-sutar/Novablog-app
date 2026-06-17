@@ -12,7 +12,7 @@ const Sidebar = ({ blog }) => {
       id: `heading-${i}`,
       text: match[1].replace(/<[^>]*>/g, "").trim(), // Strip any nested html tags
     }));
-  }, [blog?.content]);
+  }, [blog]);
 
   const scrollToHeading = (e, id) => {
     e.preventDefault();

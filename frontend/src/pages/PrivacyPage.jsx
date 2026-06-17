@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Shield, Database, Globe, Cpu, Server, Key, Eye, FileText, ArrowRight, Download, Edit, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Globe, Cpu, ArrowRight, Download, Edit, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 const PrivacyPage = () => {
@@ -38,7 +38,7 @@ const PrivacyPage = () => {
     }`;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col lg:flex-row gap-8 lg:gap-10 pb-20 pt-4 font-sans">
+    <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col lg:flex-row gap-8 lg:gap-10 pb-20 pt-12 font-sans">
       {/* Sidebar Navigation */}
       <aside className="lg:w-64 shrink-0 lg:sticky lg:top-24 lg:self-start space-y-6">
         <div className="px-1">

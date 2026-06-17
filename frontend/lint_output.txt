@@ -1,0 +1,94 @@
+﻿
+> frontend@0.0.0 lint
+> eslint .
+
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\auth\ProtectedRoute.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\blog\ArticleContent.jsx
+  32:41  error  'match' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\blog\BlogHero.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\blog\ShareToolbar.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\feed\FeaturedPostCard.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\feed\PostCard.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\home\Hero.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\home\Newsletter.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\home\TopContributors.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\layout\Footer.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\layout\Navbar.jsx
+  233:6  warning  React Hook useEffect has a missing dependency: 'searchPhrases'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\ui\Button.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\ui\CustomCursor.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\ui\GlassCard.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\ui\GradientText.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\ui\Skeleton.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\components\ui\Tag.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\layouts\AuthLayout.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\layouts\ProfileLayout.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\pages\HomePage.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\pages\MyBlogsPage.jsx
+  141:26  error  Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This value was memoized in source but not in compilation output.
+
+  139 |   // Mock Scheduled blog for visual demo matching reference image
+  140 |   // Since scheduled enum is not in backend, we inject a mock one if needed, or allow filtering DRAFT as Scheduled
+> 141 |   const processedBlogs = useMemo(() => {
+      |                          ^^^^^^^^^^^^^^^
+> 142 |     const list = [...blogs];
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 143 |
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 175 |     });
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 176 |   }, [blogs, filter, search]);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Could not preserve existing memoization
+  177 |
+  178 |   const navItemClass = (active) =>
+  179 |     `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors border ${  react-hooks/preserve-manual-memoization
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\pages\SettingsPage.jsx
+   1:8   error  'React' is defined but never used   no-unused-vars
+   2:10  error  'motion' is defined but never used  no-unused-vars
+  16:3   error  'Trash2' is defined but never used  no-unused-vars
+
+Γ£û 24 problems (23 errors, 1 warning)
+

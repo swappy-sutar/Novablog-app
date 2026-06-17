@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { 
   User, 
@@ -13,7 +13,6 @@ import {
   Mail, 
   Check, 
   ChevronRight, 
-  Trash2, 
   Download,
   AlertTriangle
 } from 'lucide-react';
@@ -124,6 +123,19 @@ const SettingsPage = () => {
     websiteUrl: '',
     githubUrl: '',
   });
+
+  // API settings modals states
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [emailForm, setEmailForm] = useState({ newEmail: '' });
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [isExportingData, setIsExportingData] = useState(false);
   
   const initialPrefs = loadPrefs();
   const prefsBaseline = useRef(JSON.parse(JSON.stringify(initialPrefs)));
@@ -131,13 +143,11 @@ const SettingsPage = () => {
   const fileRef = useRef(null);
 
   // Setup Refs for Scroll-Spy
-  const sectionRefs = {
-    profile: useRef(null),
-    security: useRef(null),
-    appearance: useRef(null),
-    notifications: useRef(null),
-    privacy: useRef(null),
-  };
+  const profileRef = useRef(null);
+  const securityRef = useRef(null);
+  const appearanceRef = useRef(null);
+  const notificationsRef = useRef(null);
+  const privacyRef = useRef(null);
 
   const applyTheme = useCallback((theme) => {
     const root = document.documentElement;
@@ -189,16 +199,27 @@ const SettingsPage = () => {
   }, []);
 
   useEffect(() => {
-    loadProfile();
+    const timer = setTimeout(() => {
+      loadProfile();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [loadProfile]);
 
   // Scrollspy logic
   useEffect(() => {
+    const refs = {
+      profile: profileRef,
+      security: securityRef,
+      appearance: appearanceRef,
+      notifications: notificationsRef,
+      privacy: privacyRef,
+    };
+
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 220; // offset
 
-      for (const id in sectionRefs) {
-        const ref = sectionRefs[id].current;
+      for (const id in refs) {
+        const ref = refs[id].current;
         if (ref) {
           const top = ref.offsetTop;
           const bottom = top + ref.offsetHeight;
@@ -216,7 +237,14 @@ const SettingsPage = () => {
   }, []);
 
   const scrollToSection = (id) => {
-    const ref = sectionRefs[id].current;
+    const refs = {
+      profile: profileRef,
+      security: securityRef,
+      appearance: appearanceRef,
+      notifications: notificationsRef,
+      privacy: privacyRef,
+    };
+    const ref = refs[id]?.current;
     if (ref) {
       const offset = 100; // Adjust for sticky header
       const elementPosition = ref.getBoundingClientRect().top + window.scrollY;
@@ -318,6 +346,119 @@ const SettingsPage = () => {
     toast('Changes discarded', { icon: '↩' });
   };
 
+  const handleChangePasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (!passwordForm.oldPassword) {
+      toast.error('Current password is required');
+      return;
+    }
+    if (passwordForm.newPassword.length < 6) {
+      toast.error('New password must be at least 6 characters long');
+      return;
+    }
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+    setIsChangingPassword(true);
+    try {
+      const res = await authAPI.changePassword({
+        oldPassword: passwordForm.oldPassword,
+        newPassword: passwordForm.newPassword,
+      });
+      if (res.success) {
+        toast.success('Password changed successfully');
+        setIsPasswordModalOpen(false);
+        setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Failed to change password';
+      toast.error(typeof msg === 'string' ? msg : 'Failed to change password');
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
+  const handleUpdateEmailSubmit = async (e) => {
+    e.preventDefault();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailForm.newEmail || !emailRegex.test(emailForm.newEmail)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+    setIsUpdatingEmail(true);
+    try {
+      const res = await authAPI.updateEmail({
+        newEmail: emailForm.newEmail,
+      });
+      if (res.success && res.data) {
+        setProfile(res.data);
+        persistUserFromProfile(res.data);
+        toast.success('Email updated successfully');
+        setIsEmailModalOpen(false);
+        setEmailForm({ newEmail: '' });
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Failed to update email';
+      toast.error(typeof msg === 'string' ? msg : 'Failed to update email');
+    } finally {
+      setIsUpdatingEmail(false);
+    }
+  };
+
+  const handleDeleteAccountSubmit = async (e) => {
+    e.preventDefault();
+    if (deleteConfirmText !== 'DELETE') {
+      toast.error('Please type DELETE to confirm');
+      return;
+    }
+    setIsDeletingAccount(true);
+    try {
+      const res = await authAPI.deleteAccount();
+      if (res.success) {
+        toast.success('Your account has been deleted successfully');
+        // Clear auth details
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+        window.dispatchEvent(new Event('auth-change'));
+        // Redirect
+        window.location.href = '/';
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Failed to delete account';
+      toast.error(typeof msg === 'string' ? msg : 'Failed to delete account');
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
+
+  const handleExportData = async () => {
+    setIsExportingData(true);
+    try {
+      const res = await authAPI.exportData();
+      if (res.success && res.data) {
+        // Trigger file download in browser
+        const jsonStr = JSON.stringify(res.data, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${profile?.username || 'user'}_data_export.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        toast.success('Data export download started');
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Failed to export data';
+      toast.error(typeof msg === 'string' ? msg : 'Failed to export data');
+    } finally {
+      setIsExportingData(false);
+    }
+  };
+
   const avatarSrc =
     profile?.avatar &&
     `${profile.avatar}${profile.avatar.includes('?') ? '&' : '?'}cb=${encodeURIComponent(profile.updatedAt || profile.id || '')}`;
@@ -351,7 +492,7 @@ const SettingsPage = () => {
   const labelClass = 'block text-xs font-semibold text-gray-400 mb-2';
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col lg:flex-row gap-8 lg:gap-10 pb-28 pt-4">
+    <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col lg:flex-row gap-8 lg:gap-10 pb-28 pt-12">
       <input
         ref={fileRef}
         type="file"
@@ -430,7 +571,7 @@ const SettingsPage = () => {
         
         {/* PROFILE SETTINGS CARD */}
         <section 
-          ref={sectionRefs.profile} 
+          ref={profileRef} 
           className="rounded-2xl border border-border-subtle bg-white/[0.02] p-6 md:p-8 space-y-6"
         >
           <h2 className="text-lg font-bold text-brand-blue border-b border-border-subtle pb-3">
@@ -536,7 +677,7 @@ const SettingsPage = () => {
 
         {/* ACCOUNT SECURITY CARD */}
         <section 
-          ref={sectionRefs.security} 
+          ref={securityRef} 
           className="rounded-2xl border border-border-subtle bg-white/[0.02] p-6 md:p-8 space-y-6"
         >
           <h2 className="text-lg font-bold text-brand-blue border-b border-border-subtle pb-3">
@@ -555,8 +696,8 @@ const SettingsPage = () => {
             </div>
             <button
               type="button"
-              onClick={() => toast('Email updates coming soon')}
-              className="text-xs font-semibold text-brand-cyan hover:text-cyan-300 py-1.5 px-4 rounded-lg bg-brand-cyan/5 border border-brand-cyan/20 transition-all text-center"
+              onClick={() => setIsEmailModalOpen(true)}
+              className="text-xs font-semibold text-brand-cyan hover:text-cyan-300 py-1.5 px-4 rounded-lg bg-brand-cyan/5 border border-brand-cyan/20 transition-all text-center cursor-pointer"
             >
               Update
             </button>
@@ -582,8 +723,8 @@ const SettingsPage = () => {
 
           <button
             type="button"
-            onClick={() => toast('Password change flow coming soon')}
-            className="w-full py-3.5 rounded-xl border border-border-subtle text-xs font-semibold text-gray-300 hover:bg-white/[0.04] hover:text-white flex items-center justify-center gap-2 transition-all"
+            onClick={() => setIsPasswordModalOpen(true)}
+            className="w-full py-3.5 rounded-xl border border-border-subtle text-xs font-semibold text-gray-300 hover:bg-white/[0.04] hover:text-white flex items-center justify-center gap-2 transition-all cursor-pointer"
           >
             <Lock className="w-4 h-4 opacity-75" />
             Change Password
@@ -592,7 +733,7 @@ const SettingsPage = () => {
 
         {/* APPEARANCE CARD */}
         <section 
-          ref={sectionRefs.appearance} 
+          ref={appearanceRef} 
           className="rounded-2xl border border-border-subtle bg-white/[0.02] p-6 md:p-8 space-y-6"
         >
           <h2 className="text-lg font-bold text-brand-blue border-b border-border-subtle pb-3">
@@ -655,7 +796,7 @@ const SettingsPage = () => {
 
         {/* NOTIFICATIONS CARD */}
         <section 
-          ref={sectionRefs.notifications} 
+          ref={notificationsRef} 
           className="rounded-2xl border border-border-subtle bg-white/[0.02] p-6 md:p-8 space-y-6"
         >
           <div className="flex items-center justify-between border-b border-border-subtle pb-3">
@@ -734,7 +875,7 @@ const SettingsPage = () => {
 
         {/* PRIVACY CARD */}
         <section 
-          ref={sectionRefs.privacy} 
+          ref={privacyRef} 
           className="rounded-2xl border border-border-subtle bg-white/[0.02] p-6 md:p-8 space-y-6"
         >
           <h2 className="text-lg font-bold text-brand-blue border-b border-border-subtle pb-3">
@@ -772,20 +913,24 @@ const SettingsPage = () => {
           <div className="grid sm:grid-cols-2 gap-4">
             <button
               type="button"
-              onClick={() => toast('Export requested — check your registered email shortly')}
-              className="rounded-xl border border-border-subtle bg-white/[0.01] hover:bg-white/[0.03] p-4 flex items-center justify-between text-xs font-semibold text-gray-300 transition-all"
+              onClick={handleExportData}
+              disabled={isExportingData}
+              className="rounded-xl border border-border-subtle bg-white/[0.01] hover:bg-white/[0.03] p-4 flex items-center justify-between text-xs font-semibold text-gray-300 transition-all cursor-pointer disabled:opacity-50"
             >
               <span className="flex items-center gap-2">
                 <Download className="w-4 h-4 text-gray-400" />
-                Export My Data
+                {isExportingData ? 'Exporting...' : 'Export My Data'}
               </span>
               <ChevronRight className="w-4 h-4 text-gray-500" />
             </button>
             
             <button
               type="button"
-              onClick={() => toast.error('To delete your account, contact database administration')}
-              className="rounded-xl border border-red-500/20 bg-red-500/[0.01] hover:bg-red-500/[0.04] p-4 flex items-center justify-between text-xs font-semibold text-red-400 transition-all"
+              onClick={() => {
+                setDeleteConfirmText('');
+                setIsDeleteModalOpen(true);
+              }}
+              className="rounded-xl border border-red-500/20 bg-red-500/[0.01] hover:bg-red-500/[0.04] p-4 flex items-center justify-between text-xs font-semibold text-red-400 transition-all cursor-pointer"
             >
               <span className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 opacity-75" />
@@ -819,6 +964,236 @@ const SettingsPage = () => {
           </Button>
         </div>
       </div>
+
+      {/* PASSWORD CHANGE MODAL */}
+      <AnimatePresence>
+        {isPasswordModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsPasswordModalOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-md bg-[#0c0d1c]/95 border border-border-subtle rounded-2xl p-6 shadow-2xl backdrop-blur-xl z-10"
+            >
+              <div className="flex items-center justify-between border-b border-border-subtle pb-4 mb-5">
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                  <Lock className="w-5 h-5 text-brand-purple" />
+                  Change Password
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setIsPasswordModalOpen(false)}
+                  className="text-gray-400 hover:text-white text-sm cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleChangePasswordSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 mb-2">Current Password</label>
+                  <input
+                    type="password"
+                    required
+                    className="w-full bg-white/[0.03] border border-border-subtle rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
+                    value={passwordForm.oldPassword}
+                    onChange={(e) => setPasswordForm((f) => ({ ...f, oldPassword: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 mb-2">New Password</label>
+                  <input
+                    type="password"
+                    required
+                    className="w-full bg-white/[0.03] border border-border-subtle rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
+                    value={passwordForm.newPassword}
+                    onChange={(e) => setPasswordForm((f) => ({ ...f, newPassword: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 mb-2">Confirm New Password</label>
+                  <input
+                    type="password"
+                    required
+                    className="w-full bg-white/[0.03] border border-border-subtle rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
+                    value={passwordForm.confirmPassword}
+                    onChange={(e) => setPasswordForm((f) => ({ ...f, confirmPassword: e.target.value }))}
+                  />
+                </div>
+                <div className="flex gap-4 justify-end pt-4 border-t border-border-subtle">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="!rounded-xl"
+                    onClick={() => setIsPasswordModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="!rounded-xl bg-gradient-to-r from-indigo-500 to-brand-purple"
+                    disabled={isChangingPassword}
+                  >
+                    {isChangingPassword ? 'Updating...' : 'Update Password'}
+                  </Button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* EMAIL UPDATE MODAL */}
+      <AnimatePresence>
+        {isEmailModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsEmailModalOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-md bg-[#0c0d1c]/95 border border-border-subtle rounded-2xl p-6 shadow-2xl backdrop-blur-xl z-10"
+            >
+              <div className="flex items-center justify-between border-b border-border-subtle pb-4 mb-5">
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                  <Mail className="w-5 h-5 text-brand-cyan" />
+                  Update Email Address
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setIsEmailModalOpen(false)}
+                  className="text-gray-400 hover:text-white text-sm cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleUpdateEmailSubmit} className="space-y-4">
+                <div>
+                  <p className="text-xs text-gray-400 mb-4 leading-relaxed">
+                    Note: Your email address is used to log in and receive registered account notifications.
+                  </p>
+                  <label className="block text-xs font-semibold text-gray-400 mb-2">New Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="you@example.com"
+                    className="w-full bg-white/[0.03] border border-border-subtle rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
+                    value={emailForm.newEmail}
+                    onChange={(e) => setEmailForm((f) => ({ ...f, newEmail: e.target.value }))}
+                  />
+                </div>
+                <div className="flex gap-4 justify-end pt-4 border-t border-border-subtle">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="!rounded-xl"
+                    onClick={() => setIsEmailModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="!rounded-xl bg-gradient-to-r from-brand-cyan to-brand-blue"
+                    disabled={isUpdatingEmail}
+                  >
+                    {isUpdatingEmail ? 'Updating...' : 'Update Email'}
+                  </Button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* DELETE ACCOUNT MODAL */}
+      <AnimatePresence>
+        {isDeleteModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-md bg-[#0c0d1c]/95 border border-red-500/20 rounded-2xl p-6 shadow-2xl backdrop-blur-xl z-10"
+            >
+              <div className="flex items-center justify-between border-b border-red-500/10 pb-4 mb-5">
+                <h3 className="text-lg font-bold text-red-400 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5" />
+                  Delete Account Permanently
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setIsDeleteModalOpen(false)}
+                  className="text-gray-400 hover:text-white text-sm cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleDeleteAccountSubmit} className="space-y-4">
+                <div className="rounded-xl bg-red-500/5 border border-red-500/10 p-4 mb-4">
+                  <p className="text-xs text-red-400/90 leading-relaxed font-semibold">
+                    Warning: This action is irreversible. All your articles, bookmarks, comments, likes, and followers will be deleted permanently.
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 mb-2">
+                    To confirm, type <span className="text-white font-bold">DELETE</span> below:
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="DELETE"
+                    className="w-full bg-white/[0.03] border border-border-subtle rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20 transition-all"
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value)}
+                  />
+                </div>
+                <div className="flex gap-4 justify-end pt-4 border-t border-border-subtle">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="!rounded-xl"
+                    onClick={() => setIsDeleteModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="danger"
+                    className="!rounded-xl"
+                    disabled={isDeletingAccount || deleteConfirmText !== 'DELETE'}
+                  >
+                    {isDeletingAccount ? 'Deleting...' : 'Delete My Account'}
+                  </Button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

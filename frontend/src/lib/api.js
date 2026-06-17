@@ -84,6 +84,26 @@ export const authAPI = {
     const response = await api.post('/auth/reset-password', { token, password });
     return response.data;
   },
+
+  changePassword: async (payload) => {
+    const response = await api.post('/auth/change-password', payload);
+    return response.data;
+  },
+
+  updateEmail: async (payload) => {
+    const response = await api.post('/auth/update-email', payload);
+    return response.data;
+  },
+
+  deleteAccount: async () => {
+    const response = await api.delete('/auth/delete-account');
+    return response.data;
+  },
+
+  exportData: async () => {
+    const response = await api.get('/auth/export-data');
+    return response.data;
+  },
 };
 
 // Blog API endpoints

@@ -1,11 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "../ui/Button";
-import { authAPI, notificationsAPI } from "../../lib/api";
+import { notificationsAPI } from "../../lib/api";
 import { Bell } from "lucide-react";
 import { connectSocket, disconnectSocket } from "../../lib/socket";
 import toast from "react-hot-toast";
+
+const searchPhrases = [
+  "Search 'React hooks'...",
+  "Search 'System Design'...",
+  "Search 'Framer Motion'...",
+  "Search 'Next.js 14'...",
+];
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -21,7 +28,10 @@ const Navbar = () => {
   const isAbout = location.pathname === "/about";
 
   useEffect(() => {
-    setIsMobileMenuOpen(false);
+    const timer = setTimeout(() => {
+      setIsMobileMenuOpen(false);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [location.pathname]);
 
   const handleSearchSubmit = (e) => {
@@ -52,7 +62,7 @@ const Navbar = () => {
       if (storedUser && storedUser !== "undefined") {
         try {
           setUser(JSON.parse(storedUser));
-        } catch (e) {
+        } catch {
           console.error("Failed to parse user from local storage");
           setUser(null);
         }
@@ -81,9 +91,11 @@ const Navbar = () => {
   // Load and subscribe to notifications
   useEffect(() => {
     if (!user) {
-      setNotifications([]);
+      const timer = setTimeout(() => {
+        setNotifications([]);
+      }, 0);
       disconnectSocket();
-      return;
+      return () => clearTimeout(timer);
     }
 
     const loadNotifications = async () => {
@@ -175,7 +187,7 @@ const Navbar = () => {
       if (diffMins < 60) return `${diffMins}m ago`;
       if (diffHours < 24) return `${diffHours}h ago`;
       return `${diffDays}d ago`;
-    } catch (e) {
+    } catch {
       return "";
     }
   };
@@ -186,13 +198,7 @@ const Navbar = () => {
     }
   };
 
-  // Typing placeholder effect
-  const searchPhrases = [
-    "Search 'React hooks'...",
-    "Search 'System Design'...",
-    "Search 'Framer Motion'...",
-    "Search 'Next.js 14'...",
-  ];
+
   const [placeholder, setPlaceholder] = useState("");
   const [phraseIdx, setPhraseIdx] = useState(0);
   const [charIdx, setCharIdx] = useState(0);
@@ -200,17 +206,23 @@ const Navbar = () => {
 
   useEffect(() => {
     const currentPhrase = searchPhrases[phraseIdx];
-    let typingSpeed = isDeleting ? 40 : 100;
 
     if (!isDeleting && charIdx === currentPhrase.length) {
-      typingSpeed = 2000;
-      setIsDeleting(true);
-    } else if (isDeleting && charIdx === 0) {
-      setIsDeleting(false);
-      setPhraseIdx((prev) => (prev + 1) % searchPhrases.length);
-      typingSpeed = 500;
+      const timeout = setTimeout(() => {
+        setIsDeleting(true);
+      }, 2000);
+      return () => clearTimeout(timeout);
     }
 
+    if (isDeleting && charIdx === 0) {
+      const timeout = setTimeout(() => {
+        setIsDeleting(false);
+        setPhraseIdx((prev) => (prev + 1) % searchPhrases.length);
+      }, 500);
+      return () => clearTimeout(timeout);
+    }
+
+    const typingSpeed = isDeleting ? 40 : 100;
     const timeout = setTimeout(() => {
       setCharIdx((prev) => prev + (isDeleting ? -1 : 1));
       setPlaceholder(

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { MessageSquare, CornerDownRight, Trash2, Send } from 'lucide-react';
+import { MessageSquare, Trash2, Send } from 'lucide-react';
 import GlassCard from '../ui/GlassCard';
 import Button from '../ui/Button';
 import { commentsAPI } from '../../lib/api';
@@ -33,7 +33,10 @@ const Discussion = ({ blog }) => {
   }, [blog.id]);
 
   useEffect(() => {
-    loadComments();
+    const timer = setTimeout(() => {
+      loadComments();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [loadComments]);
 
   // Handle post main comment

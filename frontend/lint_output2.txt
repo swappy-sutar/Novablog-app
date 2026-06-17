@@ -1,0 +1,29 @@
+﻿
+> frontend@0.0.0 lint
+> eslint .
+
+
+C:\Users\Vaishnavi Savadi\Desktop\Swapnil_files\self-projects\Blog-App\frontend\src\pages\MyBlogsPage.jsx
+  141:26  error  Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This value was memoized in source but not in compilation output.
+
+  139 |   // Mock Scheduled blog for visual demo matching reference image
+  140 |   // Since scheduled enum is not in backend, we inject a mock one if needed, or allow filtering DRAFT as Scheduled
+> 141 |   const processedBlogs = useMemo(() => {
+      |                          ^^^^^^^^^^^^^^^
+> 142 |     const list = [...blogs];
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 143 |
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 175 |     });
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 176 |   }, [blogs, filter, search]);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Could not preserve existing memoization
+  177 |
+  178 |   const navItemClass = (active) =>
+  179 |     `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors border ${  react-hooks/preserve-manual-memoization
+
+Γ£û 1 problem (1 error, 0 warnings)
+

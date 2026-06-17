@@ -14,6 +14,8 @@ import { LoginDto } from './dto/login.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateEmailDto } from './dto/update-email.dto';
 import { comparePassword, hashPassword } from '../../common/utils/hash.util';
 import { successResponse } from 'src/common/helpers/response.helper';
 import { CacheService } from 'src/config/redis/cache.service';
@@ -587,5 +589,140 @@ export class AuthService {
     }
 
     return successResponse('Password reset successfully', null);
+  }
+
+  async changePassword(userId: string, dto: ChangePasswordDto) {
+    const user = await this.usersRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isPasswordMatched = await comparePassword(dto.oldPassword, user.password);
+    if (!isPasswordMatched) {
+      throw new BadRequestException('Incorrect old password');
+    }
+
+    const hashedPassword = await hashPassword(dto.newPassword);
+    await this.usersRepository.update(userId, {
+      password: hashedPassword,
+    });
+
+    // Invalidate caches
+    await this.cacheService.del(REDIS_KEYS.USER(userId));
+    await this.cacheService.del(REDIS_KEYS.USER_PROFILE(userId));
+    if (user.username) {
+      await this.cacheService.del(REDIS_KEYS.USER_PROFILE_BY_USERNAME(user.username));
+    }
+
+    return successResponse('Password changed successfully', null);
+  }
+
+  async updateEmail(userId: string, dto: UpdateEmailDto) {
+    const newEmail = dto.newEmail.toLowerCase().trim();
+
+    const existingUser = await this.usersRepository.findByEmail(newEmail);
+    if (existingUser && existingUser.id !== userId) {
+      throw new BadRequestException('Email already in use');
+    }
+
+    const user = await this.usersRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const updatedUser = await this.usersRepository.update(userId, {
+      email: newEmail,
+    });
+
+    // Invalidate caches
+    await this.cacheService.del(REDIS_KEYS.USER(userId));
+    await this.cacheService.del(REDIS_KEYS.USER_PROFILE(userId));
+    if (user.username) {
+      await this.cacheService.del(REDIS_KEYS.USER_PROFILE_BY_USERNAME(user.username));
+    }
+
+    const { password, refreshToken, ...safeUser } = updatedUser;
+    return successResponse('Email updated successfully', safeUser);
+  }
+
+  async deleteAccount(userId: string) {
+    const user = await this.usersRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Prisma onDelete: Cascade will handle deleting follows, comments, blogs, bookmarks, notifications
+    await this.prisma.user.delete({
+      where: { id: userId },
+    });
+
+    // Clean up cache keys
+    await this.cacheService.del(REDIS_KEYS.USER(userId));
+    await this.cacheService.del(REDIS_KEYS.USER_PROFILE(userId));
+    if (user.username) {
+      await this.cacheService.del(REDIS_KEYS.USER_PROFILE_BY_USERNAME(user.username));
+    }
+    await this.cacheService.deleteByPattern(REDIS_KEYS.ALL_FEEDS_BY_USER(userId));
+
+    return successResponse('Account deleted successfully', null);
+  }
+
+  async exportData(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        firstname: true,
+        lastname: true,
+        username: true,
+        email: true,
+        bio: true,
+        avatar: true,
+        websiteUrl: true,
+        githubUrl: true,
+        role: true,
+        createdAt: true,
+        blogs: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            excerpt: true,
+            content: true,
+            status: true,
+            views: true,
+            createdAt: true,
+          },
+        },
+        comments: {
+          select: {
+            id: true,
+            content: true,
+            blogId: true,
+            createdAt: true,
+          },
+        },
+        bookmarks: {
+          select: {
+            id: true,
+            blogId: true,
+            createdAt: true,
+          },
+        },
+        likes: {
+          select: {
+            id: true,
+            blogId: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return successResponse('Data exported successfully', user);
   }
 }

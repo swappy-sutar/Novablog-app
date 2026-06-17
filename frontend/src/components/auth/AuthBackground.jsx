@@ -1,5 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
+
+const generateStaticNodes = () => {
+  return Array.from({ length: 25 }).map((_, i) => {
+    // Pure deterministic pseudo-random generator using sine wave values
+    const pseudoRandom = (seed) => {
+      const val = Math.sin(seed) * 10000;
+      return val - Math.floor(val);
+    };
+    return {
+      id: i,
+      x: pseudoRandom(i + 1) * 100,
+      y: pseudoRandom(i + 2) * 100,
+      size: pseudoRandom(i + 3) * 4 + 2,
+      duration: pseudoRandom(i + 4) * 20 + 15,
+      delay: pseudoRandom(i + 5) * 10,
+      animX: pseudoRandom(i + 6) * 100 - 50,
+    };
+  });
+};
 
 const AuthBackground = () => {
   const [mousePosition, setMousePosition] = useState({ x: -1000, y: -1000 });
@@ -13,15 +32,8 @@ const AuthBackground = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Generate random data nodes
-  const nodes = Array.from({ length: 25 }).map((_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 4 + 2,
-    duration: Math.random() * 20 + 15,
-    delay: Math.random() * 10,
-  }));
+  // Generate random data nodes once on mount
+  const nodes = useMemo(() => generateStaticNodes(), []);
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-[-1]">
@@ -73,7 +85,7 @@ const AuthBackground = () => {
           }}
           animate={{
             y: [0, -150, 0],
-            x: [0, Math.random() * 100 - 50, 0],
+            x: [0, node.animX, 0],
             opacity: [0, 0.8, 0],
           }}
           transition={{

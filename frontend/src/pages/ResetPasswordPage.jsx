@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { authAPI } from '../lib/api';
 import toast from 'react-hot-toast';
 import AuthBackground from '../components/auth/AuthBackground';
+import Button from '../components/ui/Button';
 
 const ResetPasswordPage = () => {
   const [searchParams] = useSearchParams();
@@ -62,7 +63,7 @@ const ResetPasswordPage = () => {
     }
   };
 
-  const inputClass = "w-full bg-transparent border border-border-subtle rounded-md px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-brand-purple transition-colors text-sm";
+  const inputClass = "w-full bg-white/[0.04] border border-border-subtle rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all text-sm";
   const labelClass = "block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2";
 
   return (
@@ -86,8 +87,10 @@ const ResetPasswordPage = () => {
               <p className="text-gray-400 text-sm mb-8 leading-relaxed">
                 This reset link is missing a valid signature token. Please check the email you received or request a new reset link.
               </p>
-              <Link to="/forgot-password" className="inline-block bg-gradient-premium text-white font-bold tracking-wider text-xs py-3 px-6 rounded-md uppercase hover:shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all">
-                Request Reset Link
+              <Link to="/forgot-password">
+                <Button variant="primary" className="inline-block tracking-wider text-xs py-3 px-6 uppercase shadow-[0_0_20px_rgba(139,92,246,0.3)] mx-auto">
+                  Request Reset Link
+                </Button>
               </Link>
             </div>
           ) : (
@@ -126,18 +129,16 @@ const ResetPasswordPage = () => {
                   />
                 </div>
 
-                <button 
+                <Button 
                   type="submit" 
                   disabled={isLoading}
-                  className="w-full bg-gradient-premium hover:shadow-[0_0_20px_rgba(139,92,246,0.3)] text-white font-bold tracking-wider text-sm py-3.5 rounded-md transition-all uppercase disabled:opacity-70 flex items-center justify-center gap-2 mt-8 cursor-pointer"
+                  variant="primary"
+                  className="w-full tracking-wider text-sm py-3.5 uppercase mt-8 shadow-[0_0_20px_rgba(139,92,246,0.3)]"
                 >
                   {isLoading ? (
-                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : "Update Password"}
-                </button>
+                </Button>
               </form>
             </div>
           )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
@@ -21,8 +21,9 @@ import {
   Sparkles,
   Search,
 } from "lucide-react";
-import { blogAPI } from "../lib/api";
+import { blogAPI, bookmarkAPI } from "../lib/api";
 import Button from "../components/ui/Button";
+import GlassCard from "../components/ui/GlassCard";
 import { ExploreInsightSkeleton as SkeletonCard } from "../components/ui/Skeleton";
 
 const stripHtml = (html) => {
@@ -42,8 +43,9 @@ const stripHtml = (html) => {
 const MyBlogsPage = () => {
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
+  const [displayBlogs, setDisplayBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("all"); // all, published, drafts, scheduled
+  const [filter, setFilter] = useState("all"); // all, published, drafts, scheduled, following, bookmarks
   const [search, setSearch] = useState("");
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const dropdownRef = useRef(null);
@@ -56,6 +58,9 @@ const MyBlogsPage = () => {
       const res = await blogAPI.getMyBlogs({ page: 1, limit: 100 });
       if (res.success && res.data) {
         setBlogs(res.data.blogs || []);
+        if (["all", "published", "drafts", "scheduled"].includes(filter)) {
+          setDisplayBlogs(res.data.blogs || []);
+        }
       }
     } catch (e) {
       toast.error("Failed to load your blogs.");
@@ -66,8 +71,72 @@ const MyBlogsPage = () => {
   };
 
   useEffect(() => {
-    loadBlogs();
+    const timer = setTimeout(() => {
+      loadBlogs();
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const fetchFilteredBlogs = async () => {
+      // Local tabs use preloaded blogs state
+      if (["all", "published", "drafts", "scheduled"].includes(filter)) {
+        setDisplayBlogs(blogs);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        if (filter === "following") {
+          const res = await blogAPI.getFeed({ page: 1, limit: 100, tab: "Following" });
+          if (res.success && res.data) {
+            const mapped = (res.data.blogs || []).map((blog) => ({
+              id: blog.id,
+              title: blog.title,
+              excerpt: blog.excerpt,
+              content: blog.content,
+              status: blog.status,
+              views: blog.views || 0,
+              thumbnail: blog.thumbnail || null,
+              createdAt: blog.createdAt,
+              updatedAt: blog.updatedAt,
+              author: blog.author,
+              category: blog.category,
+            }));
+            setDisplayBlogs(mapped);
+          }
+        } else if (filter === "bookmarks") {
+          const res = await bookmarkAPI.getMyBookmarks({ page: 1, limit: 100 });
+          if (res.success && res.data) {
+            const mapped = (res.data.bookmarks || []).map((item) => {
+              const b = item.blog || {};
+              return {
+                id: b.id,
+                title: b.title,
+                excerpt: b.excerpt,
+                content: b.content,
+                status: b.status,
+                views: b.views || 0,
+                thumbnail: b.thumbnail || null,
+                createdAt: b.createdAt,
+                updatedAt: b.updatedAt,
+                author: b.author,
+                category: b.category,
+              };
+            });
+            setDisplayBlogs(mapped);
+          }
+        }
+      } catch (err) {
+        toast.error(`Failed to load ${filter} posts.`);
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFilteredBlogs();
+  }, [filter, blogs]);
 
   // Handle outside clicks to close actions dropdown
   useEffect(() => {
@@ -134,12 +203,11 @@ const MyBlogsPage = () => {
   const publishedCount = blogs.filter((b) => b.status === "PUBLISHED").length;
 
   // Mock Scheduled blog for visual demo matching reference image
-  // Since scheduled enum is not in backend, we inject a mock one if needed, or allow filtering DRAFT as Scheduled
-  const processedBlogs = React.useMemo(() => {
-    const list = [...blogs];
+  const processedBlogs = (() => {
+    const list = [...displayBlogs];
 
     // Add one mock scheduled post to match the visual preview from the mock design
-    if (list.length > 0 && !list.some((b) => b.isMockScheduled)) {
+    if ((filter === "all" || filter === "scheduled") && list.length > 0 && !list.some((b) => b.isMockScheduled)) {
       list.push({
         id: "mock-scheduled-id",
         title: "Web3 Security: Beyond the Smart Contract",
@@ -149,8 +217,8 @@ const MyBlogsPage = () => {
         status: "SCHEDULED", // Virtual status for UI filter
         views: 0,
         publishedAt: null,
-        createdAt: new Date(Date.now() + 86400000 * 9).toISOString(), // 9 days in future
-        updatedAt: new Date().toISOString(),
+        createdAt: "2026-06-26T12:00:00.000Z", // Stable pure ISO string
+        updatedAt: "2026-06-17T12:00:00.000Z",
         isMockScheduled: true,
       });
     }
@@ -164,13 +232,15 @@ const MyBlogsPage = () => {
       if (!matchesSearch) return false;
 
       // Tab Filter
-      if (filter === "all") return true;
+      if (["following", "bookmarks", "all"].includes(filter)) return true;
       if (filter === "published") return b.status === "PUBLISHED";
       if (filter === "drafts") return b.status === "DRAFT";
       if (filter === "scheduled") return b.status === "SCHEDULED";
       return true;
     });
-  }, [blogs, filter, search]);
+  })();
+
+  const isOwnFeed = !["following", "bookmarks"].includes(filter);
 
   const navItemClass = (active) =>
     `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors border ${
@@ -180,7 +250,7 @@ const MyBlogsPage = () => {
     }`;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col lg:flex-row gap-8 lg:gap-10 pb-20 pt-4">
+    <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col lg:flex-row gap-8 lg:gap-10 pb-20 pt-12">
       {/* Sidebar - Dashboard Developer Edition */}
       <aside className="lg:w-64 shrink-0 lg:sticky lg:top-24 lg:self-start space-y-6">
         <div className="px-1">
@@ -205,15 +275,15 @@ const MyBlogsPage = () => {
             Trending
           </button>
           <button
-            onClick={() => toast("Following feed loaded")}
-            className={navItemClass(false)}
+            onClick={() => setFilter("following")}
+            className={navItemClass(filter === "following")}
           >
             <Users className="w-4 h-4 opacity-70" />
             Following
           </button>
           <button
-            onClick={() => toast("Bookmarks tab coming soon")}
-            className={navItemClass(false)}
+            onClick={() => setFilter("bookmarks")}
+            className={navItemClass(filter === "bookmarks")}
           >
             <Bookmark className="w-4 h-4 opacity-70" />
             Bookmarks
@@ -345,6 +415,53 @@ const MyBlogsPage = () => {
               <SkeletonCard key={n} />
             ))}
           </div>
+        ) : processedBlogs.length === 0 && !isOwnFeed ? (
+          <div className="flex flex-col items-center justify-center rounded-2xl bg-bg-card/20 p-12 text-center max-w-md mx-auto my-8 space-y-4 backdrop-blur-md">
+            <div className="w-16 h-16 rounded-2xl bg-border-subtle/20 flex items-center justify-center text-gray-400 border border-border-subtle/30 shadow-inner">
+              {filter === "bookmarks" ? (
+                <Bookmark className="w-6 h-6 text-brand-purple" />
+              ) : (
+                <Users className="w-6 h-6 text-brand-cyan" />
+              )}
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-lg font-bold text-white tracking-tight">
+                {filter === "bookmarks" ? "No Bookmarks Yet" : "No Followed Authors"}
+              </h3>
+              <p className="text-xs text-gray-400 leading-relaxed max-w-sm">
+                {filter === "bookmarks"
+                  ? "Save interesting articles to read later by clicking the bookmark button on any post."
+                  : "Follow other writers on the platform to see their posts and updates here."}
+              </p>
+            </div>
+            <Link to="/" className="pt-2">
+              <Button variant="primary" className="!rounded-xl !py-2.5 !px-5 flex items-center gap-2">
+                <Search className="w-4 h-4" />
+                {filter === "bookmarks" ? "Browse Articles" : "Discover Writers"}
+              </Button>
+            </Link>
+          </div>
+        ) : processedBlogs.length === 0 && search ? (
+          <div className="flex flex-col items-center justify-center rounded-2xl bg-bg-card/20 p-12 text-center max-w-md mx-auto my-8 space-y-4 backdrop-blur-md">
+            <div className="w-16 h-16 rounded-2xl bg-border-subtle/20 flex items-center justify-center text-gray-400 border border-border-subtle/30 shadow-inner">
+              <Search className="w-6 h-6 text-gray-400" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-lg font-bold text-white tracking-tight">
+                No Results Found
+              </h3>
+              <p className="text-xs text-gray-400 leading-relaxed max-w-sm">
+                We couldn't find any articles matching "{search}". Try checking your spelling or search terms.
+              </p>
+            </div>
+            <Button
+              variant="secondary"
+              className="!rounded-xl !py-2.5 !px-5 mt-2"
+              onClick={() => setSearch("")}
+            >
+              Clear Search
+            </Button>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <AnimatePresence mode="popLayout">
@@ -352,16 +469,18 @@ const MyBlogsPage = () => {
                 const isPublished = blog.status === "PUBLISHED";
                 const isDraft = blog.status === "DRAFT";
                 const isScheduled = blog.status === "SCHEDULED";
+                const isOwnBlog = isOwnFeed;
+                const showActions = isOwnBlog && !blog.isMockScheduled;
 
                 return (
-                  <motion.div
+                  <GlassCard
                     layout
                     key={blog.id}
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.3 }}
-                    className="relative flex flex-col justify-between rounded-2xl border border-border-subtle bg-bg-card overflow-hidden hover:border-gray-500/30 transition-colors group h-[400px]"
+                    className="relative flex flex-col justify-between overflow-hidden hover:border-gray-500/30 group h-[400px]"
                   >
                     {/* Header Image / Badge */}
                     <div className="relative h-44 w-full overflow-hidden bg-bg-card-hover shrink-0">
@@ -399,23 +518,25 @@ const MyBlogsPage = () => {
                       </div>
 
                       {/* Actions Button */}
-                      <div className="absolute top-4 right-4">
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setOpenDropdownId(
-                              openDropdownId === blog.id ? null : blog.id,
-                            );
-                          }}
-                          className="p-1.5 rounded-lg bg-border-subtle/30 hover:bg-border-subtle/80 text-gray-400 hover:text-gray-200 border border-border-subtle transition-all"
-                          title="Actions menu"
-                        >
-                          <MoreVertical className="w-4 h-4" />
-                        </button>
-                      </div>
+                      {showActions && (
+                        <div className="absolute top-4 right-4">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setOpenDropdownId(
+                                openDropdownId === blog.id ? null : blog.id,
+                              );
+                            }}
+                            className="p-1.5 rounded-lg bg-border-subtle/30 hover:bg-border-subtle/80 text-gray-400 hover:text-gray-200 border border-border-subtle transition-all"
+                            title="Actions menu"
+                          >
+                            <MoreVertical className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
 
                       {/* Dropdown Menu */}
-                      {openDropdownId === blog.id && (
+                      {showActions && openDropdownId === blog.id && (
                         <div
                           ref={dropdownRef}
                           className="absolute right-4 top-14 w-36 rounded-xl border border-border-subtle bg-bg-base/95 p-1.5 shadow-2xl backdrop-blur-xl z-10 space-y-0.5"
@@ -460,67 +581,102 @@ const MyBlogsPage = () => {
 
                       {/* Bottom Info Row */}
                       <div className="flex items-center justify-between border-t border-border-subtle pt-4 text-xs text-gray-500 font-medium">
-                        {isPublished && (
+                        {isOwnBlog ? (
                           <>
-                            <div className="flex items-center gap-1.5">
-                              <Calendar className="w-3.5 h-3.5 text-gray-600" />
-                              <span>
-                                {formatDate(blog.publishedAt || blog.createdAt)}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1.5 text-gray-400">
-                              <Eye className="w-3.5 h-3.5 text-gray-500" />
-                              <span>{formatNumber(blog.views)} views</span>
-                            </div>
-                          </>
-                        )}
+                            {isPublished && (
+                              <>
+                                <div className="flex items-center gap-1.5">
+                                  <Calendar className="w-3.5 h-3.5 text-gray-600" />
+                                  <span>
+                                    {formatDate(blog.publishedAt || blog.createdAt)}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-gray-400">
+                                  <Eye className="w-3.5 h-3.5 text-gray-500" />
+                                  <span>{formatNumber(blog.views)} views</span>
+                                </div>
+                              </>
+                            )}
 
-                        {isDraft && (
+                            {isDraft && (
+                              <>
+                                <span className="text-[11px] text-gray-500">
+                                  Last edited {formatRelativeTime(blog.updatedAt)}
+                                </span>
+                                <button
+                                  onClick={() => navigate(`/write?edit=${blog.id}`)}
+                                  className="text-gray-400 hover:text-brand-cyan p-1 transition-colors"
+                                  title="Quick edit"
+                                >
+                                  <Edit className="w-3.5 h-3.5" />
+                                </button>
+                              </>
+                            )}
+
+                            {isScheduled && (
+                              <>
+                                <div className="flex items-center gap-1.5">
+                                  <Calendar className="w-3.5 h-3.5 text-gray-600" />
+                                  <span>{formatDate(blog.createdAt)}</span>
+                                </div>
+                                <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                              </>
+                            )}
+                          </>
+                        ) : (
                           <>
-                            <span className="text-[11px] text-gray-500">
-                              Last edited {formatRelativeTime(blog.updatedAt)}
-                            </span>
-                            <button
-                              onClick={() => navigate(`/write?edit=${blog.id}`)}
-                              className="text-gray-400 hover:text-brand-cyan p-1 transition-colors"
-                              title="Quick edit"
+                            <Link
+                              to={blog.author?.username ? `/profile/${blog.author.username}` : "#"}
+                              className="flex items-center gap-2 hover:text-brand-cyan transition-colors"
+                              onClick={(e) => e.stopPropagation()}
                             >
-                              <Edit className="w-3.5 h-3.5" />
-                            </button>
-                          </>
-                        )}
-
-                        {isScheduled && (
-                          <>
-                            <div className="flex items-center gap-1.5">
+                              {blog.author?.avatar ? (
+                                <img
+                                  src={blog.author.avatar}
+                                  alt={blog.author.username || "Author"}
+                                  className="w-5 h-5 rounded-full object-cover border border-border-subtle"
+                                />
+                              ) : (
+                                <div className="w-5 h-5 rounded-full bg-brand-purple/20 flex items-center justify-center text-[10px] text-brand-purple font-bold">
+                                  {(blog.author?.username || "A").slice(0, 1).toUpperCase()}
+                                </div>
+                              )}
+                              <span className="text-gray-300 font-semibold truncate max-w-[120px]">
+                                {blog.author
+                                  ? `${blog.author.firstname || ""} ${blog.author.lastname || ""}`.trim() || blog.author.username
+                                  : "Anonymous"}
+                              </span>
+                            </Link>
+                            <div className="flex items-center gap-1.5 text-gray-500">
                               <Calendar className="w-3.5 h-3.5 text-gray-600" />
-                              <span>{formatDate(blog.createdAt)}</span>
+                              <span>{formatDate(blog.publishedAt || blog.createdAt)}</span>
                             </div>
-                            <Clock className="w-3.5 h-3.5 text-cyan-400" />
                           </>
                         )}
                       </div>
                     </div>
-                  </motion.div>
+                  </GlassCard>
                 );
               })}
 
               {/* Dotted border placeholder post card */}
-              <motion.button
-                layout
-                onClick={() => navigate("/write")}
-                className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border-subtle bg-transparent p-6 text-center hover:border-brand-purple/50 hover:bg-brand-purple/5 transition-all group h-[400px] cursor-pointer"
-              >
-                <div className="w-12 h-12 rounded-xl bg-border-subtle/30 flex items-center justify-center text-gray-500 group-hover:text-brand-purple group-hover:bg-brand-purple/10 transition-colors shadow-inner mb-4">
-                  <FileEdit className="w-5 h-5" />
-                </div>
-                <h3 className="text-sm font-bold text-white tracking-tight group-hover:text-brand-purple transition-colors">
-                  Create New Template
-                </h3>
-                <p className="text-xs text-gray-500 mt-2 max-w-xs leading-relaxed">
-                  Streamline your writing with custom post structures.
-                </p>
-              </motion.button>
+              {isOwnFeed && (
+                <motion.button
+                  layout
+                  onClick={() => navigate("/write")}
+                  className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border-subtle bg-transparent p-6 text-center hover:border-brand-purple/50 hover:bg-brand-purple/5 transition-all group h-[400px] cursor-pointer"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-border-subtle/30 flex items-center justify-center text-gray-500 group-hover:text-brand-purple group-hover:bg-brand-purple/10 transition-colors shadow-inner mb-4">
+                    <FileEdit className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-bold text-white tracking-tight group-hover:text-brand-purple transition-colors">
+                    Create New Template
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-2 max-w-xs leading-relaxed">
+                    Streamline your writing with custom post structures.
+                  </p>
+                </motion.button>
+              )}
             </AnimatePresence>
           </div>
         )}

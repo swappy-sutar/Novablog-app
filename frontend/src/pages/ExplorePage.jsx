@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Play, ArrowRight, Clock, BookOpen, Sparkles } from "lucide-react";
+import { Search, Play, ArrowRight, Clock, BookOpen } from "lucide-react";
 import { blogAPI } from "../lib/api";
 import GlassCard from "../components/ui/GlassCard";
 import Button from "../components/ui/Button";
@@ -123,24 +123,21 @@ const ExplorePage = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const searchParam = params.get("search");
-    if (searchParam) {
-      setSearchQuery(searchParam);
-      performSearch(searchParam);
-    } else {
-      // If there is no search param and searchQuery was active, clear it
-      setSearchQuery("");
-      setActiveQuery("");
-      setSearchResults([]);
-    }
+    const timer = setTimeout(() => {
+      if (searchParam) {
+        setSearchQuery(searchParam);
+        performSearch(searchParam);
+      } else {
+        // If there is no search param and searchQuery was active, clear it
+        setSearchQuery("");
+        setActiveQuery("");
+        setSearchResults([]);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, [location.search]);
 
-  const formatViews = (views) => {
-    if (!views) return "0";
-    if (views >= 1000) {
-      return (views / 1000).toFixed(0) + "k";
-    }
-    return views.toString();
-  };
+
 
   const getAuthorName = (author) => {
     if (!author) return "Anonymous";
@@ -169,7 +166,7 @@ const ExplorePage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 pt-40 pb-25 space-y-20">
+    <div className="max-w-7xl mx-auto px-4 md:px-6 pt-12 pb-25 space-y-20">
       {/* Top Hero Section */}
       <section className="text-center max-w-3xl mx-auto space-y-5">
         <motion.h1
@@ -369,11 +366,12 @@ const ExplorePage = () => {
                   <Link to={`/post/${featuredBlog.id}`} className="lg:col-span-2 block group relative">
                     <GlassCard className="relative h-[480px] overflow-hidden flex flex-col justify-end p-8 border border-white/5 bg-gradient-to-t from-bg-base via-bg-base/40 to-transparent">
                       {/* Visual coding background layer */}
-                      <div
-                        className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay group-hover:scale-[1.02] transition-transform duration-700"
-                        style={{ backgroundImage: `url('${featuredBlog.thumbnail || "https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2664&auto=format&fit=crop"}")` }}
+                      <img
+                        src={featuredBlog.thumbnail || "https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2664&auto=format&fit=crop"}
+                        alt={featuredBlog.title}
+                        className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-[1.02] transition-transform duration-700"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/70 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-bg-base/90 via-bg-base/30 to-transparent" />
 
                       <div className="relative space-y-4">
                         <span className="inline-block px-3 py-1 bg-brand-cyan/20 text-brand-cyan text-[10px] font-bold tracking-widest uppercase rounded-md border border-brand-cyan/30 backdrop-blur-md">
@@ -395,8 +393,12 @@ const ExplorePage = () => {
                 ) : (
                   <div className="lg:col-span-2 block group relative">
                     <GlassCard className="relative h-[480px] overflow-hidden flex flex-col justify-end p-8 border border-white/5 bg-gradient-to-t from-bg-base via-bg-base/40 to-transparent">
-                      <div className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay group-hover:scale-[1.02] transition-transform duration-700" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')` }} />
-                      <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/70 to-transparent" />
+                      <img
+                        src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"
+                        alt="Memory Safety"
+                        className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-[1.02] transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-bg-base/90 via-bg-base/30 to-transparent" />
 
                       <div className="relative space-y-4">
                         <span className="inline-block px-3 py-1 bg-brand-cyan/20 text-brand-cyan text-[10px] font-bold tracking-widest uppercase rounded-md border border-brand-cyan/30 backdrop-blur-md">

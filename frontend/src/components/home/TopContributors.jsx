@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import GlassCard from '../ui/GlassCard';
 import { blogAPI } from '../../lib/api';

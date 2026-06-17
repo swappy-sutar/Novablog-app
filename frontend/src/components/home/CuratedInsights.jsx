@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Eye, Clock } from 'lucide-react';
 import GlassCard from '../ui/GlassCard';
 import { blogAPI } from '../../lib/api';
 
@@ -107,7 +108,8 @@ const CuratedInsights = () => {
         title: apiBlog.title,
         excerpt: stripHtml(apiBlog.excerpt) || (apiBlog.content ? stripHtml(apiBlog.content).slice(0, 90) + "..." : ""),
         category: apiBlog.category?.name?.toUpperCase() || item.category,
-        readTime: `${apiBlog.readTime || 12} MIN READ`,
+        readTime: apiBlog.readTime || 5,
+        views: apiBlog.views || 0,
         author: {
           name: authorName,
           initials: initials,
@@ -118,7 +120,8 @@ const CuratedInsights = () => {
     }
     return {
       ...item,
-      readTime: "12 MIN READ",
+      readTime: 5,
+      views: idx === 0 ? 142 : 89,
       author: {
         name: idx === 0 ? "Sarah Chen" : "Marcus Johnson",
         initials: idx === 0 ? "SC" : "MJ",
@@ -237,7 +240,16 @@ const CuratedInsights = () => {
                     {post.author.name}
                   </span>
                 </Link>
-                <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">{post.readTime}</span>
+                <div className="flex items-center gap-3 text-[10px] text-gray-500 font-semibold tracking-wider select-none shrink-0">
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5 opacity-70" />
+                    <span className="lowercase">{post.readTime} min read</span>
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-3.5 h-3.5 opacity-70" />
+                    <span>{post.views}</span>
+                  </span>
+                </div>
               </div>
             </GlassCard>
           ))}

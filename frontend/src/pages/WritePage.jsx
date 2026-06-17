@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
@@ -12,7 +12,6 @@ const WritePage = () => {
   
   const editorRef = useRef(null);
   const [isPublishing, setIsPublishing] = useState(false);
-  const [isLoadingBlog, setIsLoadingBlog] = useState(false);
   
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -27,7 +26,6 @@ const WritePage = () => {
     if (!editId) return;
 
     const fetchBlog = async () => {
-      setIsLoadingBlog(true);
       try {
         const res = await blogAPI.getBlogById(editId);
         if (res.success && res.data) {
@@ -48,8 +46,6 @@ const WritePage = () => {
       } catch (e) {
         toast.error("Failed to load blog post for editing.");
         console.error("Load edit blog error:", e);
-      } finally {
-        setIsLoadingBlog(false);
       }
     };
 
@@ -292,7 +288,7 @@ const WritePage = () => {
               ref={editorRef}
               contentEditable
               onInput={(e) => setContent(e.currentTarget.innerHTML)}
-              className="w-full min-h-[50vh] sm:min-h-[60vh] prose prose-invert prose-sm sm:prose-base lg:prose-xl max-w-none text-gray-300 font-serif leading-loose focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-gray-500 bg-bg-base/40 border border-border-subtle rounded-xl p-4 sm:p-6 md:p-8 focus:border-brand-purple/40 focus:bg-bg-base/60 transition-all shadow-inner"
+              className="w-full min-h-[50vh] sm:min-h-[60vh] prose prose-invert prose-sm sm:prose-base lg:prose-xl max-w-none text-gray-300 leading-loose focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-gray-500 bg-bg-base/40 border border-border-subtle rounded-xl p-4 sm:p-6 md:p-8 focus:border-brand-purple/40 focus:bg-bg-base/60 transition-all shadow-inner"
               data-placeholder="Write your story..."
             />
           </div>
