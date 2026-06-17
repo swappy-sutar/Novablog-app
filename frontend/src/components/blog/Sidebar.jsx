@@ -57,14 +57,14 @@ const Sidebar = ({ blog }) => {
 
       <GlassCard className="p-5 mt-12 bg-gradient-to-b from-bg-card to-bg-base">
         <span className="text-xs font-semibold text-brand-purple uppercase tracking-widest mb-2 block">Newsletter</span>
-        <h4 className="font-bold text-white mb-2">Subscribe to Nova</h4>
+        <h4 className="font-bold text-gray-200 mb-2">Subscribe to Nova</h4>
         <p className="text-xs text-gray-400 mb-4">Get weekly deep dives delivered securely.</p>
         <form onSubmit={handleSubscribe}>
           <input 
             type="email" 
             placeholder="Email..." 
             required
-            className="w-full bg-black/50 border border-border-subtle rounded p-2 text-xs text-white mb-2 focus:border-brand-purple focus:outline-none"
+            className="w-full bg-border-subtle/30 border border-border-subtle rounded p-2 text-xs text-gray-200 mb-2 focus:border-brand-purple focus:outline-none"
           />
           <button 
             type="submit"

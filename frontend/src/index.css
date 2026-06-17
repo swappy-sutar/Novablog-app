@@ -10,6 +10,16 @@
   --color-bg-card: rgba(15, 15, 30, 0.6);
   --color-bg-card-hover: rgba(25, 25, 45, 0.8);
   --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-bg-dropdown: #0c0c1e;
+
+  /* Register standard colors for dynamic theme inversion */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e1;
+  --color-gray-400: #94a3b8;
+  --color-gray-500: #64748b;
+  --color-gray-800: #1f2937;
 }
 
 @layer base {
@@ -24,15 +34,38 @@
     --color-bg-card: rgba(255, 255, 255, 0.7);
     --color-bg-card-hover: rgba(255, 255, 255, 1);
     --color-border-subtle: rgba(0, 0, 0, 0.1);
+    --color-bg-dropdown: #ffffff;
 
-    /* Invert tailwind standard colors used in the app */
+    /* Accessibility contrast adjustments for brand elements */
+    --color-brand-cyan: #0e7490;
+    --color-brand-purple: #6d28d9;
+
+    /* Invert tailwind standard colors with WCAG compliant contrast ratios */
     --color-white: #0f172a;
     --color-black: #ffffff;
-    --color-gray-200: #334155;
-    --color-gray-300: #475569;
-    --color-gray-400: #64748b;
-    --color-gray-500: #94a3b8;
+    --color-gray-200: #1e293b;
+    --color-gray-300: #334155;
+    --color-gray-400: #475569;
+    --color-gray-500: #64748b;
     --color-gray-800: #cbd5e1;
+
+    /* Prose inversion for light mode typography */
+    --tw-prose-invert-body: #1e293b;
+    --tw-prose-invert-headings: #0f172a;
+    --tw-prose-invert-lead: #334155;
+    --tw-prose-invert-links: #0e7490;
+    --tw-prose-invert-bold: #0f172a;
+    --tw-prose-invert-counters: #475569;
+    --tw-prose-invert-bullets: #64748b;
+    --tw-prose-invert-hr: #cbd5e1;
+    --tw-prose-invert-quotes: #0f172a;
+    --tw-prose-invert-quote-borders: #cbd5e1;
+    --tw-prose-invert-captions: #475569;
+    --tw-prose-invert-code: #0f172a;
+    --tw-prose-invert-pre-code: #1e293b;
+    --tw-prose-invert-pre-bg: #f8fafc;
+    --tw-prose-invert-th-borders: #cbd5e1;
+    --tw-prose-invert-td-borders: #cbd5e1;
   }
 
   body {
@@ -80,4 +113,93 @@
   .bg-gradient-premium {
     @apply bg-gradient-to-r from-brand-cyan via-brand-blue to-brand-purple;
   }
+}
+
+/* Accessibility contrast fixes for standard Tailwind utility colors in Light Mode */
+.light-mode .text-gray-200 { color: #1e293b; }
+.light-mode .text-gray-300 { color: #334155; }
+.light-mode .text-gray-400 { color: #475569; }
+.light-mode .text-gray-500 { color: #64748b; }
+.light-mode .text-gray-800 { color: #cbd5e1; }
+
+/* In Light Mode, override the local typography variables inside .prose-invert */
+.light-mode .prose-invert {
+  --tw-prose-body: #1e293b;
+  --tw-prose-headings: #0f172a;
+  --tw-prose-lead: #334155;
+  --tw-prose-links: #0e7490;
+  --tw-prose-bold: #0f172a;
+  --tw-prose-counters: #475569;
+  --tw-prose-bullets: #64748b;
+  --tw-prose-hr: #cbd5e1;
+  --tw-prose-quotes: #0f172a;
+  --tw-prose-quote-borders: #cbd5e1;
+  --tw-prose-captions: #475569;
+  --tw-prose-code: #0f172a;
+  --tw-prose-pre-code: #1e293b;
+  --tw-prose-pre-bg: #f8fafc;
+  --tw-prose-th-borders: #cbd5e1;
+  --tw-prose-td-borders: #cbd5e1;
+}
+
+/* Light Mode overrides for inline-styled code blocks */
+.light-mode pre[style*="color: rgb(234, 236, 240)"],
+.light-mode pre code[style*="color: rgb(234, 236, 240)"],
+.light-mode pre [style*="color: rgb(234, 236, 240)"],
+.light-mode pre [style*="color: rgb(226, 232, 240)"],
+.light-mode pre [style*="color: rgb(211, 215, 222)"] {
+  color: #1e293b !important; /* Main text, punctuation, operators -> Dark Slate */
+}
+
+.light-mode pre [style*="color: rgb(112, 184, 255)"] {
+  color: #1e40af !important; /* Keywords / Functions -> Dark Blue */
+}
+
+.light-mode pre [style*="color: rgb(251, 173, 96)"] {
+  color: #c2410c !important; /* Constants / Commands -> Dark Orange */
+}
+
+.light-mode pre [style*="color: rgb(204, 123, 244)"] {
+  color: #6d28d9 !important; /* Controls / Built-ins -> Dark Purple */
+}
+
+.light-mode pre [style*="color: rgb(244, 123, 133)"],
+.light-mode pre [style*="color: rgb(244, 123, 130)"],
+.light-mode pre [style*="color: rgb(240, 117, 128)"] {
+  color: #b91c1c !important; /* Tags / Special tags -> Dark Red */
+}
+
+.light-mode pre [style*="color: rgb(155, 233, 99)"] {
+  color: #166534 !important; /* Strings / Literals -> Dark Green */
+}
+
+/* Accessibility contrast fixes for status badges in light mode */
+.light-mode .text-emerald-400 { color: #15803d !important; }
+.light-mode .text-purple-400 { color: #6d28d9 !important; }
+.light-mode .text-cyan-400 { color: #0e7490 !important; }
+.light-mode .text-red-400 { color: #b91c1c !important; }
+
+/* Shimmer styling for Framer Motion skeleton cards */
+.shimmer-gradient {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+}
+.light-mode .shimmer-gradient {
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent);
+}
+
+/* Ensure text-white and hover states display with high contrast in Light Mode */
+.light-mode .text-white {
+  color: #0f172a !important;
+}
+.light-mode .hover\:text-white:hover {
+  color: #0f172a !important;
+}
+.light-mode .hover\:text-gray-200:hover {
+  color: #1e293b !important;
+}
+.light-mode .hover\:text-gray-300:hover {
+  color: #334155 !important;
+}
+.light-mode .hover\:text-gray-400:hover {
+  color: #475569 !important;
 }

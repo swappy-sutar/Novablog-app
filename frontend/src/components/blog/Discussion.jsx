@@ -19,7 +19,6 @@ const Discussion = ({ blog }) => {
   const currentUser = storedUser && storedUser !== "undefined" ? JSON.parse(storedUser) : null;
 
   const loadComments = useCallback(async () => {
-    if (!currentUser) return;
     setLoading(true);
     try {
       const res = await commentsAPI.getCommentsByBlog(blog.id);
@@ -31,7 +30,7 @@ const Discussion = ({ blog }) => {
     } finally {
       setLoading(false);
     }
-  }, [blog.id, currentUser]);
+  }, [blog.id]);
 
   useEffect(() => {
     loadComments();
@@ -118,7 +117,7 @@ const Discussion = ({ blog }) => {
     }
     const initials = `${userObj?.firstname?.[0] || ''}${userObj?.lastname?.[0] || ''}`.toUpperCase() || userObj?.username?.[0]?.toUpperCase() || 'U';
     return (
-      <div className={`${sizeClass} rounded-full bg-gradient-to-br from-brand-purple/40 to-brand-cyan/20 flex items-center justify-center text-[10px] font-bold text-white border border-white/5`}>
+      <div className={`${sizeClass} rounded-full bg-gradient-to-br from-brand-purple/40 to-brand-cyan/20 flex items-center justify-center text-[10px] font-bold text-[#ffffff] border border-white/5`}>
         {initials}
       </div>
     );
@@ -141,12 +140,25 @@ const Discussion = ({ blog }) => {
     return list;
   }, [comments, sortBy]);
 
-  // If user is not logged in, show login wall card
-  if (!currentUser) {
-    return (
-      <section id="discussion-section" className="mt-20 pt-10 border-t border-border-subtle max-w-3xl">
-        <h3 className="text-2xl font-bold text-white mb-6">Discussions</h3>
-        <GlassCard className="p-8 text-center border-dashed border-brand-cyan/25 flex flex-col items-center gap-4">
+  return (
+    <section id="discussion-section" className="mt-20 pt-10 border-t border-border-subtle max-w-3xl">
+      <div className="flex items-center justify-between mb-8">
+        <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+          Discussions <span className="bg-brand-blue/20 text-brand-blue text-xs py-1 px-2.5 rounded-full">{comments.length}</span>
+        </h3>
+        <select 
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value === "Newest" || e.target.value === "newest" ? "newest" : "oldest")}
+          className="bg-bg-base border border-border-subtle text-xs text-gray-400 py-1.5 px-3 rounded-lg focus:outline-none focus:border-brand-cyan cursor-pointer"
+        >
+          <option value="newest">Sort by: Newest</option>
+          <option value="oldest">Sort by: Oldest</option>
+        </select>
+      </div>
+
+      {/* Main Comment Input / Join Wall */}
+      {!currentUser ? (
+        <GlassCard className="p-8 text-center border-dashed border-brand-cyan/25 flex flex-col items-center gap-4 mb-10">
           <MessageSquare className="w-10 h-10 text-gray-500 mb-2" />
           <h4 className="text-base font-bold text-white">Join the discussion</h4>
           <p className="text-xs text-gray-400 max-w-sm leading-relaxed">
@@ -165,49 +177,30 @@ const Discussion = ({ blog }) => {
             </Link>
           </div>
         </GlassCard>
-      </section>
-    );
-  }
-
-  return (
-    <section id="discussion-section" className="mt-20 pt-10 border-t border-border-subtle max-w-3xl">
-      <div className="flex items-center justify-between mb-8">
-        <h3 className="text-2xl font-bold text-white flex items-center gap-3">
-          Discussions <span className="bg-brand-blue/20 text-brand-blue text-xs py-1 px-2.5 rounded-full">{comments.length}</span>
-        </h3>
-        <select 
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value === "Newest" || e.target.value === "newest" ? "newest" : "oldest")}
-          className="bg-bg-base border border-border-subtle text-xs text-gray-400 py-1.5 px-3 rounded-lg focus:outline-none focus:border-brand-cyan cursor-pointer"
-        >
-          <option value="newest">Sort by: Newest</option>
-          <option value="oldest">Sort by: Oldest</option>
-        </select>
-      </div>
-
-      {/* Main Comment Input */}
-      <GlassCard className="p-6 mb-10 border-brand-cyan/20">
-        <div className="flex gap-4">
-          {renderAvatar(currentUser, "w-10 h-10")}
-          <div className="flex-grow">
-            <form onSubmit={handlePostComment}>
-              <textarea 
-                value={newCommentText}
-                onChange={(e) => setNewCommentText(e.target.value)}
-                className="w-full bg-black/40 border border-border-subtle rounded-xl p-4 text-sm text-white placeholder-gray-500 focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan/10 focus:outline-none min-h-[90px] resize-none"
-                placeholder="Add to the discussion..."
-                required
-              />
-              <div className="flex items-center justify-between mt-3">
-                <span className="text-[10px] text-gray-500">markdown supported</span>
-                <Button type="submit" variant="primary" className="!rounded-xl !py-2 !px-5 text-xs">
-                  Post Comment
-                </Button>
-              </div>
-            </form>
+      ) : (
+        <GlassCard className="p-6 mb-10 border-brand-cyan/20">
+          <div className="flex gap-4">
+            {renderAvatar(currentUser, "w-10 h-10")}
+            <div className="flex-grow">
+              <form onSubmit={handlePostComment}>
+                <textarea 
+                  value={newCommentText}
+                  onChange={(e) => setNewCommentText(e.target.value)}
+                  className="w-full bg-border-subtle/30 border border-border-subtle rounded-xl p-4 text-sm text-white placeholder-gray-500 focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan/10 focus:outline-none min-h-[90px] resize-none"
+                  placeholder="Add to the discussion..."
+                  required
+                />
+                <div className="flex items-center justify-between mt-3">
+                  <span className="text-[10px] text-gray-500">markdown supported</span>
+                  <Button type="submit" variant="primary" className="!rounded-xl !py-2 !px-5 text-xs">
+                    Post Comment
+                  </Button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      </GlassCard>
+        </GlassCard>
+      )}
 
       {/* Comment Thread */}
       {loading && comments.length === 0 ? (
@@ -218,17 +211,19 @@ const Discussion = ({ blog }) => {
         <div className="space-y-6">
           {sortedComments.map((comment) => {
             const isBlogAuthor = comment.userId === blog.authorId;
-            const isCommentOwner = comment.userId === currentUser.id;
+            const isCommentOwner = currentUser && comment.userId === currentUser.id;
 
             return (
               <div key={comment.id} className="flex gap-4 group/comment">
-                {renderAvatar(comment.user, "w-10 h-10")}
+                <Link to={comment.user?.username ? `/profile/${comment.user.username}` : "#"} className="cursor-pointer shrink-0 block">
+                  {renderAvatar(comment.user, "w-10 h-10")}
+                </Link>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white text-sm">
+                      <Link to={comment.user?.username ? `/profile/${comment.user.username}` : "#"} className="font-semibold text-gray-200 text-sm hover:text-brand-cyan transition-colors cursor-pointer">
                         {getUserName(comment.user)}
-                      </span>
+                      </Link>
                       {isBlogAuthor && (
                         <span className="text-[9px] font-extrabold uppercase tracking-wide text-brand-purple bg-brand-purple/10 border border-brand-purple/20 px-2 py-0.5 rounded">
                           Author
@@ -256,10 +251,14 @@ const Discussion = ({ blog }) => {
                   <div className="flex items-center gap-4 text-xs text-gray-500">
                     <button 
                       onClick={() => {
+                        if (!currentUser) {
+                          toast.error("Please sign in to reply to comments.");
+                          return;
+                        }
                         setReplyingToId(replyingToId === comment.id ? null : comment.id);
                         setReplyText("");
                       }}
-                      className="flex items-center gap-1 hover:text-white transition-colors"
+                      className="flex items-center gap-1 hover:text-gray-200 transition-colors"
                     >
                       <MessageSquare className="w-3 h-3" /> Reply
                     </button>
@@ -269,22 +268,22 @@ const Discussion = ({ blog }) => {
                   {replyingToId === comment.id && (
                     <form 
                       onSubmit={(e) => handlePostReply(e, comment.id)}
-                      className="mt-4 flex gap-3 bg-[#0c0d1c]/40 border border-border-subtle p-4 rounded-xl"
+                      className="mt-4 flex gap-3 bg-bg-card border border-border-subtle p-4 rounded-xl"
                     >
-                      {renderAvatar(currentUser, "w-7 h-7")}
-                      <div className="flex-grow">
-                        <textarea
-                          value={replyText}
-                          onChange={(e) => setReplyText(e.target.value)}
-                          placeholder="Type reply..."
-                          required
-                          className="w-full bg-black/40 border border-border-subtle rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500 focus:border-brand-cyan focus:outline-none min-h-[50px] resize-none"
+                    {renderAvatar(currentUser, "w-7 h-7")}
+                    <div className="flex-grow">
+                      <textarea
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        placeholder="Type reply..."
+                        required
+                        className="w-full bg-border-subtle/30 border border-border-subtle rounded-xl px-3 py-2 text-xs text-gray-200 placeholder-gray-500 focus:border-brand-cyan focus:outline-none min-h-[50px] resize-none"
                         />
                         <div className="flex justify-end gap-2 mt-2">
                           <button
                             type="button"
                             onClick={() => setReplyingToId(null)}
-                            className="px-3 py-1.5 rounded-lg text-[10px] text-gray-400 hover:text-white"
+                            className="px-3 py-1.5 rounded-lg text-[10px] text-gray-400 hover:text-gray-200"
                           >
                             Cancel
                           </button>
@@ -304,17 +303,19 @@ const Discussion = ({ blog }) => {
                     <div className="mt-4 space-y-4 border-l border-border-subtle/50 pl-4 ml-1">
                       {comment.replies.map((reply) => {
                         const isReplyBlogAuthor = reply.userId === blog.authorId;
-                        const isReplyOwner = reply.userId === currentUser.id;
+                        const isReplyOwner = currentUser && reply.userId === currentUser.id;
 
                         return (
                           <div key={reply.id} className="flex gap-3 group/reply">
-                            {renderAvatar(reply.user, "w-7 h-7")}
+                            <Link to={reply.user?.username ? `/profile/${reply.user.username}` : "#"} className="cursor-pointer shrink-0 block">
+                              {renderAvatar(reply.user, "w-7 h-7")}
+                            </Link>
                             <div className="flex-1">
                               <div className="flex items-center justify-between mb-0.5">
                                 <div className="flex items-center gap-1.5">
-                                  <span className="font-semibold text-white text-xs">
+                                  <Link to={reply.user?.username ? `/profile/${reply.user.username}` : "#"} className="font-semibold text-gray-200 text-xs hover:text-brand-cyan transition-colors cursor-pointer">
                                     {getUserName(reply.user)}
-                                  </span>
+                                  </Link>
                                   {isReplyBlogAuthor && (
                                     <span className="text-[8px] font-extrabold uppercase tracking-wide text-brand-purple bg-brand-purple/10 border border-brand-purple/20 px-1.5 py-0.5 rounded">
                                       Author

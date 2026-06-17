@@ -5,6 +5,8 @@ import HomePage from "./pages/HomePage";
 import BlogDetailsPage from "./pages/BlogDetailsPage";
 import SignUpPage from "./pages/SignUpPage";
 import SignInPage from "./pages/SignInPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import WritePage from "./pages/WritePage";
 import ProfileLayout from "./layouts/ProfileLayout";
 import PublicProfilePage from "./pages/PublicProfilePage";
@@ -12,6 +14,10 @@ import SettingsPage from "./pages/SettingsPage";
 import MyBlogsPage from "./pages/MyBlogsPage";
 import ExplorePage from "./pages/ExplorePage";
 import AboutPage from "./pages/AboutPage";
+import FeedPage from "./pages/FeedPage";
+import PrivacyPage from "./pages/PrivacyPage";
+import CookiePage from "./pages/CookiePage";
+import TermsPage from "./pages/TermsPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 function App() {
@@ -33,12 +39,18 @@ function App() {
           {/* Auth Routes */}
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/signin" element={<SignInPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           {/* Main Routes */}
           <Route path="/" element={<HomePage />} />
+          <Route path="/feed" element={<FeedPage />} />
           <Route path="/post/:id" element={<BlogDetailsPage />} />
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/cookie-policy" element={<CookiePage />} />
+          <Route path="/terms" element={<TermsPage />} />
 
           {/* Protected Routes sharing MainLayout */}
           <Route
@@ -58,6 +70,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route path="/profile/:username" element={<PublicProfilePage />} />
 
           <Route
             path="/profile"
