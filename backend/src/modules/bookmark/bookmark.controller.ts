@@ -25,4 +25,13 @@ export class BookmarkController {
   ) {
     return this.bookmarksService.getUserBookmarks(user.id, query);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('check/:blogId')
+  async checkBookmarkStatus(
+    @Param('blogId') blogId: string,
+    @CurrentUser() user: any,
+  ) {
+    return this.bookmarksService.checkBookmarkStatus(blogId, user.id);
+  }
 }

@@ -30,7 +30,6 @@ export class CommentsController {
     return this.commentService.createComment(blogId, user.id, createCommentDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('get-comment/:blogId')
   async getCommentsByBlog(
     @Param('blogId') blogId: string,

@@ -74,4 +74,14 @@ export class BookmarkService {
 
     return successResponse('Bookmarks fetched successfully', response);
   }
+
+  async checkBookmarkStatus(blogId: string, userId: string) {
+    const existingBookmark = await this.bookmarksRepository.findBookmark(
+      blogId,
+      userId,
+    );
+    return successResponse('Bookmark status checked successfully', {
+      bookmarked: !!existingBookmark,
+    });
+  }
 }

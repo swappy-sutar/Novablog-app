@@ -74,25 +74,45 @@ export class BlogsRepository {
     const skip = (page - 1) * limit;
 
     return this.prisma.blog.findMany({
-      where: search
-        ? {
-            OR: [
-              {
-                title: {
+      where: {
+        status: 'PUBLISHED',
+        ...(search && {
+          OR: [
+            {
+              title: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            {
+              content: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            {
+              category: {
+                name: {
                   contains: search,
                   mode: 'insensitive',
                 },
               },
-
-              {
-                content: {
-                  contains: search,
-                  mode: 'insensitive',
+            },
+            {
+              tags: {
+                some: {
+                  tag: {
+                    name: {
+                      contains: search,
+                      mode: 'insensitive',
+                    },
+                  },
                 },
               },
-            ],
-          }
-        : {},
+            },
+          ],
+        }),
+      },
 
       skip,
       take: limit,
@@ -126,25 +146,45 @@ export class BlogsRepository {
 
   async count(search?: string) {
     return this.prisma.blog.count({
-      where: search
-        ? {
-            OR: [
-              {
-                title: {
+      where: {
+        status: 'PUBLISHED',
+        ...(search && {
+          OR: [
+            {
+              title: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            {
+              content: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            {
+              category: {
+                name: {
                   contains: search,
                   mode: 'insensitive',
                 },
               },
-
-              {
-                content: {
-                  contains: search,
-                  mode: 'insensitive',
+            },
+            {
+              tags: {
+                some: {
+                  tag: {
+                    name: {
+                      contains: search,
+                      mode: 'insensitive',
+                    },
+                  },
                 },
               },
-            ],
-          }
-        : {},
+            },
+          ],
+        }),
+      },
     });
   }
 
@@ -223,6 +263,196 @@ export class BlogsRepository {
         views: {
           increment: 1,
         },
+      },
+    });
+  }
+
+  async findTrendingTags(take: number) {
+    return this.prisma.tag.findMany({
+      take,
+      orderBy: {
+        blogs: {
+          _count: 'desc',
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+      },
+    });
+  }
+
+  async findFeaturedBlog() {
+    return this.prisma.blog.findFirst({
+      where: {
+        isFeatured: true,
+        status: 'PUBLISHED',
+      },
+      orderBy: {
+        publishedAt: 'desc',
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstname: true,
+            lastname: true,
+            username: true,
+            avatar: true,
+          },
+        },
+        category: true,
+      },
+    });
+  }
+
+  async findMostViewedBlog() {
+    return this.prisma.blog.findFirst({
+      where: {
+        status: 'PUBLISHED',
+      },
+      orderBy: {
+        views: 'desc',
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstname: true,
+            lastname: true,
+            username: true,
+            avatar: true,
+          },
+        },
+        category: true,
+      },
+    });
+  }
+
+  async findPopularBlogs(take: number, excludeId?: string) {
+    return this.prisma.blog.findMany({
+      where: {
+        status: 'PUBLISHED',
+        ...(excludeId && {
+          id: {
+            not: excludeId,
+          },
+        }),
+      },
+      orderBy: {
+        views: 'desc',
+      },
+      take,
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstname: true,
+            lastname: true,
+            username: true,
+            avatar: true,
+          },
+        },
+        category: true,
+      },
+    });
+  }
+
+  async findFeed(page: number, limit: number, tab: 'Latest' | 'Trending' | 'Following', tag: string, followingAuthorIds?: string[]) {
+    const skip = (page - 1) * limit;
+
+    const whereClause: Prisma.BlogWhereInput = {
+      status: 'PUBLISHED',
+    };
+
+    if (tag && tag !== 'All') {
+      whereClause.tags = {
+        some: {
+          tag: {
+            name: {
+              equals: tag,
+              mode: 'insensitive',
+            },
+          },
+        },
+      };
+    }
+
+    if (tab === 'Following') {
+      whereClause.authorId = {
+        in: followingAuthorIds || [],
+      };
+    }
+
+    let orderByClause: Prisma.BlogOrderByWithRelationInput = {
+      createdAt: 'desc',
+    };
+
+    if (tab === 'Trending') {
+      orderByClause = {
+        views: 'desc',
+      };
+    }
+
+    return this.prisma.blog.findMany({
+      where: whereClause,
+      skip,
+      take: limit,
+      orderBy: orderByClause,
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstname: true,
+            lastname: true,
+            username: true,
+            avatar: true,
+          },
+        },
+        category: true,
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
+      },
+    });
+  }
+
+  async countFeed(tab: 'Latest' | 'Trending' | 'Following', tag: string, followingAuthorIds?: string[]) {
+    const whereClause: Prisma.BlogWhereInput = {
+      status: 'PUBLISHED',
+    };
+
+    if (tag && tag !== 'All') {
+      whereClause.tags = {
+        some: {
+          tag: {
+            name: {
+              equals: tag,
+              mode: 'insensitive',
+            },
+          },
+        },
+      };
+    }
+
+    if (tab === 'Following') {
+      whereClause.authorId = {
+        in: followingAuthorIds || [],
+      };
+    }
+
+    return this.prisma.blog.count({
+      where: whereClause,
+    });
+  }
+
+  async getAllTags() {
+    return this.prisma.tag.findMany({
+      orderBy: {
+        name: 'asc',
       },
     });
   }

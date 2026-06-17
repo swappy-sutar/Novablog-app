@@ -36,6 +36,14 @@ export class UsersRepository {
     });
   }
 
+  async findByResetToken(token: string): Promise<User | null> {
+    return this.prisma.user.findFirst({
+      where: {
+        resetPasswordToken: token,
+      },
+    });
+  }
+
   async findMany(page: number = 1, limit: number = 10, search?: string) {
     const skip = (page - 1) * limit;
 

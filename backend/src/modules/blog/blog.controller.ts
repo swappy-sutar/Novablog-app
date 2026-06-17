@@ -14,8 +14,10 @@ import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { CurrentUser } from 'src/common/decorator/current-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt.guard';
 import { ImageUpload } from 'src/common/decorator/image-upload.decorator';
 import { QueryBlogDto } from './dto/query-blog.dto';
+import { QueryFeedDto } from './dto/query-feed.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 
 @Controller('blog')
@@ -36,6 +38,27 @@ export class BlogController {
   @Get('get-all-blogs')
   async getAllBlogs(@Query() query: QueryBlogDto) {
     return this.blogService.getAllBlogs(query);
+  }
+
+  @Get('explore')
+  async getExplorePageData() {
+    return this.blogService.getExplorePageData();
+  }
+
+  @Get('top-contributors')
+  async getTopContributors() {
+    return this.blogService.getTopContributors();
+  }
+
+  @UseGuards(OptionalJwtAuthGuard)
+  @Get('feed')
+  async getFeed(@Query() query: QueryFeedDto, @CurrentUser() user: any) {
+    return this.blogService.getFeed(query, user);
+  }
+
+  @Get('tags')
+  async getTags() {
+    return this.blogService.getAllTags();
   }
 
   @UseGuards(JwtAuthGuard)

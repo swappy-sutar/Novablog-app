@@ -15,6 +15,10 @@ import { CACHE_TTL } from 'src/config/redis/redis.ttl';
 import { S3Service } from 'src/config/s3/s3.service';
 import { QueryBlogDto } from './dto/query-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
+import { QueryFeedDto } from './dto/query-feed.dto';
+import { PrismaService } from 'src/config/prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '@prisma/client';
 
 @Injectable()
 export class BlogService {
@@ -22,6 +26,8 @@ export class BlogService {
     private readonly blogsRepository: BlogsRepository,
     private readonly cacheService: CacheService,
     private readonly s3Service: S3Service,
+    private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async createBlog(
@@ -78,6 +84,14 @@ export class BlogService {
     await this.cacheService.del(REDIS_KEYS.FEATURED_BLOGS());
 
     await this.cacheService.del(REDIS_KEYS.RECENT_BLOGS());
+
+    if (blog.status === 'PUBLISHED') {
+      const authorName =
+        `${blog.author?.firstname || ''} ${blog.author?.lastname || ''}`.trim() ||
+        blog.author?.username ||
+        'Someone';
+      await this.notifyFollowers(userId, authorName, blog);
+    }
 
     return successResponse('Blog created successfully', blog, 201);
   }
@@ -223,6 +237,14 @@ export class BlogService {
 
     await this.cacheService.del(REDIS_KEYS.RECENT_BLOGS());
 
+    if (updateBlogDto.status === 'PUBLISHED' && existingBlog.status !== 'PUBLISHED') {
+      const authorName =
+        `${existingBlog.author?.firstname || ''} ${existingBlog.author?.lastname || ''}`.trim() ||
+        existingBlog.author?.username ||
+        'Someone';
+      await this.notifyFollowers(userId, authorName, updatedBlog);
+    }
+
     return successResponse('Blog updated successfully', updatedBlog);
   }
 
@@ -250,5 +272,208 @@ export class BlogService {
     await this.cacheService.del(REDIS_KEYS.RECENT_BLOGS());
 
     return successResponse('Blog deleted successfully');
+  }
+
+  async getExplorePageData() {
+    const cacheKey = REDIS_KEYS.EXPLORE;
+    const cachedData = await this.cacheService.get(cacheKey);
+
+    if (cachedData) {
+      return successResponse('Explore page data fetched successfully', cachedData);
+    }
+
+    const dbTags = await this.blogsRepository.findTrendingTags(5);
+
+    const trendingTags = dbTags.map((t) => ({
+      label: `#${t.name}`,
+      query: t.name,
+    }));
+
+    const defaults = [
+      { label: '#Rust', query: 'Rust' },
+      { label: '#DistributedSystems', query: 'Distributed Systems' },
+      { label: '#LLMOps', query: 'LLMOps' },
+      { label: '#Wasm', query: 'Wasm' },
+      { label: '#Kubernetes', query: 'Kubernetes' },
+    ];
+
+    while (trendingTags.length < 5 && defaults.length > 0) {
+      const def = defaults.shift();
+      if (
+        def &&
+        !trendingTags.some(
+          (t) => t.query.toLowerCase() === def.query.toLowerCase(),
+        )
+      ) {
+        trendingTags.push(def);
+      }
+    }
+
+    let featuredBlog = await this.blogsRepository.findFeaturedBlog();
+
+    if (!featuredBlog) {
+      featuredBlog = await this.blogsRepository.findMostViewedBlog();
+    }
+
+    const popularBlogs = await this.blogsRepository.findPopularBlogs(
+      2,
+      featuredBlog?.id,
+    );
+
+    const response = {
+      trendingTags,
+      featuredBlog,
+      popularBlogs,
+    };
+
+    await this.cacheService.set(cacheKey, response, 300);
+
+    return successResponse('Explore page data fetched successfully', response);
+  }
+
+  async getFeed(query: QueryFeedDto, user?: any) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const tab = query.tab || 'Latest';
+    const tag = query.tag || 'All';
+
+    const cacheKey = REDIS_KEYS.FEED(user?.id, tab, tag, page, limit);
+    const cachedData = await this.cacheService.get(cacheKey);
+
+    if (cachedData) {
+      return successResponse('Feed fetched successfully', cachedData);
+    }
+
+    let followingAuthorIds: string[] = [];
+
+    if (tab === 'Following') {
+      if (!user) {
+        const response = {
+          meta: {
+            total: 0,
+            page,
+            limit,
+            totalPages: 0,
+          },
+          blogs: [],
+        };
+        await this.cacheService.set(cacheKey, response, CACHE_TTL.BLOGS);
+        return successResponse('Feed fetched successfully', response);
+      }
+
+      const follows = await this.prisma.follow.findMany({
+        where: {
+          followerId: user.id,
+        },
+        select: {
+          followingId: true,
+        },
+      });
+
+      followingAuthorIds = follows.map((f) => f.followingId);
+    }
+
+    const [blogs, total] = await Promise.all([
+      this.blogsRepository.findFeed(
+        page,
+        limit,
+        tab,
+        tag,
+        followingAuthorIds,
+      ),
+      this.blogsRepository.countFeed(tab, tag, followingAuthorIds),
+    ]);
+
+    const response = {
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      blogs,
+    };
+
+    await this.cacheService.set(cacheKey, response, CACHE_TTL.BLOGS);
+
+    return successResponse('Feed fetched successfully', response);
+  }
+
+  async getAllTags() {
+    const tags = await this.blogsRepository.getAllTags();
+    return successResponse('Tags fetched successfully', tags);
+  }
+
+  async getTopContributors() {
+    const users = await this.prisma.user.findMany({
+      where: {
+        blogs: {
+          some: {
+            status: 'PUBLISHED',
+          },
+        },
+      },
+      select: {
+        id: true,
+        firstname: true,
+        lastname: true,
+        username: true,
+        bio: true,
+        avatar: true,
+        blogs: {
+          where: {
+            status: 'PUBLISHED',
+          },
+          select: {
+            views: true,
+          },
+        },
+      },
+    });
+
+    const contributors = users.map((user) => {
+      const totalViews = user.blogs.reduce((sum, b) => sum + (b.views || 0), 0);
+      return {
+        id: user.id,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        username: user.username,
+        bio: user.bio,
+        avatar: user.avatar,
+        totalViews,
+      };
+    });
+
+    // Sort descending by totalViews
+    contributors.sort((a, b) => b.totalViews - a.totalViews);
+
+    // Take top 4
+    const topContributors = contributors.slice(0, 4);
+
+    return successResponse('Top contributors fetched successfully', topContributors);
+  }
+
+  private async notifyFollowers(authorId: string, authorName: string, blog: any) {
+    try {
+      const followers = await this.prisma.follow.findMany({
+        where: {
+          followingId: authorId,
+        },
+        select: {
+          followerId: true,
+        },
+      });
+
+      for (const follower of followers) {
+        await this.notificationsService.createNotification(
+          follower.followerId,
+          NotificationType.BLOG_PUBLISHED,
+          'New Post Published',
+          `${authorName} published a new post: "${blog.title}"`,
+        );
+      }
+    } catch (error) {
+      console.error(`Failed to notify followers for blog ${blog.id}:`, error);
+    }
   }
 }
