@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import ScrollToTop from "./components/layout/ScrollToTop";
 import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
 import BlogDetailsPage from "./pages/BlogDetailsPage";
@@ -23,6 +24,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Toaster
         position="top-center"
         toastOptions={{

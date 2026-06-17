@@ -372,11 +372,11 @@ const MyBlogsPage = () => {
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-[#10132c] to-cyan-950 flex items-center justify-center opacity-85 transition-opacity duration-300 group-hover:opacity-100">
-                          <code className="text-[11px] text-gray-500 font-mono select-none">
-                            // code block visual representation
-                          </code>
-                        </div>
+                        <img
+                          src="https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2664&auto=format&fit=crop"
+                          alt={blog.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
                       )}
 
                       {/* Status Badges */}

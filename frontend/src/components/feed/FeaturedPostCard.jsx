@@ -17,9 +17,11 @@ const FeaturedPostCard = ({ post }) => {
             className="w-full h-full object-cover group-hover/thumbnail:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-tr from-brand-cyan/20 via-brand-purple/20 to-bg-card flex items-center justify-center">
-            <span className="text-gray-500 text-xs uppercase tracking-widest font-bold">Featured Article</span>
-          </div>
+          <img
+            src="https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2664&auto=format&fit=crop"
+            alt={title}
+            className="w-full h-full object-cover group-hover/thumbnail:scale-105 transition-transform duration-500"
+          />
         )}
         <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-bg-base/70 backdrop-blur-sm border border-border-subtle text-[10px] font-bold text-brand-cyan tracking-wider uppercase">
           {category}

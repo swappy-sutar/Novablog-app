@@ -13,11 +13,16 @@ const Navbar = () => {
   const [isDark, setIsDark] = useState(true);
   const [user, setUser] = useState(null);
   const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const isMyBlogs = location.pathname === "/my-blogs";
   const isFeed = location.pathname === "/feed";
   const isExplore = location.pathname === "/explore";
   const isAbout = location.pathname === "/about";
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -471,24 +476,192 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu Toggle */}
-            <button className="md:hidden text-gray-400 hover:text-gray-200 ml-2">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                ></path>
-              </svg>
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden text-gray-400 hover:text-gray-200 ml-2 cursor-pointer focus:outline-none"
+              aria-label="Toggle Mobile Menu"
+            >
+              {isMobileMenuOpen ? (
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
+                </svg>
+              ) : (
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  ></path>
+                </svg>
+              )}
             </button>
           </div>
         </div>
-    </nav>
+
+        {/* Mobile Menu Drawer */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden border-t border-border-subtle/40 bg-bg-base/95 backdrop-blur-lg overflow-hidden flex flex-col px-6 py-5 gap-5 shadow-2xl"
+            >
+              {/* Search Form for Mobile */}
+              <form onSubmit={handleSearchSubmit} className="relative flex items-center group w-full">
+                <svg
+                  className="w-4 h-4 absolute left-3 text-gray-400 group-focus-within:text-brand-cyan transition-colors"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search articles..."
+                  value={searchVal}
+                  onChange={(e) => setSearchVal(e.target.value)}
+                  className="w-full bg-border-subtle/30 border border-border-subtle focus:border-brand-cyan/50 rounded-full py-2.5 pl-10 pr-4 text-xs text-gray-200 placeholder-gray-400 focus:outline-none focus:bg-border-subtle/50"
+                />
+              </form>
+
+              {/* Navigation Links */}
+              <div className="flex flex-col gap-4 text-base font-semibold">
+                <Link
+                  to="/feed"
+                  onClick={(e) => {
+                    handleNavClick(e, "/feed");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`py-1.5 ${isFeed ? "text-brand-cyan" : "text-gray-400 hover:text-gray-200"}`}
+                >
+                  Feed
+                </Link>
+                <Link
+                  to="/explore"
+                  onClick={(e) => {
+                    handleNavClick(e, "/explore");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`py-1.5 ${isExplore ? "text-brand-cyan" : "text-gray-400 hover:text-gray-200"}`}
+                >
+                  Explore
+                </Link>
+                <Link
+                  to="/my-blogs"
+                  onClick={(e) => {
+                    handleNavClick(e, "/my-blogs");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`py-1.5 ${isMyBlogs ? "text-brand-cyan" : "text-gray-400 hover:text-gray-200"}`}
+                >
+                  My Blogs
+                </Link>
+                <Link
+                  to="/about"
+                  onClick={(e) => {
+                    handleNavClick(e, "/about");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`py-1.5 ${isAbout ? "text-brand-cyan" : "text-gray-400 hover:text-gray-200"}`}
+                >
+                  About Us
+                </Link>
+              </div>
+
+              {/* Actions: Theme toggle, write button, profile/signin */}
+              <div className="border-t border-border-subtle/30 pt-4 flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-400 font-medium">Display Theme</span>
+                  <button
+                    onClick={toggleTheme}
+                    className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors rounded-full bg-border-subtle/30"
+                    aria-label="Toggle Theme"
+                  >
+                    {isDark ? (
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+
+                {user ? (
+                  <div className="flex flex-col gap-4">
+                    <Link 
+                      to="/write"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="w-full"
+                    >
+                      <Button variant="primary" className="py-2.5 w-full text-center text-sm">
+                        Write new post
+                      </Button>
+                    </Link>
+                    <div className="flex items-center justify-between border-t border-border-subtle/20 pt-4">
+                      <Link
+                        to="/profile"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center gap-3 text-sm text-white font-medium"
+                      >
+                        <div className="w-9 h-9 rounded-full bg-brand-cyan/20 border border-brand-cyan flex items-center justify-center text-brand-cyan font-bold text-sm">
+                          {user.firstname?.[0]?.toUpperCase() || "U"}
+                        </div>
+                        <span>{user.firstname} {user.lastname || ""}</span>
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-4 w-full">
+                    <Link
+                      to="/signin"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex-1 text-center py-2.5 rounded-xl border border-border-subtle text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                    >
+                      Log In
+                    </Link>
+                    <Link 
+                      to="/signup"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex-1"
+                    >
+                      <Button variant="primary" className="py-2.5 w-full text-sm">
+                        Sign Up
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
   );
 };
 

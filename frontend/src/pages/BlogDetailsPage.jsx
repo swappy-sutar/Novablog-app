@@ -210,9 +210,7 @@ const BlogDetailsPage = () => {
                           {item.thumbnail ? (
                             <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-500" />
                           ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-[#10132c] to-cyan-950 flex items-center justify-center opacity-85">
-                              <code className="text-[10px] text-gray-600 font-mono">{"// code block"}</code>
-                            </div>
+                            <img src="https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2664&auto=format&fit=crop" alt={item.title} className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-500" />
                           )}
                         </div>
                         <div className="p-4 flex-grow flex flex-col justify-between">

@@ -7,7 +7,7 @@ import GlassCard from '../ui/GlassCard';
 
 const Hero = () => {
   return (
-    <section className="relative pt-12 pb-16 overflow-hidden">
+    <section className="relative pt-24 pb-16 lg:pt-40 lg:pb-35 overflow-hidden">
       {/* Glow Effects */}
       <div className="absolute top-1/3 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[900px] bg-brand-purple/15 rounded-full blur-[120px] -z-10" />
       <div className="absolute top-1/2 right-1/4 translate-x-1/2 -translate-y-1/2 w-[500px] h-[800px] bg-brand-cyan/15 rounded-full blur-[100px] -z-10" />
@@ -58,7 +58,7 @@ const Hero = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="flex-grow flex flex-col"
           >
-            <GlassCard className="relative border border-border-subtle bg-bg-card/75 shadow-2xl overflow-hidden group flex-grow flex flex-col justify-between p-6 min-h-[340px]">
+            <GlassCard className="relative border border-border-subtle bg-bg-card/75 shadow-2xl overflow-hidden group flex-grow flex flex-col justify-between p-6 min-h-[260px] sm:min-h-[340px]">
 
               {/* Header Status Bar */}
               <div className="flex items-center justify-between z-10 relative">

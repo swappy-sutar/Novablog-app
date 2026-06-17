@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import GlassCard from '../ui/GlassCard';
 import Button from '../ui/Button';
 
@@ -33,7 +34,7 @@ const Newsletter = () => {
             </Button>
           </form>
           <p className="text-[10px] text-gray-500 pl-2 text-left">
-            by subscribing, you agree to our <a href="#" className="underline hover:text-white transition-colors">privacy protocol</a>
+            by subscribing, you agree to our <Link to="/privacy" className="underline hover:text-white transition-colors">privacy protocol</Link>
           </p>
         </div>
       </GlassCard>

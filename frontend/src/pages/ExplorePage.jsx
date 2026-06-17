@@ -169,10 +169,10 @@ const ExplorePage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-6 pt-8 pb-24 space-y-16">
+    <div className="max-w-7xl mx-auto px-4 md:px-6 pt-40 pb-25 space-y-20">
       {/* Top Hero Section */}
-      <section className="text-center max-w-3xl mx-auto space-y-6">
-        <motion.h1 
+      <section className="text-center max-w-3xl mx-auto space-y-5">
+        <motion.h1
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -229,11 +229,10 @@ const ExplorePage = () => {
             <button
               key={tag.label}
               onClick={() => handleTagClick(tag.query)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all border ${
-                activeQuery.toLowerCase() === tag.query.toLowerCase()
-                  ? "bg-brand-cyan/15 text-brand-cyan border-brand-cyan/30"
-                  : "bg-white/[0.02] text-gray-400 border-white/[0.04] hover:text-white hover:bg-white/[0.06] hover:border-white/10"
-              }`}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all border ${activeQuery.toLowerCase() === tag.query.toLowerCase()
+                ? "bg-brand-cyan/15 text-brand-cyan border-brand-cyan/30"
+                : "bg-white/[0.02] text-gray-400 border-white/[0.04] hover:text-white hover:bg-white/[0.06] hover:border-white/10"
+                }`}
             >
               {tag.label}
             </button>
@@ -288,9 +287,11 @@ const ExplorePage = () => {
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-[#10132c] to-cyan-950 flex items-center justify-center opacity-85">
-                          <code className="text-[10px] text-gray-600 font-mono">{"// code block"}</code>
-                        </div>
+                        <img
+                          src="https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2664&auto=format&fit=crop"
+                          alt={blog.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
                       )}
                       <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-brand-cyan/20 text-brand-cyan border border-brand-cyan/30 shadow-sm backdrop-blur-md">
                         {blog.category?.name || "Insight"}
@@ -368,12 +369,12 @@ const ExplorePage = () => {
                   <Link to={`/post/${featuredBlog.id}`} className="lg:col-span-2 block group relative">
                     <GlassCard className="relative h-[480px] overflow-hidden flex flex-col justify-end p-8 border border-white/5 bg-gradient-to-t from-bg-base via-bg-base/40 to-transparent">
                       {/* Visual coding background layer */}
-                      <div 
-                        className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay group-hover:scale-[1.02] transition-transform duration-700" 
-                        style={{ backgroundImage: `url('${featuredBlog.thumbnail || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"}")` }} 
+                      <div
+                        className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay group-hover:scale-[1.02] transition-transform duration-700"
+                        style={{ backgroundImage: `url('${featuredBlog.thumbnail || "https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2664&auto=format&fit=crop"}")` }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/70 to-transparent" />
-                      
+
                       <div className="relative space-y-4">
                         <span className="inline-block px-3 py-1 bg-brand-cyan/20 text-brand-cyan text-[10px] font-bold tracking-widest uppercase rounded-md border border-brand-cyan/30 backdrop-blur-md">
                           {featuredBlog.category?.name || "Featured"}
@@ -396,7 +397,7 @@ const ExplorePage = () => {
                     <GlassCard className="relative h-[480px] overflow-hidden flex flex-col justify-end p-8 border border-white/5 bg-gradient-to-t from-bg-base via-bg-base/40 to-transparent">
                       <div className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay group-hover:scale-[1.02] transition-transform duration-700" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')` }} />
                       <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/70 to-transparent" />
-                      
+
                       <div className="relative space-y-4">
                         <span className="inline-block px-3 py-1 bg-brand-cyan/20 text-brand-cyan text-[10px] font-bold tracking-widest uppercase rounded-md border border-brand-cyan/30 backdrop-blur-md">
                           Series
@@ -426,34 +427,34 @@ const ExplorePage = () => {
                       <ExplorePopularSkeleton key={n} />
                     ))
                   ) : popularBlogs && popularBlogs.length > 0 ? (
-                  popularBlogs.map((blog, idx) => (
-                    <GlassCard key={blog.id} className="p-6 flex flex-col justify-between h-[228px] hover:bg-bg-card-hover/40 transition-colors border border-white/5 group">
-                      <Link to={`/post/${blog.id}`} className="space-y-2.5 block group/link cursor-pointer">
-                        <span className={`text-[10px] font-bold tracking-wider uppercase ${idx === 0 ? "text-brand-purple" : "text-brand-cyan"}`}>
-                          {blog.category?.name || (idx === 0 ? "Trending" : "Popular")}
-                        </span>
-                        <h4 className={`text-lg font-bold text-white leading-snug transition-colors line-clamp-2 ${idx === 0 ? "group-hover/link:text-brand-purple" : "group-hover/link:text-brand-cyan"}`}>
-                          {blog.title}
-                        </h4>
-                        <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
-                          {stripHtml(blog.excerpt) || (blog.content ? stripHtml(blog.content).slice(0, 120) + "..." : "No summary available.")}
-                        </p>
-                      </Link>
-                      <div className="flex items-center justify-between border-t border-border-subtle pt-3 mt-4 text-xs text-gray-500">
-                        <Link
-                          to={blog.author?.username ? `/profile/${blog.author.username}` : "#"}
-                          className="flex items-center gap-2 group/author cursor-pointer"
-                        >
-                          {renderAvatar(blog.author, "w-6 h-6")}
-                          <span className="text-gray-300 group-hover/author:text-brand-cyan transition-colors">{getAuthorName(blog.author)}</span>
+                    popularBlogs.map((blog, idx) => (
+                      <GlassCard key={blog.id} className="p-6 flex flex-col justify-between h-[228px] hover:bg-bg-card-hover/40 transition-colors border border-white/5 group">
+                        <Link to={`/post/${blog.id}`} className="space-y-2.5 block group/link cursor-pointer">
+                          <span className={`text-[10px] font-bold tracking-wider uppercase ${idx === 0 ? "text-brand-purple" : "text-brand-cyan"}`}>
+                            {blog.category?.name || (idx === 0 ? "Trending" : "Popular")}
+                          </span>
+                          <h4 className={`text-lg font-bold text-white leading-snug transition-colors line-clamp-2 ${idx === 0 ? "group-hover/link:text-brand-purple" : "group-hover/link:text-brand-cyan"}`}>
+                            {blog.title}
+                          </h4>
+                          <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
+                            {stripHtml(blog.excerpt) || (blog.content ? stripHtml(blog.content).slice(0, 120) + "..." : "No summary available.")}
+                          </p>
                         </Link>
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5 opacity-60" />
-                          <span>{blog.readTime || 5} min read</span>
+                        <div className="flex items-center justify-between border-t border-border-subtle pt-3 mt-4 text-xs text-gray-500">
+                          <Link
+                            to={blog.author?.username ? `/profile/${blog.author.username}` : "#"}
+                            className="flex items-center gap-2 group/author cursor-pointer"
+                          >
+                            {renderAvatar(blog.author, "w-6 h-6")}
+                            <span className="text-gray-300 group-hover/author:text-brand-cyan transition-colors">{getAuthorName(blog.author)}</span>
+                          </Link>
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5 opacity-60" />
+                            <span>{blog.readTime || 5} min read</span>
+                          </div>
                         </div>
-                      </div>
-                    </GlassCard>
-                  ))
+                      </GlassCard>
+                    ))
                   ) : (
                     <>
                       {/* Card 1 Fallback */}
@@ -531,9 +532,11 @@ const ExplorePage = () => {
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-[#10132c] to-cyan-950 flex items-center justify-center opacity-85">
-                            <code className="text-[10px] text-gray-600 font-mono">{"// code block"}</code>
-                          </div>
+                          <img
+                            src="https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2664&auto=format&fit=crop"
+                            alt={blog.title}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
                         )}
                         <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-brand-cyan/20 text-brand-cyan border border-brand-cyan/30 shadow-sm backdrop-blur-md">
                           {blog.category?.name || "Insight"}

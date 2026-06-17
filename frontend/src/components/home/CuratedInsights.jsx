@@ -9,7 +9,7 @@ const MOCK_FEATURED = {
   excerpt: "An in-depth exploration of state-of-the-art replication protocols and consensus algorithms in the modern cloud era.",
   category: "FEATURED",
   readTime: "12 Min Read",
-  thumbnail: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=2574&auto=format&fit=crop",
+  thumbnail: "https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2664&auto=format&fit=crop",
   author: {
     name: "Dr. Elena Vance",
     role: "Principal Engineer @ NovaCore",
@@ -157,7 +157,7 @@ const CuratedInsights = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#04040c] via-[#04040c]/60 to-transparent" />
             </Link>
-
+ 
             {/* Card Content Overlay */}
             <div className="p-8 space-y-4 z-10">
               <Link to={`/post/${mainBlog.id}`} className="block space-y-4 group/text cursor-pointer">
@@ -166,7 +166,7 @@ const CuratedInsights = () => {
                     {mainBlog.category}
                   </span>
                 </div>
-
+ 
                 <h3 className="text-2xl sm:text-3xl font-extrabold text-[#ffffff] tracking-tight leading-tight group-hover/text:text-brand-cyan transition-colors max-w-2xl">
                   {mainBlog.title}
                 </h3>
@@ -175,7 +175,7 @@ const CuratedInsights = () => {
                   {mainBlog.excerpt}
                 </p>
               </Link>
-
+ 
               {/* Author Info Row */}
               <div className="flex items-center gap-3 border-t border-border-subtle/30 pt-4 mt-2">
                 <Link
@@ -197,14 +197,14 @@ const CuratedInsights = () => {
                 </Link>
               </div>
             </div>
-
+ 
           </GlassCard>
         </div>
-
+ 
         {/* Right Column: Latest Insights */}
         <div className="lg:col-span-4 flex flex-col justify-between gap-6">
           {sideBlogs.slice(0, 2).map((post, idx) => (
-            <GlassCard key={post.id} className="p-6 flex flex-col justify-between border border-border-subtle bg-bg-card hover:bg-white/[0.02] hover:border-brand-purple/40 transition-all duration-300 min-h-[228px] group h-[calc(50%-12px)]">
+            <GlassCard key={post.id} className="p-6 flex flex-col justify-between border border-border-subtle bg-bg-card hover:bg-white/[0.02] hover:border-brand-purple/40 transition-all duration-300 min-h-[228px] group lg:h-[calc(50%-12px)] h-auto">
               <Link to={`/post/${post.id}`} className="block space-y-3 group/link cursor-pointer">
                 <span className="text-[10px] font-bold text-brand-purple tracking-widest uppercase block">
                   {post.category}
