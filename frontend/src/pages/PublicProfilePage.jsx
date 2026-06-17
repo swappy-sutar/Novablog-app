@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useState, useCallback, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import GlassCard from '../components/ui/GlassCard';
@@ -90,7 +90,17 @@ function formatJoined(iso) {
   }
 }
 
+const getWriterLevel = (reads) => {
+  if (typeof reads !== 'number') return 'Nova';
+  if (reads < 100) return 'Nova';
+  if (reads < 500) return 'Explorer';
+  if (reads < 2000) return 'Architect';
+  if (reads < 5000) return 'Elite';
+  return 'Nexus Master';
+};
+
 const PublicProfilePage = () => {
+  const { username } = useParams();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -101,7 +111,9 @@ const PublicProfilePage = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await authAPI.getProfile();
+      const res = username 
+        ? await authAPI.getPublicProfile(username)
+        : await authAPI.getProfile();
       if (res.success && res.data) setProfile(res.data);
       else setError('Unexpected response');
     } catch (e) {
@@ -110,7 +122,7 @@ const PublicProfilePage = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [username]);
 
   useEffect(() => {
     load();
@@ -134,6 +146,32 @@ const PublicProfilePage = () => {
       toast.error(err.response?.data?.message || 'Upload failed');
     } finally {
       setUploading(false);
+    }
+  };
+
+  const storedUser = localStorage.getItem('user');
+  const currentUser = storedUser && storedUser !== "undefined" ? JSON.parse(storedUser) : null;
+  const isOwnProfile = !username || (currentUser && currentUser.username === username);
+
+  const handleFollowToggle = async () => {
+    if (!currentUser) {
+      toast.error('Please log in to follow users');
+      return;
+    }
+    try {
+      const res = await authAPI.toggleFollow(profile.id);
+      if (res.success && res.data) {
+        setProfile((prev) => ({
+          ...prev,
+          isFollowing: res.data.followed,
+          followersCount: res.data.followed
+            ? (prev.followersCount ?? 0) + 1
+            : Math.max(0, (prev.followersCount ?? 0) - 1),
+        }));
+        toast.success(res.data.followed ? `Following @${profile.username}` : `Unfollowed @${profile.username}`);
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Action failed');
     }
   };
 
@@ -178,7 +216,7 @@ const PublicProfilePage = () => {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45 }}
-      className="max-w-6xl mx-auto"
+      className="max-w-6xl mx-auto px-4 md:px-6 pt-6 pb-12"
     >
       <input
         ref={fileRef}
@@ -188,14 +226,16 @@ const PublicProfilePage = () => {
         onChange={handleFile}
       />
 
-      <div className="flex justify-end mb-4">
-        <Link
-          to="/profile/settings"
-          className="text-sm font-medium text-[#a5b4fc] hover:text-[#c4b5fd] transition-colors"
-        >
-          Edit profile & settings →
-        </Link>
-      </div>
+      {isOwnProfile && (
+        <div className="flex justify-end mb-4">
+          <Link
+            to="/profile/settings"
+            className="text-sm font-medium text-[#a5b4fc] hover:text-[#c4b5fd] transition-colors"
+          >
+            Edit profile & settings →
+          </Link>
+        </div>
+      )}
 
       <section className="relative mb-8">
         <div
@@ -232,10 +272,10 @@ const PublicProfilePage = () => {
           <div className="relative shrink-0 group">
             <button
               type="button"
-              onClick={() => fileRef.current?.click()}
-              disabled={uploading}
-              className="relative w-32 h-32 md:w-40 md:h-40 rounded-xl border-2 border-[#0b0e14] overflow-hidden shadow-xl shadow-black/40 bg-bg-card text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan disabled:opacity-60"
-              aria-label="Change profile photo"
+              onClick={() => isOwnProfile && fileRef.current?.click()}
+              disabled={uploading || !isOwnProfile}
+              className={`relative w-32 h-32 md:w-40 md:h-40 rounded-xl border-2 border-[#0b0e14] overflow-hidden shadow-xl shadow-black/40 bg-bg-card text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${isOwnProfile ? 'cursor-pointer' : 'cursor-default'}`}
+              aria-label="Profile photo"
             >
               {profile?.avatar ? (
                 <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
@@ -244,9 +284,11 @@ const PublicProfilePage = () => {
                   {initials}
                 </div>
               )}
-              <span className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs font-medium text-white">
-                {uploading ? '…' : 'Change'}
-              </span>
+              {isOwnProfile && (
+                <span className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs font-medium text-white">
+                  {uploading ? '…' : 'Change'}
+                </span>
+              )}
             </button>
             <span className="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide bg-brand-purple text-white shadow-lg border border-white/10">
               {profile?.isVerified ? 'Verified' : roleLabel}
@@ -262,47 +304,65 @@ const PublicProfilePage = () => {
                 {subtitle}
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-3 shrink-0">
-              <Button
-                type="button"
-                variant="outline"
-                className="!rounded-[10px] !py-2.5 !px-4 border-border-subtle bg-white/[0.04] hover:bg-white/[0.08]"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                  />
-                </svg>
-                Follow
-              </Button>
-              <button
-                type="button"
-                className="px-6 py-2.5 rounded-[10px] font-medium text-sm flex items-center justify-center gap-2 bg-[#c3c7f3] text-[#0b0e14] hover:opacity-90 transition-opacity"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-                Message
-              </button>
-            </div>
+            {!isOwnProfile && (
+              <div className="flex flex-wrap items-center gap-3 shrink-0">
+                <Button
+                  type="button"
+                  variant={profile?.isFollowing ? "primary" : "outline"}
+                  onClick={handleFollowToggle}
+                  className={`!rounded-[10px] !py-2.5 !px-4 ${
+                    profile?.isFollowing 
+                      ? "bg-brand-cyan text-black hover:opacity-90 border-transparent" 
+                      : "border-border-subtle bg-white/[0.04] hover:bg-white/[0.08]"
+                  }`}
+                >
+                  {profile?.isFollowing ? (
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                      />
+                    </svg>
+                  )}
+                  {profile?.isFollowing ? "Following" : "Follow"}
+                </Button>
+                <button
+                  type="button"
+                  className="px-6 py-2.5 rounded-[10px] font-medium text-sm flex items-center justify-center gap-2 bg-[#c3c7f3] text-[#0b0e14] hover:opacity-90 transition-opacity"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                  Message
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </section>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-10">
         {[
-          { label: 'FOLLOWERS', value: '—', accent: false },
-          { label: 'FOLLOWING', value: '—', accent: false },
-          { label: 'TOTAL READS', value: '—', accent: true },
-          { label: 'WRITER LEVEL', value: 'Nova', accent: true },
+          { label: 'FOLLOWERS', value: profile?.followersCount ?? 0, accent: false },
+          { label: 'FOLLOWING', value: profile?.followingCount ?? 0, accent: false },
+          { label: 'TOTAL READS', value: profile?.totalViews ?? 0, accent: true },
+          { label: 'WRITER LEVEL', value: getWriterLevel(profile?.totalViews ?? 0), accent: true },
         ].map((stat) => (
           <GlassCard
             key={stat.label}

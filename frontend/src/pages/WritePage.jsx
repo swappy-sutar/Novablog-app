@@ -76,8 +76,17 @@ const WritePage = () => {
       formData.append("title", title);
       formData.append("content", content);
 
-      // Auto-generate a clean excerpt from the markdown content
-      const cleanText = content.replace(/[#*`_\[\]()]/g, "");
+      // Auto-generate a clean plain-text excerpt by stripping HTML tags and entities
+      const cleanText = content
+        .replace(/<[^>]*>/g, "")
+        .replace(/&nbsp;/g, " ")
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/\s+/g, " ")
+        .trim();
       const excerpt =
         cleanText.length > 150
           ? cleanText.substring(0, 150).trim() + "..."

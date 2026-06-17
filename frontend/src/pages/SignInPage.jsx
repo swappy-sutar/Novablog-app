@@ -89,7 +89,7 @@ const SignInPage = () => {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Password</label>
-              <Link to="#" className="text-xs text-brand-cyan hover:underline">Forgot password?</Link>
+              <Link to="/forgot-password" className="text-xs text-brand-cyan hover:underline">Forgot password?</Link>
             </div>
             <div className="relative">
               <input 
