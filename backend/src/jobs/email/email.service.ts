@@ -26,4 +26,27 @@ export class EmailService {
       },
     );
   }
+
+  async sendForgotPasswordEmail(
+    email: string,
+    firstname: string,
+    resetLink: string,
+  ) {
+    await this.emailQueue.add(
+      'forgot-password',
+      {
+        email,
+        firstname,
+        resetLink,
+      },
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 3000,
+        },
+        removeOnComplete: true,
+      },
+    );
+  }
 }

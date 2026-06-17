@@ -12,6 +12,7 @@ import { BookmarkModule } from './modules/bookmark/bookmark.module';
 import { JobsEmailModule } from './jobs/email/email.module';
 import { BullMQModule } from './config/bullmq/bull.module';
 import { ResendModule } from './config/resend/resend.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ResendModule } from './config/resend/resend.module';
     JobsEmailModule,
     BullMQModule,
     ResendModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

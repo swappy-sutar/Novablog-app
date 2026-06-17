@@ -40,6 +40,8 @@ model User {
   isVerified    Boolean        @default(false)
   isActive      Boolean        @default(true)
   refreshToken  String?
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   blogs         Blog[]

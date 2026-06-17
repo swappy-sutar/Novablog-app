@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Patch,
   Post,
   UploadedFile,
@@ -12,7 +13,10 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from './guards/optional-jwt.guard';
 import { CurrentUser } from 'src/common/decorator/current-user.decorator';
 import { ImageUpload } from 'src/common/decorator/image-upload.decorator';
 
@@ -34,6 +38,24 @@ export class AuthController {
   @Get('profile')
   async getProfile(@CurrentUser() user: any) {
     return this.authService.getProfile(user.id);
+  }
+
+  @UseGuards(OptionalJwtAuthGuard)
+  @Get('profile/:username')
+  async getPublicProfile(
+    @Param('username') username: string,
+    @CurrentUser() currentUser: any,
+  ) {
+    return this.authService.getPublicProfileByUsername(username, currentUser?.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('follow/:userId')
+  async toggleFollow(
+    @Param('userId') followingId: string,
+    @CurrentUser() user: any,
+  ) {
+    return this.authService.toggleFollow(user.id, followingId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -65,5 +87,15 @@ export class AuthController {
   @Post('logout')
   async logout(@CurrentUser() user: any) {
     return this.authService.logout(user.id);
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(resetPasswordDto);
   }
 }

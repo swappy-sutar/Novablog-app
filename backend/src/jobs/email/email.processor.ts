@@ -19,6 +19,15 @@ export class EmailProcessor extends WorkerHost {
         );
 
         break;
+
+      case 'forgot-password':
+        await this.mailProvider.sendForgotPasswordEmail(
+          job.data.email,
+          job.data.firstname,
+          job.data.resetLink,
+        );
+
+        break;
     }
   }
 }

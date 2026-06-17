@@ -6,6 +6,8 @@ export const REDIS_KEYS = {
 
   USER_PROFILE: (userId: string) => `user:profile:${userId}`,
 
+  USER_PROFILE_BY_USERNAME: (username: string) => `user:profile:username:${username}`,
+
   BLOGS: (page: number, limit: number, search?: string) =>
     `blogs:${page}:${limit}:${search || 'all'}`,
 
@@ -41,6 +43,18 @@ export const REDIS_KEYS = {
   ) => `user-bookmarks:${userId}:${page}:${limit}`,
 
   BLOG_VIEWS: (blogId: string) => `blog-views:${blogId}`,
+
+  EXPLORE: 'blogs:explore',
+
+  FEED: (
+    userId: string | undefined,
+    tab: string,
+    tag: string,
+    page: number,
+    limit: number,
+  ) => `blogs:feed:${userId || 'public'}:${tab}:${tag}:${page}:${limit}`,
+
+  ALL_FEEDS_BY_USER: (userId: string) => `blogs:feed:${userId}:*`,
 
   ALL_BLOGS: 'blogs:*',
 };

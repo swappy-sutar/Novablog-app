@@ -12,6 +12,8 @@ import { UsersRepository } from './repositories/users.repository';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { comparePassword, hashPassword } from '../../common/utils/hash.util';
 import { successResponse } from 'src/common/helpers/response.helper';
 import { CacheService } from 'src/config/redis/cache.service';
@@ -19,6 +21,7 @@ import { REDIS_KEYS } from 'src/config/redis/redis.keys';
 import { CACHE_TTL } from 'src/config/redis/redis.ttl';
 import { S3Service } from 'src/config/s3/s3.service';
 import { EmailService } from 'src/jobs/email/email.service';
+import { PrismaService } from 'src/config/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
@@ -29,6 +32,7 @@ export class AuthService {
     private readonly cacheService: CacheService,
     private readonly s3Service: S3Service,
     private readonly emailService: EmailService,
+    private readonly prisma: PrismaService,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -132,30 +136,218 @@ export class AuthService {
 
   async getProfile(userId: string) {
     const cacheKey = REDIS_KEYS.USER_PROFILE(userId);
-
-    const cachedUser = await this.cacheService.get(cacheKey);
-
-    if (cachedUser) {
+    const cachedProfile = await this.cacheService.get(cacheKey);
+    if (cachedProfile) {
       return successResponse(
         'User profile fetched successfully',
-        cachedUser,
+        cachedProfile,
         HttpStatus.OK,
       );
     }
 
-    const user = await this.usersRepository.findById(userId);
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        firstname: true,
+        lastname: true,
+        username: true,
+        email: true,
+        bio: true,
+        avatar: true,
+        websiteUrl: true,
+        githubUrl: true,
+        role: true,
+        isVerified: true,
+        createdAt: true,
+        updatedAt: true,
+        blogs: {
+          where: {
+            status: 'PUBLISHED',
+          },
+          select: {
+            views: true,
+          },
+        },
+      },
+    });
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    const { password, refreshToken, ...safeUser } = user;
+    const totalViews = user.blogs.reduce((sum, b) => sum + (b.views || 0), 0);
+    
+    const followersCount = await this.prisma.follow.count({
+      where: {
+        followingId: user.id,
+      },
+    });
 
-    await this.cacheService.set(cacheKey, safeUser, CACHE_TTL.USER_PROFILE);
+    const followingCount = await this.prisma.follow.count({
+      where: {
+        followerId: user.id,
+      },
+    });
+
+    const { blogs, ...safeUser } = user;
+    const responseData = {
+      ...safeUser,
+      totalViews,
+      followersCount,
+      followingCount,
+    };
+
+    await this.cacheService.set(cacheKey, responseData, CACHE_TTL.USER_PROFILE);
 
     return successResponse(
       'User profile fetched successfully',
-      safeUser,
+      responseData,
+      HttpStatus.OK,
+    );
+  }
+
+  async getPublicProfileByUsername(username: string, currentUserId?: string) {
+    const cacheKey = REDIS_KEYS.USER_PROFILE_BY_USERNAME(username);
+    const cachedProfile = await this.cacheService.get(cacheKey);
+    let profileData: any;
+
+    if (cachedProfile) {
+      profileData = cachedProfile;
+    } else {
+      const user = await this.prisma.user.findUnique({
+        where: { username },
+        select: {
+          id: true,
+          firstname: true,
+          lastname: true,
+          username: true,
+          email: true,
+          bio: true,
+          avatar: true,
+          websiteUrl: true,
+          githubUrl: true,
+          role: true,
+          isVerified: true,
+          createdAt: true,
+          updatedAt: true,
+          blogs: {
+            where: {
+              status: 'PUBLISHED',
+            },
+            select: {
+              views: true,
+            },
+          },
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      const totalViews = user.blogs.reduce((sum, b) => sum + (b.views || 0), 0);
+      
+      const followersCount = await this.prisma.follow.count({
+        where: {
+          followingId: user.id,
+        },
+      });
+
+      const followingCount = await this.prisma.follow.count({
+        where: {
+          followerId: user.id,
+        },
+      });
+
+      const { blogs, ...safeUser } = user;
+      profileData = {
+        ...safeUser,
+        totalViews,
+        followersCount,
+        followingCount,
+      };
+
+      await this.cacheService.set(cacheKey, profileData, CACHE_TTL.USER_PROFILE);
+    }
+
+    let isFollowing = false;
+    if (currentUserId && profileData.id) {
+      const followRecord = await this.prisma.follow.findUnique({
+        where: {
+          followerId_followingId: {
+            followerId: currentUserId,
+            followingId: profileData.id,
+          },
+        },
+      });
+      isFollowing = !!followRecord;
+    }
+
+    const responseData = {
+      ...profileData,
+      isFollowing,
+    };
+
+    return successResponse(
+      'Public user profile fetched successfully',
+      responseData,
+      HttpStatus.OK,
+    );
+  }
+
+  async toggleFollow(followerId: string, followingId: string) {
+    if (followerId === followingId) {
+      throw new BadRequestException('You cannot follow yourself');
+    }
+
+    const targetUser = await this.usersRepository.findById(followingId);
+    if (!targetUser) {
+      throw new NotFoundException('User to follow not found');
+    }
+
+    const existingFollow = await this.prisma.follow.findUnique({
+      where: {
+        followerId_followingId: {
+          followerId,
+          followingId,
+        },
+      },
+    });
+
+    let followed = false;
+    if (existingFollow) {
+      await this.prisma.follow.delete({
+        where: {
+          id: existingFollow.id,
+        },
+      });
+    } else {
+      await this.prisma.follow.create({
+        data: {
+          followerId,
+          followingId,
+        },
+      });
+      followed = true;
+    }
+
+    // Invalidate caches
+    await this.cacheService.del(REDIS_KEYS.USER_PROFILE(followerId));
+    await this.cacheService.del(REDIS_KEYS.USER_PROFILE(followingId));
+    await this.cacheService.deleteByPattern(REDIS_KEYS.ALL_FEEDS_BY_USER(followerId));
+    await this.cacheService.deleteByPattern(REDIS_KEYS.ALL_FEEDS_BY_USER(followingId));
+    if (targetUser.username) {
+      await this.cacheService.del(REDIS_KEYS.USER_PROFILE_BY_USERNAME(targetUser.username));
+    }
+    const followerUser = await this.usersRepository.findById(followerId);
+    if (followerUser?.username) {
+      await this.cacheService.del(REDIS_KEYS.USER_PROFILE_BY_USERNAME(followerUser.username));
+    }
+
+    return successResponse(
+      followed ? 'Followed user successfully' : 'Unfollowed user successfully',
+      { followed },
       HttpStatus.OK,
     );
   }
@@ -202,6 +394,9 @@ export class AuthService {
 
     await this.cacheService.del(REDIS_KEYS.USER(userId));
     await this.cacheService.del(REDIS_KEYS.USER_PROFILE(userId));
+    if (user && user.username) {
+      await this.cacheService.del(REDIS_KEYS.USER_PROFILE_BY_USERNAME(user.username));
+    }
 
     const { password, refreshToken, ...safeUser } = updatedUser;
 
@@ -287,8 +482,10 @@ export class AuthService {
     });
 
     await this.cacheService.del(REDIS_KEYS.USER(userId));
-
     await this.cacheService.del(REDIS_KEYS.USER_PROFILE(userId));
+    if (user && user.username) {
+      await this.cacheService.del(REDIS_KEYS.USER_PROFILE_BY_USERNAME(user.username));
+    }
 
     const { password, refreshToken, ...safeUser } = updatedUser;
 
@@ -322,5 +519,73 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const email = forgotPasswordDto.email.toLowerCase().trim();
+    const user = await this.usersRepository.findByEmail(email);
+
+    if (!user) {
+      throw new NotFoundException('User with this email not found');
+    }
+
+    // Generate a secure reset token
+    const resetToken = this.jwtService.sign(
+      { userId: user.id },
+      {
+        secret: this.configService.get<string>('JWT_ACCESS_SECRET')!,
+        expiresIn: '1h',
+      },
+    );
+    const resetTokenExpires = new Date(Date.now() + 3600000); // 1 hour
+
+    await this.usersRepository.update(user.id, {
+      resetPasswordToken: resetToken,
+      resetPasswordExpires: resetTokenExpires,
+    });
+
+    const resetLink = `${
+      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:5173'
+    }/reset-password?token=${resetToken}`;
+
+    await this.emailService.sendForgotPasswordEmail(
+      user.email,
+      user.firstname,
+      resetLink,
+    );
+
+    return successResponse('Password reset link sent successfully', null);
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    const user = await this.usersRepository.findByResetToken(
+      resetPasswordDto.token,
+    );
+
+    if (!user) {
+      throw new BadRequestException('Invalid or expired token');
+    }
+
+    if (!user.resetPasswordExpires || new Date() > user.resetPasswordExpires) {
+      throw new BadRequestException('Token has expired');
+    }
+
+    const hashedPassword = await hashPassword(resetPasswordDto.password);
+
+    await this.usersRepository.update(user.id, {
+      password: hashedPassword,
+      resetPasswordToken: null,
+      resetPasswordExpires: null,
+    });
+
+    await this.cacheService.del(REDIS_KEYS.USER(user.id));
+    await this.cacheService.del(REDIS_KEYS.USER_PROFILE(user.id));
+    if (user.username) {
+      await this.cacheService.del(
+        REDIS_KEYS.USER_PROFILE_BY_USERNAME(user.username),
+      );
+    }
+
+    return successResponse('Password reset successfully', null);
   }
 }
