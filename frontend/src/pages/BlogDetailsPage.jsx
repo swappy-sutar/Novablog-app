@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import BlogHero from '../components/blog/BlogHero';
@@ -8,15 +8,19 @@ import ArticleContent from '../components/blog/ArticleContent';
 import ShareToolbar from '../components/blog/ShareToolbar';
 import Discussion from '../components/blog/Discussion';
 import GlassCard from '../components/ui/GlassCard';
-import { blogAPI, likeAPI } from '../lib/api';
+import { blogAPI, likeAPI, bookmarkAPI } from '../lib/api';
 
 const BlogDetailsPage = () => {
   const { id } = useParams();
   const [blog, setBlog] = useState(null);
   const [likeCount, setLikeCount] = useState(0);
   const [userLiked, setUserLiked] = useState(false);
+  const [userBookmarked, setUserBookmarked] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [relatedBlogs, setRelatedBlogs] = useState([]);
+  const [loadingRelated, setLoadingRelated] = useState(true);
 
   const loadBlogData = useCallback(async () => {
     setLoading(true);
@@ -33,6 +37,23 @@ const BlogDetailsPage = () => {
         if (countRes.success && countRes.data) {
           setLikeCount(countRes.data.count);
         }
+
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+          try {
+            const statusRes = await likeAPI.checkLikeStatus(id);
+            if (statusRes.success && statusRes.data) {
+              setUserLiked(statusRes.data.liked);
+            }
+
+            const bookmarkRes = await bookmarkAPI.checkBookmarkStatus(id);
+            if (bookmarkRes.success && bookmarkRes.data) {
+              setUserBookmarked(bookmarkRes.data.bookmarked);
+            }
+          } catch (err) {
+            console.error("Failed to check like/bookmark status:", err);
+          }
+        }
       } else {
         setError("Post not found.");
       }
@@ -47,6 +68,36 @@ const BlogDetailsPage = () => {
   useEffect(() => {
     loadBlogData();
   }, [loadBlogData]);
+
+  useEffect(() => {
+    if (!blog) return;
+    const fetchRelated = async () => {
+      setLoadingRelated(true);
+      try {
+        let searchCategory = blog.category?.name;
+        let fetched = [];
+        if (searchCategory) {
+          const res = await blogAPI.getAllBlogs({ search: searchCategory, limit: 4 });
+          if (res.success && res.data && res.data.blogs) {
+            fetched = res.data.blogs.filter(b => b.id !== blog.id);
+          }
+        }
+        if (fetched.length < 3) {
+          const resFallback = await blogAPI.getAllBlogs({ limit: 6 });
+          if (resFallback.success && resFallback.data && resFallback.data.blogs) {
+            const extra = resFallback.data.blogs.filter(b => b.id !== blog.id && !fetched.some(f => f.id === b.id));
+            fetched = [...fetched, ...extra];
+          }
+        }
+        setRelatedBlogs(fetched.slice(0, 3));
+      } catch (err) {
+        console.error("Failed to load related blogs:", err);
+      } finally {
+        setLoadingRelated(false);
+      }
+    };
+    fetchRelated();
+  }, [blog]);
 
   const handleToggleLike = async () => {
     try {
@@ -64,6 +115,24 @@ const BlogDetailsPage = () => {
         toast.error("Please log in to like posts.");
       } else {
         toast.error("Failed to toggle like.");
+      }
+    }
+  };
+
+  const handleToggleBookmark = async () => {
+    try {
+      const res = await bookmarkAPI.toggleBookmark(id);
+      if (res.success && res.data) {
+        const bookmarked = res.data.bookmarked;
+        setUserBookmarked(bookmarked);
+        toast.success(bookmarked ? "Post bookmarked!" : "Bookmark removed.");
+      }
+    } catch (e) {
+      console.error(e);
+      if (e.response?.status === 401) {
+        toast.error("Please log in to bookmark posts.");
+      } else {
+        toast.error("Failed to toggle bookmark.");
       }
     }
   };
@@ -106,6 +175,8 @@ const BlogDetailsPage = () => {
         likeCount={likeCount} 
         userLiked={userLiked} 
         onToggleLike={handleToggleLike} 
+        userBookmarked={userBookmarked}
+        onToggleBookmark={handleToggleBookmark}
       />
 
       <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-start gap-12 lg:gap-16 relative">
@@ -118,27 +189,51 @@ const BlogDetailsPage = () => {
           <section className="mt-20 border-t border-border-subtle pt-12">
             <div className="flex items-center justify-between mb-8">
               <h3 className="text-2xl font-bold text-white">More from NovaBlog</h3>
-              <a href="#" className="text-sm text-brand-blue hover:text-brand-cyan transition-colors flex items-center gap-1">
+              <Link to="/explore" className="text-sm text-brand-blue hover:text-brand-cyan transition-colors flex items-center gap-1">
                 View all <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-              </a>
+              </Link>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                { category: 'Cybersecurity', title: 'Quantum-Resistant Encryption in Node.js', color: 'brand-cyan', img: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670&auto=format&fit=crop' },
-                { category: 'Cloud Arch', title: 'Serverless: The Hidden Operational Cost', color: 'brand-blue', img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2672&auto=format&fit=crop' },
-                { category: 'Hardware', title: 'Optimizing Silicon for Edge WebAssembly', color: 'brand-purple', img: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2670&auto=format&fit=crop' },
-              ].map((item, i) => (
-                <GlassCard key={i} className="group cursor-pointer border-transparent hover:border-border-subtle">
-                  <div className="h-32 overflow-hidden">
-                    <img src={item.img} alt={item.title} className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-500" />
-                  </div>
-                  <div className="p-4">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider text-${item.color} mb-2 block`}>{item.category}</span>
-                    <h4 className="font-bold text-white text-sm group-hover:text-brand-blue transition-colors">{item.title}</h4>
-                  </div>
-                </GlassCard>
-              ))}
+              {loadingRelated ? (
+                [1, 2, 3].map((n) => (
+                  <div key={n} className="h-[230px] bg-white/[0.01] border border-border-subtle rounded-2xl animate-pulse" />
+                ))
+              ) : relatedBlogs.length > 0 ? (
+                relatedBlogs.map((item, i) => {
+                  const colors = ['brand-cyan', 'brand-blue', 'brand-purple'];
+                  const color = colors[i % colors.length];
+                  return (
+                    <Link key={item.id} to={`/post/${item.id}`} className="block">
+                      <GlassCard className="group cursor-pointer border-transparent hover:border-border-subtle h-[230px] flex flex-col justify-between overflow-hidden">
+                        <div className="h-32 overflow-hidden shrink-0">
+                          {item.thumbnail ? (
+                            <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-500" />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-[#10132c] to-cyan-950 flex items-center justify-center opacity-85">
+                              <code className="text-[10px] text-gray-600 font-mono">{"// code block"}</code>
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-4 flex-grow flex flex-col justify-between">
+                          <div>
+                            <span className={`text-[10px] font-bold uppercase tracking-wider text-${color} mb-2 block`}>
+                              {item.category?.name || 'Insight'}
+                            </span>
+                            <h4 className="font-bold text-white text-sm group-hover:text-brand-blue transition-colors line-clamp-2 leading-snug">
+                              {item.title}
+                            </h4>
+                          </div>
+                        </div>
+                      </GlassCard>
+                    </Link>
+                  );
+                })
+              ) : (
+                <div className="col-span-3 text-center py-6 text-xs text-gray-500">
+                  No related posts found.
+                </div>
+              )}
             </div>
           </section>
 

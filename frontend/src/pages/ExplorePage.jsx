@@ -1,10 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Play, ArrowRight, Clock, BookOpen, Sparkles } from "lucide-react";
 import { blogAPI } from "../lib/api";
 import GlassCard from "../components/ui/GlassCard";
 import Button from "../components/ui/Button";
+import { ExploreFeaturedSkeleton, ExplorePopularSkeleton, ExploreInsightSkeleton } from "../components/ui/Skeleton";
+
+const stripHtml = (html) => {
+  if (!html) return "";
+  return html
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+};
 
 const trendingTags = [
   { label: "#Rust", query: "Rust" },
@@ -15,12 +30,18 @@ const trendingTags = [
 ];
 
 const ExplorePage = () => {
+  const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeQuery, setActiveQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [allBlogs, setAllBlogs] = useState([]);
   const [loadingAll, setLoadingAll] = useState(true);
+
+  const [trendingTagsList, setTrendingTagsList] = useState(trendingTags);
+  const [featuredBlog, setFeaturedBlog] = useState(null);
+  const [popularBlogs, setPopularBlogs] = useState([]);
+  const [loadingExplore, setLoadingExplore] = useState(true);
 
   // Fetch all blogs on mount for the general feed
   useEffect(() => {
@@ -37,7 +58,27 @@ const ExplorePage = () => {
         setLoadingAll(false);
       }
     };
+
+    const fetchExplore = async () => {
+      setLoadingExplore(true);
+      try {
+        const res = await blogAPI.getExploreData();
+        if (res.success && res.data) {
+          if (res.data.trendingTags && res.data.trendingTags.length > 0) {
+            setTrendingTagsList(res.data.trendingTags);
+          }
+          setFeaturedBlog(res.data.featuredBlog);
+          setPopularBlogs(res.data.popularBlogs || []);
+        }
+      } catch (e) {
+        console.error("Failed to fetch explore data:", e);
+      } finally {
+        setLoadingExplore(false);
+      }
+    };
+
     fetchAll();
+    fetchExplore();
   }, []);
 
   // Handle Search API call
@@ -77,6 +118,21 @@ const ExplorePage = () => {
     setActiveQuery("");
     setSearchResults([]);
   };
+
+  // Trigger search on query param change
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const searchParam = params.get("search");
+    if (searchParam) {
+      setSearchQuery(searchParam);
+      performSearch(searchParam);
+    } else {
+      // If there is no search param and searchQuery was active, clear it
+      setSearchQuery("");
+      setActiveQuery("");
+      setSearchResults([]);
+    }
+  }, [location.search]);
 
   const formatViews = (views) => {
     if (!views) return "0";
@@ -169,7 +225,7 @@ const ExplorePage = () => {
 
         <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm pl-1">
           <span className="text-gray-500 font-medium">Trending:</span>
-          {trendingTags.map((tag) => (
+          {trendingTagsList.map((tag) => (
             <button
               key={tag.label}
               onClick={() => handleTagClick(tag.query)}
@@ -214,56 +270,58 @@ const ExplorePage = () => {
             </div>
 
             {loading ? (
-              <div className="flex flex-col items-center justify-center py-24 gap-4">
-                <div className="w-10 h-10 border-2 border-brand-cyan border-t-transparent rounded-full animate-spin" />
-                <p className="text-gray-500 text-sm">Searching the archive...</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3, 4, 5, 6].map((n) => (
+                  <ExploreInsightSkeleton key={n} />
+                ))}
               </div>
             ) : searchResults.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {searchResults.map((blog) => (
-                  <Link key={blog.id} to={`/post/${blog.id}`} className="block group">
-                    <GlassCard className="flex flex-col h-[400px] hover:border-white/10 hover:bg-bg-card-hover/40 transition-all duration-300">
-                      {/* Image header */}
-                      <div className="h-44 w-full bg-indigo-950/20 relative overflow-hidden shrink-0">
-                        {blog.thumbnail ? (
-                          <img
-                            src={blog.thumbnail}
-                            alt={blog.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-[#10132c] to-cyan-950 flex items-center justify-center opacity-85">
-                            <code className="text-[10px] text-gray-600 font-mono">{"// code block"}</code>
-                          </div>
-                        )}
-                        <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-brand-cyan/20 text-brand-cyan border border-brand-cyan/30 shadow-sm backdrop-blur-md">
-                          {blog.category?.name || "Insight"}
-                        </span>
-                      </div>
+                  <GlassCard key={blog.id} className="flex flex-col h-[400px] hover:border-white/10 hover:bg-bg-card-hover/40 transition-all duration-300 group">
+                    {/* Image header */}
+                    <Link to={`/post/${blog.id}`} className="h-44 w-full bg-indigo-950/20 relative overflow-hidden shrink-0 cursor-pointer block">
+                      {blog.thumbnail ? (
+                        <img
+                          src={blog.thumbnail}
+                          alt={blog.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-[#10132c] to-cyan-950 flex items-center justify-center opacity-85">
+                          <code className="text-[10px] text-gray-600 font-mono">{"// code block"}</code>
+                        </div>
+                      )}
+                      <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-brand-cyan/20 text-brand-cyan border border-brand-cyan/30 shadow-sm backdrop-blur-md">
+                        {blog.category?.name || "Insight"}
+                      </span>
+                    </Link>
 
-                      {/* Content */}
-                      <div className="p-5 flex-1 flex flex-col justify-between">
-                        <div className="space-y-2">
-                          <h3 className="text-base font-bold text-white leading-snug group-hover:text-brand-cyan transition-colors line-clamp-2">
-                            {blog.title}
-                          </h3>
-                          <p className="text-xs text-gray-400 line-clamp-3 leading-relaxed">
-                            {blog.excerpt || "No summary available."}
-                          </p>
-                        </div>
-                        <div className="flex items-center justify-between border-t border-border-subtle pt-4 mt-4 text-xs text-gray-500">
-                          <div className="flex items-center gap-2">
-                            {renderAvatar(blog.author, "w-6 h-6")}
-                            <span className="text-white font-medium">{getAuthorName(blog.author)}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5 opacity-60" />
-                            <span>{blog.readTime || 5} min read</span>
-                          </div>
+                    {/* Content */}
+                    <div className="p-5 flex-1 flex flex-col justify-between">
+                      <Link to={`/post/${blog.id}`} className="space-y-2 block group/link cursor-pointer">
+                        <h3 className="text-base font-bold text-white leading-snug group-hover/link:text-brand-cyan transition-colors line-clamp-2">
+                          {blog.title}
+                        </h3>
+                        <p className="text-xs text-gray-400 line-clamp-3 leading-relaxed">
+                          {stripHtml(blog.excerpt) || (blog.content ? stripHtml(blog.content).slice(0, 140) + "..." : "No summary available.")}
+                        </p>
+                      </Link>
+                      <div className="flex items-center justify-between border-t border-border-subtle pt-4 mt-4 text-xs text-gray-500">
+                        <Link
+                          to={blog.author?.username ? `/profile/${blog.author.username}` : "#"}
+                          className="flex items-center gap-2 group/author cursor-pointer"
+                        >
+                          {renderAvatar(blog.author, "w-6 h-6")}
+                          <span className="text-white font-medium group-hover/author:text-brand-cyan transition-colors">{getAuthorName(blog.author)}</span>
+                        </Link>
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5 opacity-60" />
+                          <span>{blog.readTime || 5} min read</span>
                         </div>
                       </div>
-                    </GlassCard>
-                  </Link>
+                    </div>
+                  </GlassCard>
                 ))}
               </div>
             ) : (
@@ -304,78 +362,145 @@ const ExplorePage = () => {
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Large Card */}
-                <div className="lg:col-span-2 block group relative">
-                  <GlassCard className="relative h-[480px] overflow-hidden flex flex-col justify-end p-8 border border-white/5 bg-gradient-to-t from-bg-base via-bg-base/40 to-transparent">
-                    {/* Visual coding background layer */}
-                    <div className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay group-hover:scale-[1.02] transition-transform duration-700" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')` }} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/70 to-transparent" />
-                    
-                    <div className="relative space-y-4">
-                      <span className="inline-block px-3 py-1 bg-brand-cyan/20 text-brand-cyan text-[10px] font-bold tracking-widest uppercase rounded-md border border-brand-cyan/30 backdrop-blur-md">
-                        Series
-                      </span>
-                      <h3 className="text-3xl font-extrabold text-white leading-tight tracking-tight group-hover:text-brand-cyan transition-colors">
-                        Mastering Memory Safety in Embedded Systems
-                      </h3>
-                      <p className="text-gray-300 text-sm max-w-xl leading-relaxed">
-                        An exhaustive 12-part exploration into zero-cost abstractions and modern memory management.
-                      </p>
-                      <button
-                        onClick={() => handleTagClick("Rust")}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-white/[0.06] hover:bg-brand-cyan hover:text-black border border-white/5 transition-all w-fit cursor-pointer"
-                      >
-                        <Play className="w-4 h-4 fill-current" />
-                        Start Series
-                      </button>
-                    </div>
-                  </GlassCard>
-                </div>
+                {loadingExplore ? (
+                  <ExploreFeaturedSkeleton className="lg:col-span-2" />
+                ) : featuredBlog ? (
+                  <Link to={`/post/${featuredBlog.id}`} className="lg:col-span-2 block group relative">
+                    <GlassCard className="relative h-[480px] overflow-hidden flex flex-col justify-end p-8 border border-white/5 bg-gradient-to-t from-bg-base via-bg-base/40 to-transparent">
+                      {/* Visual coding background layer */}
+                      <div 
+                        className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay group-hover:scale-[1.02] transition-transform duration-700" 
+                        style={{ backgroundImage: `url('${featuredBlog.thumbnail || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"}")` }} 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/70 to-transparent" />
+                      
+                      <div className="relative space-y-4">
+                        <span className="inline-block px-3 py-1 bg-brand-cyan/20 text-brand-cyan text-[10px] font-bold tracking-widest uppercase rounded-md border border-brand-cyan/30 backdrop-blur-md">
+                          {featuredBlog.category?.name || "Featured"}
+                        </span>
+                        <h3 className="text-3xl font-extrabold text-white leading-tight tracking-tight group-hover:text-brand-cyan transition-colors line-clamp-2">
+                          {featuredBlog.title}
+                        </h3>
+                        <p className="text-gray-300 text-sm max-w-xl leading-relaxed line-clamp-2">
+                          {stripHtml(featuredBlog.excerpt) || (featuredBlog.content ? stripHtml(featuredBlog.content).slice(0, 180) + "..." : "No summary available.")}
+                        </p>
+                        <div className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-white/[0.06] hover:bg-brand-cyan hover:text-black border border-white/5 transition-all w-fit cursor-pointer">
+                          <BookOpen className="w-4 h-4" />
+                          Read Article
+                        </div>
+                      </div>
+                    </GlassCard>
+                  </Link>
+                ) : (
+                  <div className="lg:col-span-2 block group relative">
+                    <GlassCard className="relative h-[480px] overflow-hidden flex flex-col justify-end p-8 border border-white/5 bg-gradient-to-t from-bg-base via-bg-base/40 to-transparent">
+                      <div className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay group-hover:scale-[1.02] transition-transform duration-700" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')` }} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/70 to-transparent" />
+                      
+                      <div className="relative space-y-4">
+                        <span className="inline-block px-3 py-1 bg-brand-cyan/20 text-brand-cyan text-[10px] font-bold tracking-widest uppercase rounded-md border border-brand-cyan/30 backdrop-blur-md">
+                          Series
+                        </span>
+                        <h3 className="text-3xl font-extrabold text-white leading-tight tracking-tight group-hover:text-brand-cyan transition-colors">
+                          Mastering Memory Safety in Embedded Systems
+                        </h3>
+                        <p className="text-gray-300 text-sm max-w-xl leading-relaxed">
+                          An exhaustive 12-part exploration into zero-cost abstractions and modern memory management.
+                        </p>
+                        <button
+                          onClick={() => handleTagClick("Rust")}
+                          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-white/[0.06] hover:bg-brand-cyan hover:text-black border border-white/5 transition-all w-fit cursor-pointer"
+                        >
+                          <Play className="w-4 h-4 fill-current" />
+                          Start Series
+                        </button>
+                      </div>
+                    </GlassCard>
+                  </div>
+                )}
 
                 {/* Right Stacked Cards */}
                 <div className="flex flex-col gap-6">
-                  {/* Card 1 */}
-                  <GlassCard className="p-6 flex flex-col justify-between h-[228px] hover:bg-bg-card-hover/40 transition-colors border border-white/5 group">
-                    <div className="space-y-2.5">
-                      <span className="text-[10px] font-bold tracking-wider text-brand-purple uppercase">
-                        Rising Star
-                      </span>
-                      <h4 className="text-lg font-bold text-white leading-snug group-hover:text-brand-purple transition-colors">
-                        The Quantum Web
-                      </h4>
-                      <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
-                        How entanglement might redefine the HTTP protocol by 2030.
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between border-t border-border-subtle pt-3 mt-4 text-xs text-gray-500">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-brand-purple/20 border border-brand-purple flex items-center justify-center text-[10px] font-bold text-white">AC</div>
-                        <span className="text-gray-300">Alex Chen</span>
+                  {loadingExplore ? (
+                    [1, 2].map((n) => (
+                      <ExplorePopularSkeleton key={n} />
+                    ))
+                  ) : popularBlogs && popularBlogs.length > 0 ? (
+                  popularBlogs.map((blog, idx) => (
+                    <GlassCard key={blog.id} className="p-6 flex flex-col justify-between h-[228px] hover:bg-bg-card-hover/40 transition-colors border border-white/5 group">
+                      <Link to={`/post/${blog.id}`} className="space-y-2.5 block group/link cursor-pointer">
+                        <span className={`text-[10px] font-bold tracking-wider uppercase ${idx === 0 ? "text-brand-purple" : "text-brand-cyan"}`}>
+                          {blog.category?.name || (idx === 0 ? "Trending" : "Popular")}
+                        </span>
+                        <h4 className={`text-lg font-bold text-white leading-snug transition-colors line-clamp-2 ${idx === 0 ? "group-hover/link:text-brand-purple" : "group-hover/link:text-brand-cyan"}`}>
+                          {blog.title}
+                        </h4>
+                        <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
+                          {stripHtml(blog.excerpt) || (blog.content ? stripHtml(blog.content).slice(0, 120) + "..." : "No summary available.")}
+                        </p>
+                      </Link>
+                      <div className="flex items-center justify-between border-t border-border-subtle pt-3 mt-4 text-xs text-gray-500">
+                        <Link
+                          to={blog.author?.username ? `/profile/${blog.author.username}` : "#"}
+                          className="flex items-center gap-2 group/author cursor-pointer"
+                        >
+                          {renderAvatar(blog.author, "w-6 h-6")}
+                          <span className="text-gray-300 group-hover/author:text-brand-cyan transition-colors">{getAuthorName(blog.author)}</span>
+                        </Link>
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5 opacity-60" />
+                          <span>{blog.readTime || 5} min read</span>
+                        </div>
                       </div>
-                      <span>8 min read</span>
-                    </div>
-                  </GlassCard>
+                    </GlassCard>
+                  ))
+                  ) : (
+                    <>
+                      {/* Card 1 Fallback */}
+                      <GlassCard className="p-6 flex flex-col justify-between h-[228px] hover:bg-bg-card-hover/40 transition-colors border border-white/5 group">
+                        <div className="space-y-2.5">
+                          <span className="text-[10px] font-bold tracking-wider text-brand-purple uppercase">
+                            Rising Star
+                          </span>
+                          <h4 className="text-lg font-bold text-white leading-snug group-hover:text-brand-purple transition-colors">
+                            The Quantum Web
+                          </h4>
+                          <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
+                            How entanglement might redefine the HTTP protocol by 2030.
+                          </p>
+                        </div>
+                        <div className="flex items-center justify-between border-t border-border-subtle pt-3 mt-4 text-xs text-gray-500">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-brand-purple/20 border border-brand-purple flex items-center justify-center text-[10px] font-bold text-white">AC</div>
+                            <span className="text-gray-300">Alex Chen</span>
+                          </div>
+                          <span>8 min read</span>
+                        </div>
+                      </GlassCard>
 
-                  {/* Card 2 */}
-                  <GlassCard className="p-6 flex flex-col justify-between h-[228px] hover:bg-bg-card-hover/40 transition-colors border border-white/5 group">
-                    <div className="space-y-2.5">
-                      <span className="text-[10px] font-bold tracking-wider text-brand-cyan uppercase">
-                        Case Study
-                      </span>
-                      <h4 className="text-lg font-bold text-white leading-snug group-hover:text-brand-cyan transition-colors">
-                        Scaling to 10M RPM
-                      </h4>
-                      <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
-                        Lessons from the infrastructure overhaul of Titan Labs.
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between border-t border-border-subtle pt-3 mt-4 text-xs text-gray-500">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-brand-cyan/20 border border-brand-cyan flex items-center justify-center text-[10px] font-bold text-white">SJ</div>
-                        <span className="text-gray-300">Sarah Jenkins</span>
-                      </div>
-                      <span>15 min read</span>
-                    </div>
-                  </GlassCard>
+                      {/* Card 2 Fallback */}
+                      <GlassCard className="p-6 flex flex-col justify-between h-[228px] hover:bg-bg-card-hover/40 transition-colors border border-white/5 group">
+                        <div className="space-y-2.5">
+                          <span className="text-[10px] font-bold tracking-wider text-brand-cyan uppercase">
+                            Case Study
+                          </span>
+                          <h4 className="text-lg font-bold text-white leading-snug group-hover:text-brand-cyan transition-colors">
+                            Scaling to 10M RPM
+                          </h4>
+                          <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
+                            Lessons from the infrastructure overhaul of Titan Labs.
+                          </p>
+                        </div>
+                        <div className="flex items-center justify-between border-t border-border-subtle pt-3 mt-4 text-xs text-gray-500">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-brand-cyan/20 border border-brand-cyan flex items-center justify-center text-[10px] font-bold text-white">SJ</div>
+                            <span className="text-gray-300">Sarah Jenkins</span>
+                          </div>
+                          <span>15 min read</span>
+                        </div>
+                      </GlassCard>
+                    </>
+                  )}
                 </div>
               </div>
             </section>
@@ -390,55 +515,56 @@ const ExplorePage = () => {
               {loadingAll ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {[1, 2, 3].map((n) => (
-                    <div key={n} className="h-[380px] bg-white/[0.01] border border-border-subtle rounded-2xl animate-pulse" />
+                    <ExploreInsightSkeleton key={n} />
                   ))}
                 </div>
               ) : allBlogs.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {allBlogs.map((blog) => (
-                    <Link key={blog.id} to={`/post/${blog.id}`} className="block group">
-                      <GlassCard className="flex flex-col h-[400px] hover:border-white/10 hover:bg-bg-card-hover/40 transition-all duration-300">
-                        {/* Image header */}
-                        <div className="h-44 w-full bg-indigo-950/20 relative overflow-hidden shrink-0">
-                          {blog.thumbnail ? (
-                            <img
-                              src={blog.thumbnail}
-                              alt={blog.title}
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-[#10132c] to-cyan-950 flex items-center justify-center opacity-85">
-                              <code className="text-[10px] text-gray-600 font-mono">{"// code block"}</code>
-                            </div>
-                          )}
-                          <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-brand-cyan/20 text-brand-cyan border border-brand-cyan/30 shadow-sm backdrop-blur-md">
-                            {blog.category?.name || "Insight"}
-                          </span>
-                        </div>
+                    <GlassCard key={blog.id} className="flex flex-col h-[400px] hover:border-white/10 hover:bg-bg-card-hover/40 transition-all duration-300 group">
+                      {/* Image header */}
+                      <Link to={`/post/${blog.id}`} className="h-44 w-full bg-indigo-950/20 relative overflow-hidden shrink-0 cursor-pointer block">
+                        {blog.thumbnail ? (
+                          <img
+                            src={blog.thumbnail}
+                            alt={blog.title}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-[#10132c] to-cyan-950 flex items-center justify-center opacity-85">
+                            <code className="text-[10px] text-gray-600 font-mono">{"// code block"}</code>
+                          </div>
+                        )}
+                        <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-brand-cyan/20 text-brand-cyan border border-brand-cyan/30 shadow-sm backdrop-blur-md">
+                          {blog.category?.name || "Insight"}
+                        </span>
+                      </Link>
 
-                        {/* Content */}
-                        <div className="p-5 flex-1 flex flex-col justify-between">
-                          <div className="space-y-2">
-                            <h3 className="text-base font-bold text-white leading-snug group-hover:text-brand-cyan transition-colors line-clamp-2">
-                              {blog.title}
-                            </h3>
-                            <p className="text-xs text-gray-400 line-clamp-3 leading-relaxed">
-                              {blog.excerpt || "No summary available."}
-                            </p>
-                          </div>
-                          <div className="flex items-center justify-between border-t border-border-subtle pt-4 mt-4 text-xs text-gray-500">
-                            <div className="flex items-center gap-2">
-                              {renderAvatar(blog.author, "w-6 h-6")}
-                              <span className="text-white font-medium">{getAuthorName(blog.author)}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Clock className="w-3.5 h-3.5 opacity-60" />
-                              <span>{blog.readTime || 5} min read</span>
-                            </div>
+                      {/* Content */}
+                      <div className="p-5 flex-1 flex flex-col justify-between">
+                        <Link to={`/post/${blog.id}`} className="space-y-2 block group/link cursor-pointer">
+                          <h3 className="text-base font-bold text-white leading-snug group-hover/link:text-brand-cyan transition-colors line-clamp-2">
+                            {blog.title}
+                          </h3>
+                          <p className="text-xs text-gray-400 line-clamp-3 leading-relaxed">
+                            {stripHtml(blog.excerpt) || (blog.content ? stripHtml(blog.content).slice(0, 140) + "..." : "No summary available.")}
+                          </p>
+                        </Link>
+                        <div className="flex items-center justify-between border-t border-border-subtle pt-4 mt-4 text-xs text-gray-500">
+                          <Link
+                            to={blog.author?.username ? `/profile/${blog.author.username}` : "#"}
+                            className="flex items-center gap-2 group/author cursor-pointer"
+                          >
+                            {renderAvatar(blog.author, "w-6 h-6")}
+                            <span className="text-white font-medium group-hover/author:text-brand-cyan transition-colors">{getAuthorName(blog.author)}</span>
+                          </Link>
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5 opacity-60" />
+                            <span>{blog.readTime || 5} min read</span>
                           </div>
                         </div>
-                      </GlassCard>
-                    </Link>
+                      </div>
+                    </GlassCard>
                   ))}
                 </div>
               ) : (

@@ -1,22 +1,35 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "../ui/Button";
-import { authAPI } from "../../lib/api";
+import { authAPI, notificationsAPI } from "../../lib/api";
+import { Bell } from "lucide-react";
+import { connectSocket, disconnectSocket } from "../../lib/socket";
+import toast from "react-hot-toast";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const [searchVal, setSearchVal] = useState("");
   const [isDark, setIsDark] = useState(true);
   const [user, setUser] = useState(null);
   const location = useLocation();
 
   const isMyBlogs = location.pathname === "/my-blogs";
-  const isFeed = location.pathname === "/";
+  const isFeed = location.pathname === "/feed";
   const isExplore = location.pathname === "/explore";
   const isAbout = location.pathname === "/about";
 
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchVal.trim()) {
+      navigate(`/explore?search=${encodeURIComponent(searchVal.trim())}`);
+      setSearchVal("");
+    }
+  };
+
   const linkActiveStyle =
     "text-brand-cyan relative after:absolute after:-bottom-2 after:left-0 after:w-full after:h-0.5 after:bg-brand-cyan after:rounded-full";
-  const linkInactiveStyle = "text-gray-400 hover:text-white transition-colors";
+  const linkInactiveStyle = "text-gray-400 hover:text-gray-200 transition-colors";
 
   useEffect(() => {
     // Check theme
@@ -55,6 +68,112 @@ const Navbar = () => {
   }, []);
 
   const toggleTheme = () => setIsDark(!isDark);
+
+  const notificationsRef = useRef(null);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+  // Load and subscribe to notifications
+  useEffect(() => {
+    if (!user) {
+      setNotifications([]);
+      disconnectSocket();
+      return;
+    }
+
+    const loadNotifications = async () => {
+      try {
+        const res = await notificationsAPI.getNotifications();
+        if (res.success && res.data) {
+          setNotifications(res.data);
+        }
+      } catch (err) {
+        console.error("Failed to load notifications:", err);
+      }
+    };
+
+    loadNotifications();
+
+    const socketInstance = connectSocket();
+    if (socketInstance) {
+      const handleIncomingNotification = (newNotification) => {
+        setNotifications((prev) => [newNotification, ...prev]);
+        toast.success(newNotification.message, {
+          icon: "🔔",
+          duration: 4000,
+          style: {
+            background: "#0f0f23",
+            color: "#fff",
+            border: "1px solid rgba(6, 182, 212, 0.2)",
+          },
+        });
+      };
+      
+      socketInstance.on("notification", handleIncomingNotification);
+
+      return () => {
+        socketInstance.off("notification", handleIncomingNotification);
+      };
+    }
+  }, [user]);
+
+  // Click outside to close dropdown
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (notificationsRef.current && !notificationsRef.current.contains(e.target)) {
+        setShowNotifications(false);
+      }
+    };
+    if (showNotifications) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [showNotifications]);
+
+  const handleMarkAllRead = async () => {
+    try {
+      const res = await notificationsAPI.markAllAsRead();
+      if (res.success) {
+        setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      }
+    } catch (err) {
+      console.error("Failed to mark all as read:", err);
+    }
+  };
+
+  const handleMarkSingleRead = async (id) => {
+    try {
+      const res = await notificationsAPI.markAsRead(id);
+      if (res.success) {
+        setNotifications((prev) =>
+          prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+        );
+      }
+    } catch (err) {
+      console.error(`Failed to mark notification ${id} as read:`, err);
+    }
+  };
+
+  const formatRelativeTime = (dateStr) => {
+    if (!dateStr) return "";
+    try {
+      const date = new Date(dateStr);
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMins / 60);
+      const diffDays = Math.floor(diffHours / 24);
+
+      if (diffMins < 1) return "Just now";
+      if (diffMins < 60) return `${diffMins}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      return `${diffDays}d ago`;
+    } catch (e) {
+      return "";
+    }
+  };
 
   const handleNavClick = (e, path) => {
     if (location.pathname === path) {
@@ -108,8 +227,8 @@ const Navbar = () => {
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium">
           <Link
-            to="/"
-            onClick={(e) => handleNavClick(e, "/")}
+            to="/feed"
+            onClick={(e) => handleNavClick(e, "/feed")}
             className={isFeed ? linkActiveStyle : linkInactiveStyle}
           >
             Feed
@@ -139,7 +258,7 @@ const Navbar = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-4">
-            <div className="hidden lg:flex relative items-center group">
+            <form onSubmit={handleSearchSubmit} className="hidden lg:flex relative items-center group">
               <svg
                 className="w-4 h-4 absolute left-3 text-gray-400 group-focus-within:text-brand-cyan transition-colors"
                 fill="none"
@@ -156,11 +275,13 @@ const Navbar = () => {
               <input
                 type="text"
                 placeholder={placeholder}
-                className="bg-border-subtle/30 border border-border-subtle focus:border-brand-cyan/50 rounded-full py-2 pl-10 pr-4 text-sm text-white placeholder-gray-400 w-64 transition-all duration-300 focus:w-80 focus:outline-none focus:bg-border-subtle/50 focus:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                value={searchVal}
+                onChange={(e) => setSearchVal(e.target.value)}
+                className="bg-border-subtle/30 border border-border-subtle focus:border-brand-cyan/50 rounded-full py-2 pl-10 pr-4 text-sm text-gray-200 placeholder-gray-400 w-64 transition-all duration-300 focus:w-80 focus:outline-none focus:bg-border-subtle/50 focus:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
               />
-            </div>
+            </form>
 
-            <button className="lg:hidden text-gray-400 hover:text-white transition-colors">
+            <button className="lg:hidden text-gray-400 hover:text-gray-200 transition-colors">
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -178,7 +299,7 @@ const Navbar = () => {
 
             <button
               onClick={toggleTheme}
-              className="relative w-10 h-10 items-center justify-center text-gray-400 hover:text-white transition-colors hidden sm:flex rounded-full hover:bg-border-subtle"
+              className="relative w-10 h-10 items-center justify-center text-gray-400 hover:text-gray-200 transition-colors hidden sm:flex rounded-full hover:bg-border-subtle"
               aria-label="Toggle Theme"
             >
               <AnimatePresence mode="wait">
@@ -236,6 +357,79 @@ const Navbar = () => {
                     transition={{ duration: 0.2 }}
                     className="flex items-center gap-4"
                   >
+                    {/* Notifications */}
+                    <div className="relative" ref={notificationsRef}>
+                      <button
+                        onClick={() => setShowNotifications(!showNotifications)}
+                        className="relative w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors rounded-full hover:bg-border-subtle cursor-pointer"
+                        aria-label="Notifications"
+                      >
+                        <Bell className="w-5 h-5" />
+                        {notifications.some((n) => !n.isRead) && (
+                          <span className="absolute top-2 right-2.5 w-2 h-2 bg-brand-cyan rounded-full shadow-[0_0_8px_#06b6d4] animate-pulse" />
+                        )}
+                      </button>
+
+                      <AnimatePresence>
+                        {showNotifications && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute right-0 mt-3 w-80 p-4 shadow-2xl z-50 bg-bg-dropdown border border-border-subtle/80 rounded-2xl flex flex-col gap-3"
+                          >
+                            <div className="flex items-center justify-between border-b border-border-subtle/60 pb-2">
+                              <h3 className="text-sm font-bold text-white">Notifications</h3>
+                              {notifications.some((n) => !n.isRead) && (
+                                <button
+                                  onClick={handleMarkAllRead}
+                                  className="text-[10px] font-bold text-brand-cyan hover:underline uppercase tracking-wider cursor-pointer"
+                                >
+                                  Mark read
+                                </button>
+                              )}
+                            </div>
+                            <div className="flex flex-col gap-2 max-h-60 overflow-y-auto custom-scrollbar">
+                              {notifications.length === 0 ? (
+                                <div className="text-center py-6 text-gray-500 text-xs">
+                                  No new notifications
+                                </div>
+                              ) : (
+                                notifications.map((n) => (
+                                  <div
+                                    key={n.id}
+                                    onClick={() => !n.isRead && handleMarkSingleRead(n.id)}
+                                    className={`p-2.5 rounded-xl border transition-colors flex flex-col gap-1 text-left ${
+                                      !n.isRead
+                                        ? "bg-brand-cyan/5 border-brand-cyan/20 cursor-pointer hover:bg-brand-cyan/10"
+                                        : "bg-white/[0.01] border-transparent hover:bg-white/[0.03]"
+                                    }`}
+                                  >
+                                    <div className="flex justify-between items-start">
+                                      <span
+                                        className={`text-xs font-bold ${
+                                          !n.isRead ? "text-white" : "text-gray-300"
+                                        }`}
+                                      >
+                                        {n.title}
+                                      </span>
+                                      <span className="text-[9px] text-gray-500 font-medium tracking-tight">
+                                        {formatRelativeTime(n.createdAt)}
+                                      </span>
+                                    </div>
+                                    <p className="text-xs text-gray-400 leading-normal">
+                                      {n.message}
+                                    </p>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
                     <Link to="/write">
                       <Button variant="primary" className="py-2 px-5 text-sm">
                         Write
@@ -262,7 +456,7 @@ const Navbar = () => {
                   >
                     <Link
                       to="/signin"
-                      className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
+                      className="text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors"
                     >
                       Log In
                     </Link>
@@ -277,7 +471,7 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu Toggle */}
-            <button className="md:hidden text-gray-400 hover:text-white ml-2">
+            <button className="md:hidden text-gray-400 hover:text-gray-200 ml-2">
               <svg
                 className="w-6 h-6"
                 fill="none"

@@ -53,6 +53,16 @@ export const authAPI = {
     return response.data;
   },
 
+  getPublicProfile: async (username) => {
+    const response = await api.get(`/auth/profile/${username}`);
+    return response.data;
+  },
+
+  toggleFollow: async (userId) => {
+    const response = await api.post(`/auth/follow/${userId}`);
+    return response.data;
+  },
+
   updateProfile: async (payload) => {
     const response = await api.patch('/auth/profile', payload);
     return response.data;
@@ -62,6 +72,16 @@ export const authAPI = {
     const formData = new FormData();
     formData.append('image', file);
     const response = await api.post('/auth/upload-profile', formData);
+    return response.data;
+  },
+
+  forgotPassword: async (email) => {
+    const response = await api.post('/auth/forgot-password', { email });
+    return response.data;
+  },
+
+  resetPassword: async ({ token, password }) => {
+    const response = await api.post('/auth/reset-password', { token, password });
     return response.data;
   },
 };
@@ -96,6 +116,26 @@ export const blogAPI = {
   getAllBlogs: async (params = { page: 1, limit: 10 }) => {
     const response = await api.get('/blog/get-all-blogs', { params });
     return response.data;
+  },
+
+  getExploreData: async () => {
+    const response = await api.get('/blog/explore');
+    return response.data;
+  },
+
+  getFeed: async (params = { page: 1, limit: 10 }) => {
+    const response = await api.get('/blog/feed', { params });
+    return response.data;
+  },
+
+  getTags: async () => {
+    const response = await api.get('/blog/tags');
+    return response.data;
+  },
+
+  getTopContributors: async () => {
+    const response = await api.get('/blog/top-contributors');
+    return response.data;
   }
 };
 
@@ -106,6 +146,10 @@ export const likeAPI = {
   },
   getLikeCount: async (blogId) => {
     const response = await api.get(`/likes/get-count/${blogId}`);
+    return response.data;
+  },
+  checkLikeStatus: async (blogId) => {
+    const response = await api.get(`/likes/check/${blogId}`);
     return response.data;
   }
 };
@@ -125,6 +169,36 @@ export const commentsAPI = {
   },
   deleteComment: async (commentId) => {
     const response = await api.delete(`/comments/delete-comment/${commentId}`);
+    return response.data;
+  }
+};
+
+export const notificationsAPI = {
+  getNotifications: async () => {
+    const response = await api.get('/notifications');
+    return response.data;
+  },
+  markAllAsRead: async () => {
+    const response = await api.post('/notifications/read');
+    return response.data;
+  },
+  markAsRead: async (id) => {
+    const response = await api.post(`/notifications/${id}/read`);
+    return response.data;
+  }
+};
+
+export const bookmarkAPI = {
+  toggleBookmark: async (blogId) => {
+    const response = await api.post(`/bookmarks/toggle/${blogId}`);
+    return response.data;
+  },
+  getMyBookmarks: async (params = { page: 1, limit: 10 }) => {
+    const response = await api.get('/bookmarks/my-bookmarks', { params });
+    return response.data;
+  },
+  checkBookmarkStatus: async (blogId) => {
+    const response = await api.get(`/bookmarks/check/${blogId}`);
     return response.data;
   }
 };

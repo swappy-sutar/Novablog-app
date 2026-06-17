@@ -2,27 +2,42 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
-import { 
-  Home, 
-  TrendingUp, 
-  Users, 
-  Bookmark, 
-  FileText, 
-  Settings, 
-  HelpCircle, 
-  Plus, 
-  MoreVertical, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  Calendar, 
+import {
+  Home,
+  TrendingUp,
+  Users,
+  Bookmark,
+  FileText,
+  Settings,
+  HelpCircle,
+  Plus,
+  MoreVertical,
+  Edit,
+  Trash2,
+  Eye,
+  Calendar,
   FileEdit,
   Clock,
   Sparkles,
-  Search
+  Search,
 } from "lucide-react";
 import { blogAPI } from "../lib/api";
 import Button from "../components/ui/Button";
+import { ExploreInsightSkeleton as SkeletonCard } from "../components/ui/Skeleton";
+
+const stripHtml = (html) => {
+  if (!html) return "";
+  return html
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+};
 
 const MyBlogsPage = () => {
   const navigate = useNavigate();
@@ -67,7 +82,8 @@ const MyBlogsPage = () => {
 
   // Delete post handler
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this blog post?")) return;
+    if (!window.confirm("Are you sure you want to delete this blog post?"))
+      return;
     try {
       const res = await blogAPI.deleteBlog(id);
       if (res.success) {
@@ -121,13 +137,14 @@ const MyBlogsPage = () => {
   // Since scheduled enum is not in backend, we inject a mock one if needed, or allow filtering DRAFT as Scheduled
   const processedBlogs = React.useMemo(() => {
     const list = [...blogs];
-    
+
     // Add one mock scheduled post to match the visual preview from the mock design
-    if (list.length > 0 && !list.some(b => b.isMockScheduled)) {
+    if (list.length > 0 && !list.some((b) => b.isMockScheduled)) {
       list.push({
         id: "mock-scheduled-id",
         title: "Web3 Security: Beyond the Smart Contract",
-        excerpt: "Securing the frontend layer and infrastructure of decentralized applications against common attacks...",
+        excerpt:
+          "Securing the frontend layer and infrastructure of decentralized applications against common attacks...",
         content: "Draft content...",
         status: "SCHEDULED", // Virtual status for UI filter
         views: 0,
@@ -140,10 +157,10 @@ const MyBlogsPage = () => {
 
     return list.filter((b) => {
       // Search term
-      const matchesSearch = 
+      const matchesSearch =
         b.title?.toLowerCase().includes(search.toLowerCase()) ||
         b.excerpt?.toLowerCase().includes(search.toLowerCase());
-      
+
       if (!matchesSearch) return false;
 
       // Tab Filter
@@ -158,8 +175,8 @@ const MyBlogsPage = () => {
   const navItemClass = (active) =>
     `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors border ${
       active
-        ? "bg-brand-purple/15 text-[#c4b5fd] border-brand-purple/20"
-        : "text-gray-400 border-transparent hover:text-white hover:bg-white/[0.04]"
+        ? "bg-brand-purple/15 text-brand-purple border-brand-purple/20"
+        : "text-gray-400 border-transparent hover:text-gray-200 hover:bg-border-subtle/30"
     }`;
 
   return (
@@ -180,30 +197,45 @@ const MyBlogsPage = () => {
             <Home className="w-4 h-4 opacity-70" />
             Home
           </Link>
-          <button onClick={() => setFilter("all")} className={navItemClass(filter === "all" && search === "")}>
+          <button
+            onClick={() => setFilter("all")}
+            className={navItemClass(filter === "all" && search === "")}
+          >
             <TrendingUp className="w-4 h-4 opacity-70" />
             Trending
           </button>
-          <button onClick={() => toast("Following feed loaded")} className={navItemClass(false)}>
+          <button
+            onClick={() => toast("Following feed loaded")}
+            className={navItemClass(false)}
+          >
             <Users className="w-4 h-4 opacity-70" />
             Following
           </button>
-          <button onClick={() => toast("Bookmarks tab coming soon")} className={navItemClass(false)}>
+          <button
+            onClick={() => toast("Bookmarks tab coming soon")}
+            className={navItemClass(false)}
+          >
             <Bookmark className="w-4 h-4 opacity-70" />
             Bookmarks
           </button>
-          <button onClick={() => setFilter("drafts")} className={navItemClass(filter === "drafts")}>
+          <button
+            onClick={() => setFilter("drafts")}
+            className={navItemClass(filter === "drafts")}
+          >
             <FileText className="w-4 h-4 opacity-70" />
             Drafts
           </button>
-          
+
           <div className="hidden lg:block my-2 border-t border-border-subtle" />
 
           <Link to="/profile/settings" className={navItemClass(false)}>
             <Settings className="w-4 h-4 opacity-70" />
             Settings
           </Link>
-          <button onClick={() => toast("Help desk loaded")} className={navItemClass(false)}>
+          <button
+            onClick={() => toast("Help desk loaded")}
+            className={navItemClass(false)}
+          >
             <HelpCircle className="w-4 h-4 opacity-70" />
             Help
           </button>
@@ -216,9 +248,9 @@ const MyBlogsPage = () => {
           <p className="text-xs font-medium text-gray-400 leading-relaxed">
             Get advanced analytics & custom domains.
           </p>
-          <button 
+          <button
             onClick={() => toast("Upgrade request received")}
-            className="w-full mt-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-brand-cyan to-brand-purple hover:opacity-90 transition-all shadow-md shadow-brand-purple/20"
+            className="w-full mt-4 py-2.5 rounded-xl text-xs font-semibold text-[#ffffff] bg-gradient-to-r from-brand-cyan to-brand-purple hover:opacity-90 transition-all shadow-md shadow-brand-purple/20"
           >
             Upgrade to Pro
           </button>
@@ -234,11 +266,15 @@ const MyBlogsPage = () => {
               My Blogs
             </h1>
             <p className="text-sm text-gray-400 mt-2 max-w-xl leading-relaxed">
-              Manage your technical writing portfolio, track performance metrics, and prepare your next breakthrough article.
+              Manage your technical writing portfolio, track performance
+              metrics, and prepare your next breakthrough article.
             </p>
           </div>
           <Link to="/write" className="shrink-0">
-            <Button variant="primary" className="!rounded-xl !py-3 !px-5 flex items-center gap-2">
+            <Button
+              variant="primary"
+              className="!rounded-xl !py-3 !px-5 flex items-center gap-2"
+            >
               <Plus className="w-4 h-4" />
               Write New Post
             </Button>
@@ -253,7 +289,7 @@ const MyBlogsPage = () => {
               { id: "all", label: "All Posts" },
               { id: "published", label: "Published" },
               { id: "drafts", label: "Drafts" },
-              { id: "scheduled", label: "Scheduled" }
+              { id: "scheduled", label: "Scheduled" },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -263,8 +299,8 @@ const MyBlogsPage = () => {
                 }}
                 className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
                   filter === tab.id
-                    ? "bg-[#1f2038] text-white shadow-sm ring-1 ring-white/10"
-                    : "text-gray-400 hover:text-white hover:bg-white/[0.04]"
+                    ? "bg-brand-purple/10 border border-brand-purple/20 text-brand-purple shadow-sm"
+                    : "text-gray-400 hover:text-gray-200 border border-transparent hover:bg-border-subtle/30"
                 }`}
               >
                 {tab.label}
@@ -275,12 +311,16 @@ const MyBlogsPage = () => {
           {/* Stats Summary */}
           <div className="flex items-center gap-6 text-xs text-gray-500 font-medium">
             <div className="flex items-baseline gap-2">
-              <span className="text-lg font-bold text-brand-cyan">{formatNumber(totalViews)}</span>
+              <span className="text-lg font-bold text-brand-cyan">
+                {formatNumber(totalViews)}
+              </span>
               <span>TOTAL VIEWS</span>
             </div>
             <div className="h-4 w-px bg-border-subtle" />
             <div className="flex items-baseline gap-2">
-              <span className="text-lg font-bold text-white">{publishedCount}</span>
+              <span className="text-lg font-bold text-white">
+                {publishedCount}
+              </span>
               <span>PUBLISHED</span>
             </div>
           </div>
@@ -294,15 +334,16 @@ const MyBlogsPage = () => {
             placeholder="Search posts..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-white/[0.04] border border-border-subtle focus:border-brand-cyan/50 focus:ring-1 focus:ring-brand-cyan/20 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none transition-all"
+            className="w-full bg-border-subtle/30 border border-border-subtle focus:border-brand-cyan/50 focus:ring-1 focus:ring-brand-cyan/20 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none transition-all"
           />
         </div>
 
-        {/* Loading Spinner */}
+        {/* Loading Skeletons */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <div className="w-10 h-10 border-2 border-brand-cyan border-t-transparent rounded-full animate-spin" />
-            <p className="text-gray-500 text-sm">Fetching your database items...</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[1, 2, 3, 4].map((n) => (
+              <SkeletonCard key={n} />
+            ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -320,7 +361,7 @@ const MyBlogsPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.3 }}
-                    className="relative flex flex-col justify-between rounded-2xl border border-border-subtle bg-white/[0.02] overflow-hidden hover:border-white/10 transition-colors group h-[400px]"
+                    className="relative flex flex-col justify-between rounded-2xl border border-border-subtle bg-bg-card overflow-hidden hover:border-gray-500/30 transition-colors group h-[400px]"
                   >
                     {/* Header Image / Badge */}
                     <div className="relative h-44 w-full overflow-hidden bg-bg-card-hover shrink-0">
@@ -362,9 +403,11 @@ const MyBlogsPage = () => {
                         <button
                           onClick={(e) => {
                             e.preventDefault();
-                            setOpenDropdownId(openDropdownId === blog.id ? null : blog.id);
+                            setOpenDropdownId(
+                              openDropdownId === blog.id ? null : blog.id,
+                            );
                           }}
-                          className="p-1.5 rounded-lg bg-black/40 hover:bg-black/60 text-gray-300 hover:text-white border border-white/5 transition-all"
+                          className="p-1.5 rounded-lg bg-border-subtle/30 hover:bg-border-subtle/80 text-gray-400 hover:text-gray-200 border border-border-subtle transition-all"
                           title="Actions menu"
                         >
                           <MoreVertical className="w-4 h-4" />
@@ -380,7 +423,7 @@ const MyBlogsPage = () => {
                           <button
                             onClick={() => navigate(`/write?edit=${blog.id}`)}
                             disabled={blog.isMockScheduled}
-                            className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-gray-300 hover:text-white hover:bg-white/[0.06] flex items-center gap-2 transition-colors disabled:opacity-50"
+                            className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-gray-300 hover:text-gray-200 hover:bg-border-subtle/80 flex items-center gap-2 transition-colors disabled:opacity-50"
                           >
                             <Edit className="w-3.5 h-3.5" />
                             Edit Post
@@ -408,7 +451,10 @@ const MyBlogsPage = () => {
                           )}
                         </h3>
                         <p className="text-xs text-gray-400 line-clamp-3 leading-relaxed">
-                          {blog.excerpt || "No summary provided."}
+                          {stripHtml(blog.excerpt) ||
+                            (blog.content
+                              ? stripHtml(blog.content).slice(0, 140) + "..."
+                              : "No summary provided.")}
                         </p>
                       </div>
 
@@ -418,7 +464,9 @@ const MyBlogsPage = () => {
                           <>
                             <div className="flex items-center gap-1.5">
                               <Calendar className="w-3.5 h-3.5 text-gray-600" />
-                              <span>{formatDate(blog.publishedAt || blog.createdAt)}</span>
+                              <span>
+                                {formatDate(blog.publishedAt || blog.createdAt)}
+                              </span>
                             </div>
                             <div className="flex items-center gap-1.5 text-gray-400">
                               <Eye className="w-3.5 h-3.5 text-gray-500" />
@@ -463,7 +511,7 @@ const MyBlogsPage = () => {
                 onClick={() => navigate("/write")}
                 className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border-subtle bg-transparent p-6 text-center hover:border-brand-purple/50 hover:bg-brand-purple/5 transition-all group h-[400px] cursor-pointer"
               >
-                <div className="w-12 h-12 rounded-xl bg-white/[0.04] flex items-center justify-center text-gray-400 group-hover:text-brand-purple group-hover:bg-brand-purple/10 transition-colors shadow-inner mb-4">
+                <div className="w-12 h-12 rounded-xl bg-border-subtle/30 flex items-center justify-center text-gray-500 group-hover:text-brand-purple group-hover:bg-brand-purple/10 transition-colors shadow-inner mb-4">
                   <FileEdit className="w-5 h-5" />
                 </div>
                 <h3 className="text-sm font-bold text-white tracking-tight group-hover:text-brand-purple transition-colors">
