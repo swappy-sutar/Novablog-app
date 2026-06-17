@@ -1,54 +1,64 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import GlassCard from '../ui/GlassCard';
 import { blogAPI } from '../../lib/api';
 
-const fallbacks = [
+const MOCK_FEATURED = {
+  id: "featured-1",
+  title: "Mastering High-Concurrency Distributed Systems",
+  excerpt: "An in-depth exploration of state-of-the-art replication protocols and consensus algorithms in the modern cloud era.",
+  category: "FEATURED",
+  readTime: "12 Min Read",
+  thumbnail: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=2574&auto=format&fit=crop",
+  author: {
+    name: "Dr. Elena Vance",
+    role: "Principal Engineer @ NovaCore",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200"
+  }
+};
+
+const MOCK_LATEST = [
   {
-    id: "fallback-1",
-    title: "Mastering High-Concurrency Distributed Systems in 2024",
-    excerpt: "Top engineering minds sharing knowledge today.",
-    category: { name: "System Design" },
-    thumbnail: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop",
-    readTime: 12,
-    views: 24000,
-    author: {
-      firstname: "Alex",
-      lastname: "Rivera",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200"
-    },
-    isFallback: true
+    id: "latest-1",
+    title: "LLVM Optimizations for Rust 1.78",
+    excerpt: "How the new borrow checker improves memory safety without sacrificing compile-time performance.",
+    category: "COMPILER TECH",
   },
   {
-    id: "fallback-2",
-    title: "The Shift to Server-Side Components",
-    excerpt: "Exploring why the industry is moving back to the server for optimal performance.",
-    category: { name: "Web Development" },
-    readTime: 8,
-    views: 1200,
-    author: {
-      firstname: "Sarah",
-      lastname: "Chen",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200"
-    },
-    isFallback: true
+    id: "latest-2",
+    title: "Observability at Petabyte Scale",
+    excerpt: "The architecture behind our real-time logging infrastructure handling millions of events per second.",
+    category: "DEVOPS",
   },
   {
-    id: "fallback-3",
-    title: "Edge Computing: The New Front Line",
-    excerpt: "Latency-free experiences require a complete paradigm shift in deployment strategies.",
-    category: { name: "Future Tech" },
-    readTime: 10,
-    views: 3100,
-    author: {
-      firstname: "Marcus",
-      lastname: "Johnson",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200"
-    },
-    isFallback: true
+    id: "latest-3",
+    title: "Small Models, Big Impact",
+    excerpt: "Deploying 7B parameter models on edge hardware with 98% accuracy retention rates.",
+    category: "AI / ML",
   }
 ];
+
+const stripHtml = (html) => {
+  if (!html) return "";
+  return html
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
+const formatViews = (views) => {
+  if (!views) return "0";
+  if (views >= 1000) {
+    return (views / 1000).toFixed(0) + "k";
+  }
+  return views.toString();
+};
 
 const CuratedInsights = () => {
   const [blogs, setBlogs] = useState([]);
@@ -57,9 +67,9 @@ const CuratedInsights = () => {
   useEffect(() => {
     const fetchInsights = async () => {
       try {
-        const res = await blogAPI.getAllBlogs({ page: 1, limit: 3 });
-        if (res.success && res.data) {
-          setBlogs(res.data.blogs || []);
+        const res = await blogAPI.getAllBlogs({ page: 1, limit: 4 });
+        if (res.success && res.data && res.data.blogs?.length >= 3) {
+          setBlogs(res.data.blogs);
         }
       } catch (e) {
         console.error("Failed to fetch public insights:", e);
@@ -70,140 +80,168 @@ const CuratedInsights = () => {
     fetchInsights();
   }, []);
 
-  const formatViews = (views) => {
-    if (!views) return '0';
-    if (views >= 1000) {
-      return (views / 1000).toFixed(0) + 'k';
+  // Map API data to design if available, otherwise use high-fidelity mock data
+  const mainBlog = blogs[0] ? {
+    id: blogs[0].id,
+    title: blogs[0].title,
+    excerpt: stripHtml(blogs[0].excerpt) || (blogs[0].content ? stripHtml(blogs[0].content).slice(0, 140) + "..." : ""),
+    category: "FEATURED",
+    readTime: `${blogs[0].readTime || 10} Min Read`,
+    thumbnail: blogs[0].thumbnail || MOCK_FEATURED.thumbnail,
+    views: blogs[0].views || 0,
+    author: {
+      name: `${blogs[0].author?.firstname || ""} ${blogs[0].author?.lastname || ""}`.trim() || blogs[0].author?.username || "Dr. Elena Vance",
+      role: "Staff Writer @ NovaBlog",
+      avatar: blogs[0].author?.avatar || MOCK_FEATURED.author.avatar,
+      username: blogs[0].author?.username || ""
     }
-    return views.toString();
-  };
+  } : { ...MOCK_FEATURED, views: 24000 };
 
-  const displayBlogs = [
-    blogs[0] || fallbacks[0],
-    blogs[1] || fallbacks[1],
-    blogs[2] || fallbacks[2]
-  ];
-
-  const renderAvatar = (author, sizeClass = "w-8 h-8") => {
-    if (author?.avatar) {
-      return (
-        <img 
-          src={author.avatar} 
-          alt="Author" 
-          className={`${sizeClass} rounded-full border border-white/10 object-cover`} 
-        />
-      );
+  const sideBlogs = MOCK_LATEST.map((item, idx) => {
+    const apiBlog = blogs[idx + 1];
+    if (apiBlog) {
+      const authorName = `${apiBlog.author?.firstname || ""} ${apiBlog.author?.lastname || ""}`.trim() || apiBlog.author?.username || (idx === 0 ? "Sarah Chen" : "Marcus Johnson");
+      const initials = `${apiBlog.author?.firstname?.[0] || ""}${apiBlog.author?.lastname?.[0] || ""}`.toUpperCase() || apiBlog.author?.username?.[0]?.toUpperCase() || (idx === 0 ? "SC" : "MJ");
+      return {
+        id: apiBlog.id,
+        title: apiBlog.title,
+        excerpt: stripHtml(apiBlog.excerpt) || (apiBlog.content ? stripHtml(apiBlog.content).slice(0, 90) + "..." : ""),
+        category: apiBlog.category?.name?.toUpperCase() || item.category,
+        readTime: `${apiBlog.readTime || 12} MIN READ`,
+        author: {
+          name: authorName,
+          initials: initials,
+          avatar: apiBlog.author?.avatar || null,
+          username: apiBlog.author?.username || ""
+        }
+      };
     }
-    const initials = `${author?.firstname?.[0] || ''}${author?.lastname?.[0] || ''}`.toUpperCase() || author?.username?.[0]?.toUpperCase() || 'U';
-    return (
-      <div className={`${sizeClass} rounded-full border border-white/10 bg-gradient-to-br from-brand-purple/40 to-brand-cyan/30 flex items-center justify-center text-[10px] font-bold text-white`}>
-        {initials}
-      </div>
-    );
-  };
-
-  const getAuthorName = (author) => {
-    if (!author) return "";
-    const first = author.firstname || "";
-    const last = author.lastname || "";
-    if (first || last) return `${first} ${last}`.trim();
-    return author.username || "Anonymous";
-  };
-
-  const mainBlog = displayBlogs[0];
-  const sideBlog1 = displayBlogs[1];
-  const sideBlog2 = displayBlogs[2];
+    return {
+      ...item,
+      readTime: "12 MIN READ",
+      author: {
+        name: idx === 0 ? "Sarah Chen" : "Marcus Johnson",
+        initials: idx === 0 ? "SC" : "MJ",
+        avatar: null,
+        username: idx === 0 ? "sarah" : "marcus"
+      }
+    };
+  });
 
   return (
-    <section className="max-w-7xl mx-auto px-6 mb-24">
-      <div className="flex items-end justify-between mb-10">
+    <section className="max-w-7xl mx-auto px-6 mb-20 space-y-8">
+      {/* Section Header */}
+      <div className="flex items-end justify-between border-b border-border-subtle/30 pb-4">
         <div>
-          <h2 className="text-3xl font-bold mb-2">Curated Insights</h2>
-          <p className="text-gray-400">Top engineering minds sharing knowledge today.</p>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Curated Insights</h2>
+          <p className="text-sm text-gray-400 mt-1">Top engineering minds sharing knowledge today.</p>
         </div>
         <Link 
-          to="/my-blogs" 
-          className="hidden sm:flex text-brand-blue hover:text-brand-cyan transition-colors items-center gap-1 text-sm font-medium"
+          to="/explore" 
+          className="text-xs font-bold text-brand-cyan hover:text-brand-blue transition-colors flex items-center gap-1"
         >
-          View All <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+          View All <span className="text-sm">→</span>
         </Link>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Featured Post */}
-        <Link to={mainBlog.isFallback ? "#" : `/post/${mainBlog.id}`} className="lg:col-span-2 block">
-          <GlassCard className="relative group cursor-pointer h-[500px]">
-            <img 
-              src={mainBlog.thumbnail || fallbacks[0].thumbnail} 
-              alt={mainBlog.title} 
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/60 to-transparent" />
+      </div>      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        
+        {/* Left Column: One large featured post card */}
+        <div className="lg:col-span-8 flex flex-col">
+          <GlassCard className="relative p-0 border border-border-subtle bg-bg-card hover:border-brand-cyan/40 transition-all duration-300 h-full overflow-hidden flex flex-col justify-end min-h-[480px] group">
             
-            <div className="absolute bottom-0 left-0 w-full p-8">
-              <span className="inline-block px-3 py-1 bg-brand-cyan/20 text-brand-cyan text-xs font-semibold rounded-full mb-4 backdrop-blur-md">
-                {mainBlog.category?.name || "System Design"}
-              </span>
-              <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight group-hover:text-brand-blue transition-colors">
-                {mainBlog.title}
-              </h3>
-              <div className="flex items-center gap-4 text-sm text-gray-300">
-                <div className="flex items-center gap-2">
-                  {renderAvatar(mainBlog.author, "w-8 h-8")}
-                  <span className="font-medium text-white">{getAuthorName(mainBlog.author)}</span>
+            {/* Full-bleed Thumbnail Background */}
+            <Link to={`/post/${mainBlog.id}`} className="absolute inset-0 w-full h-full -z-10 cursor-pointer block">
+              <img 
+                src={mainBlog.thumbnail} 
+                alt={mainBlog.title} 
+                className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-700 ease-out"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#04040c] via-[#04040c]/60 to-transparent" />
+            </Link>
+
+            {/* Card Content Overlay */}
+            <div className="p-8 space-y-4 z-10">
+              <Link to={`/post/${mainBlog.id}`} className="block space-y-4 group/text cursor-pointer">
+                <div>
+                  <span className="inline-block px-3 py-1.5 rounded-lg bg-brand-cyan/25 border border-brand-cyan/30 text-[10px] font-bold text-brand-cyan tracking-widest uppercase">
+                    {mainBlog.category}
+                  </span>
                 </div>
-                <span>•</span>
-                <span>{mainBlog.readTime || 12} min read</span>
-                <span>•</span>
-                <span>{formatViews(mainBlog.views)} views</span>
+
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-[#ffffff] tracking-tight leading-tight group-hover/text:text-brand-cyan transition-colors max-w-2xl">
+                  {mainBlog.title}
+                </h3>
+                
+                <p className="text-[#d1d5db] text-sm leading-relaxed max-w-xl line-clamp-2">
+                  {mainBlog.excerpt}
+                </p>
+              </Link>
+
+              {/* Author Info Row */}
+              <div className="flex items-center gap-3 border-t border-border-subtle/30 pt-4 mt-2">
+                <Link
+                  to={mainBlog.author?.username ? `/profile/${mainBlog.author.username}` : "#"}
+                  className="flex items-center gap-3 group/author cursor-pointer"
+                >
+                  <img 
+                    src={mainBlog.author.avatar} 
+                    alt={mainBlog.author.name} 
+                    className="w-8 h-8 rounded-full object-cover border border-border-subtle group-hover/author:border-brand-cyan/50 transition-colors"
+                  />
+                  <div className="flex items-center gap-2 text-xs">
+                    <h4 className="font-bold text-[#ffffff] leading-none group-hover/author:text-brand-cyan transition-colors">{mainBlog.author.name}</h4>
+                    <span className="text-gray-500">•</span>
+                    <span className="text-[#9ca3af] font-medium">{mainBlog.readTime}</span>
+                    <span className="text-gray-500">•</span>
+                    <span className="text-[#9ca3af] font-medium">{formatViews(mainBlog.views)} views</span>
+                  </div>
+                </Link>
               </div>
             </div>
+
           </GlassCard>
-        </Link>
-
-        {/* Side Posts */}
-        <div className="flex flex-col gap-6">
-          <Link to={sideBlog1.isFallback ? "#" : `/post/${sideBlog1.id}`} className="block h-full">
-            <GlassCard className="p-6 flex flex-col justify-between h-full group cursor-pointer hover:bg-bg-card-hover/60">
-              <div>
-                <span className="text-brand-purple text-xs font-semibold mb-3 block">
-                  {sideBlog1.category?.name || "Web Development"}
-                </span>
-                <h4 className="text-xl font-bold mb-3 group-hover:text-brand-purple transition-colors">
-                  {sideBlog1.title}
-                </h4>
-                <p className="text-gray-400 text-sm line-clamp-2 leading-relaxed">
-                  {sideBlog1.excerpt || "Exploring new frontiers in frontend engineering and software components."}
-                </p>
-              </div>
-              <div className="flex items-center gap-2 mt-6">
-                {renderAvatar(sideBlog1.author, "w-6 h-6")}
-                <span className="text-xs text-gray-300">{getAuthorName(sideBlog1.author)}</span>
-              </div>
-            </GlassCard>
-          </Link>
-
-          <Link to={sideBlog2.isFallback ? "#" : `/post/${sideBlog2.id}`} className="block h-full">
-            <GlassCard className="p-6 flex flex-col justify-between h-full group cursor-pointer hover:bg-bg-card-hover/60">
-              <div>
-                <span className="text-brand-blue text-xs font-semibold mb-3 block">
-                  {sideBlog2.category?.name || "Future Tech"}
-                </span>
-                <h4 className="text-xl font-bold mb-3 group-hover:text-brand-blue transition-colors">
-                  {sideBlog2.title}
-                </h4>
-                <p className="text-gray-400 text-sm line-clamp-2 leading-relaxed">
-                  {sideBlog2.excerpt || "Decentralized networks and cloud computing performance optimizations."}
-                </p>
-              </div>
-              <div className="flex items-center gap-2 mt-6">
-                {renderAvatar(sideBlog2.author, "w-6 h-6")}
-                <span className="text-xs text-gray-300">{getAuthorName(sideBlog2.author)}</span>
-              </div>
-            </GlassCard>
-          </Link>
         </div>
-      </div>
+
+        {/* Right Column: Latest Insights */}
+        <div className="lg:col-span-4 flex flex-col justify-between gap-6">
+          {sideBlogs.slice(0, 2).map((post, idx) => (
+            <GlassCard key={post.id} className="p-6 flex flex-col justify-between border border-border-subtle bg-bg-card hover:bg-white/[0.02] hover:border-brand-purple/40 transition-all duration-300 min-h-[228px] group h-[calc(50%-12px)]">
+              <Link to={`/post/${post.id}`} className="block space-y-3 group/link cursor-pointer">
+                <span className="text-[10px] font-bold text-brand-purple tracking-widest uppercase block">
+                  {post.category}
+                </span>
+                <h4 className="text-lg font-bold text-white group-hover/link:text-brand-cyan transition-colors line-clamp-2 leading-snug">
+                  {post.title}
+                </h4>
+                <p className="text-gray-400 text-xs line-clamp-3 leading-relaxed">
+                  {post.excerpt}
+                </p>
+              </Link>
+              
+              <div className="flex items-center justify-between border-t border-border-subtle/30 pt-4 mt-auto">
+                <Link
+                  to={post.author?.username ? `/profile/${post.author.username}` : "#"}
+                  className="flex items-center gap-2 group/author cursor-pointer"
+                >
+                  {post.author.avatar ? (
+                    <img 
+                      src={post.author.avatar} 
+                      alt={post.author.name} 
+                      className="w-6 h-6 rounded-full object-cover border border-border-subtle/50 group-hover/author:border-brand-cyan/50 transition-colors"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-brand-purple/20 border border-brand-purple/30 flex items-center justify-center text-[10px] font-bold text-white group-hover/author:border-brand-cyan/50 transition-colors">
+                      {post.author.initials}
+                    </div>
+                  )}
+                  <span className="text-xs text-gray-300 font-medium group-hover/author:text-brand-cyan transition-colors">
+                    {post.author.name}
+                  </span>
+                </Link>
+                <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">{post.readTime}</span>
+              </div>
+            </GlassCard>
+          ))}
+        </div></div>
     </section>
   );
 };

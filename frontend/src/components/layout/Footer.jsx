@@ -31,22 +31,22 @@ const Footer = () => {
           <h4 className="font-semibold mb-4 text-white">Platform</h4>
           <ul className="space-y-3 text-sm text-gray-400">
             <li>
-              <a href="#" className="hover:text-white transition-colors">
+              <Link to="/feed" className="hover:text-gray-200 transition-colors">
                 Feed
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-white transition-colors">
+              <Link to="/explore" className="hover:text-gray-200 transition-colors">
                 Explore
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-white transition-colors">
-                Pricing
-              </a>
+              <Link to="/about" className="hover:text-gray-200 transition-colors">
+                About Us
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-white transition-colors">
+              <a href="#" className="hover:text-gray-200 transition-colors">
                 Changelog
               </a>
             </li>
@@ -57,22 +57,22 @@ const Footer = () => {
           <h4 className="font-semibold mb-4 text-white">Resources</h4>
           <ul className="space-y-3 text-sm text-gray-400">
             <li>
-              <a href="#" className="hover:text-white transition-colors">
+              <a href="#" className="hover:text-gray-200 transition-colors">
                 Documentation
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-white transition-colors">
+              <a href="#" className="hover:text-gray-200 transition-colors">
                 API Reference
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-white transition-colors">
+              <a href="#" className="hover:text-gray-200 transition-colors">
                 Community
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-white transition-colors">
+              <a href="#" className="hover:text-gray-200 transition-colors">
                 Guidelines
               </a>
             </li>
@@ -83,19 +83,19 @@ const Footer = () => {
           <h4 className="font-semibold mb-4 text-white">Legal</h4>
           <ul className="space-y-3 text-sm text-gray-400">
             <li>
-              <a href="#" className="hover:text-white transition-colors">
+              <Link to="/privacy" className="hover:text-gray-200 transition-colors">
                 Privacy Policy
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-white transition-colors">
+              <Link to="/terms" className="hover:text-gray-200 transition-colors">
                 Terms of Service
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-white transition-colors">
+              <Link to="/cookie-policy" className="hover:text-gray-200 transition-colors">
                 Cookie Policy
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
