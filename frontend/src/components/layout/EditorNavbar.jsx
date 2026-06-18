@@ -72,8 +72,9 @@ const EditorNavbar = ({ onPublish, isPublishing, showPublish = true }) => {
       <div className="max-w-7xl mx-auto h-20 px-4 sm:px-6 flex items-center justify-between">
         {/* Left: Logo & Status */}
         <div className="flex items-center gap-6">
-          <Link to="/" className="text-2xl font-bold tracking-tighter">
-            <span className="text-gradient">Nova</span>Blog
+          <Link to="/" className="flex items-center">
+            <img src="/svg/novablog-lockup-dark.svg" alt="NovaBlog" className="h-12 logo-lockup-dark" />
+            <img src="/svg/novablog-lockup-light.svg" alt="NovaBlog" className="h-12 logo-lockup-light" />
           </Link>
           <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-gray-500 border-l border-border-subtle pl-6">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

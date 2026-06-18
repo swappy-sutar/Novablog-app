@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import DOMPurify from 'dompurify';
 
 const injectDropCap = (html) => {
   if (!html) return "";
@@ -38,12 +39,16 @@ const ArticleContent = ({ blog }) => {
     return injectDropCap(html);
   }, [blog]);
 
+  const sanitizedContent = useMemo(() => {
+    return DOMPurify.sanitize(processedContent);
+  }, [processedContent]);
+
   if (!blog) return null;
 
   return (
     <article 
       className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-a:text-brand-cyan hover:prose-a:text-brand-blue prose-pre:bg-bg-card prose-pre:border prose-pre:border-border-subtle"
-      dangerouslySetInnerHTML={{ __html: processedContent }}
+      dangerouslySetInnerHTML={{ __html: sanitizedContent }}
     />
   );
 };

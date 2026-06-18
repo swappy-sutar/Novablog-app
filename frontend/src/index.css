@@ -284,4 +284,18 @@
 .mask-radial-fade {
   mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 80%);
   -webkit-mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 80%);
+}
+
+/* Logo responsiveness for dark/light mode */
+.logo-lockup-dark {
+  display: block;
+}
+.logo-lockup-light {
+  display: none;
+}
+.light-mode .logo-lockup-dark {
+  display: none;
+}
+.light-mode .logo-lockup-light {
+  display: block;
 }

@@ -58,29 +58,35 @@ const SignUpPage = () => {
     }
   };
 
-  const inputClass = "w-full bg-white/[0.04] border border-border-subtle rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all text-sm";
-  const labelClass = "block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2";
+  const inputClass = "w-full bg-white/[0.04] border border-border-subtle rounded-xl px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all text-sm";
+  const labelClass = "block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5";
 
   return (
     <>
       <AuthBackground />
-      <div className="flex flex-col items-center justify-center min-h-[80vh] max-w-md mx-auto px-4 relative z-10">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] max-w-md mx-auto px-4 py-12 relative z-10">
         <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full glass-panel p-8 sm:p-10"
-      >
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full glass-panel p-6 sm:p-8"
+        >
+          <div className="text-center mb-6">
+          <div className="flex justify-center mb-5">
+            <Link to="/">
+              <img src="/svg/novablog-lockup-dark.svg" alt="NovaBlog" className="h-11 logo-lockup-dark" />
+              <img src="/svg/novablog-lockup-light.svg" alt="NovaBlog" className="h-11 logo-lockup-light" />
+            </Link>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1.5 tracking-tight">
             Create an account
           </h1>
-          <p className="text-gray-400 text-sm px-2">
+          <p className="text-gray-400 text-xs sm:text-sm px-2">
             Join the playground for digital storytellers and developers.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex gap-4">
             <div className="flex-1">
               <label className={labelClass}>First Name</label>
@@ -103,7 +109,6 @@ const SignUpPage = () => {
                 onChange={handleChange}
                 placeholder="Rivera" 
                 className={inputClass}
-                required 
               />
             </div>
           </div>
@@ -149,7 +154,7 @@ const SignUpPage = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 py-1">
+          <div className="flex items-center gap-3 py-0.5">
             <input 
               type="checkbox" 
               name="agreed"
@@ -167,7 +172,7 @@ const SignUpPage = () => {
             type="submit" 
             disabled={isLoading}
             variant="primary"
-            className="w-full tracking-wider text-sm py-3.5 uppercase mt-2 shadow-[0_0_20px_rgba(139,92,246,0.3)]"
+            className="w-full tracking-wider text-sm py-3 uppercase mt-1 shadow-[0_0_20px_rgba(139,92,246,0.3)]"
           >
             {isLoading ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -175,7 +180,7 @@ const SignUpPage = () => {
           </Button>
         </form>
         
-        <p className="mt-6 text-center text-sm text-gray-400">
+        <p className="mt-5 text-center text-sm text-gray-400">
           Already have an account? <Link to="/signin" className="text-brand-cyan hover:text-brand-blue transition-colors font-medium">Log in</Link>
         </p>
       </motion.div>

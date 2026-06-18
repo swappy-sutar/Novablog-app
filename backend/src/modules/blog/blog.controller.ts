@@ -67,9 +67,10 @@ export class BlogController {
     return this.blogService.getMyBlogs(user.id, query);
   }
 
+  @UseGuards(OptionalJwtAuthGuard)
   @Get('get-blog/:id')
-  async getBlogById(@Param('id') id: string) {
-    return this.blogService.getBlogById(id);
+  async getBlogById(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.blogService.getBlogById(id, user?.id);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -448,7 +448,7 @@ const SettingsPage = () => {
     try {
       const res = await authAPI.updateProfile({
         firstname,
-        lastname: lastname || undefined,
+        lastname: lastname || "",
         bio: form.bio.trim(),
         websiteUrl: form.websiteUrl.trim(),
         githubUrl: form.githubUrl.trim(),

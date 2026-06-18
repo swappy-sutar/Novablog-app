@@ -1,0 +1,19 @@
+<svg width="160" height="160" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="flareGrad" x1="10%" y1="0%" x2="90%" y2="100%">
+      <stop offset="0%" stop-color="#D6B8FF"/>
+      <stop offset="50%" stop-color="#9B5DE5"/>
+      <stop offset="100%" stop-color="#5B2A9E"/>
+    </linearGradient>
+    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#F4ECFF" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#C9A6FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <g transform="translate(78, 80)">
+    <circle cx="0" cy="0" r="38" fill="url(#coreGlow)"/>
+    <path d="M -44 42 C -26 24, -8 8, 3 -4 C 12 -14, 20 -28, 28 -48 L 34 -48 C 27 -22, 16 -4, 5 6 C -8 17, -25 28, -42 46 Z" fill="url(#flareGrad)"/>
+    <path d="M -32 -28 C -19 -17, -8 -8, 0 0 C -12 -2, -25 -9, -38 -18 Z" fill="url(#flareGrad)"/>
+    <circle cx="1" cy="-1" r="6" fill="#FBF7FF"/>
+  </g>
+</svg>

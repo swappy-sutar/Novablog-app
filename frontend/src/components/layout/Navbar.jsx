@@ -278,8 +278,9 @@ const Navbar = () => {
     <nav className="fixed top-0 w-full z-50 glass-panel !rounded-none border-t-0 border-x-0 bg-bg-base/70">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="text-2xl font-bold tracking-tighter">
-          <span className="text-gradient">Nova</span>Blog
+        <Link to="/" className="flex items-center">
+          <img src="/svg/novablog-lockup-dark.svg" alt="NovaBlog" className="h-12 logo-lockup-dark" />
+          <img src="/svg/novablog-lockup-light.svg" alt="NovaBlog" className="h-12 logo-lockup-light" />
         </Link>
 
         {/* Desktop Nav */}

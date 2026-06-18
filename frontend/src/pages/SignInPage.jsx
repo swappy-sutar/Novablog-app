@@ -100,18 +100,24 @@ const SignInPage = () => {
   return (
     <>
       <AuthBackground />
-      <div className="flex flex-col items-center justify-center min-h-[70vh] max-w-md mx-auto px-4 relative z-10">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] max-w-md mx-auto px-4 py-12 relative z-10">
         <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full glass-panel p-8 sm:p-10"
+        className="w-full glass-panel p-6 sm:p-8"
       >
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
+        <div className="text-center mb-6">
+          <div className="flex justify-center mb-5">
+            <Link to="/">
+              <img src="/svg/novablog-lockup-dark.svg" alt="NovaBlog" className="h-11 logo-lockup-dark" />
+              <img src="/svg/novablog-lockup-light.svg" alt="NovaBlog" className="h-11 logo-lockup-light" />
+            </Link>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1.5 tracking-tight">
             {is2FARequired ? "Two-Factor Auth" : "Welcome back"}
           </h1>
-          <p className="text-gray-400 text-sm px-4">
+          <p className="text-gray-400 text-xs sm:text-sm px-4">
             {is2FARequired ? "Enter the 6-digit code from your authenticator app." : "Log in to continue where you left off."}
           </p>
         </div>

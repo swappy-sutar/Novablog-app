@@ -13,8 +13,9 @@ const AuthLayout = ({ children }) => {
 
       {/* Minimal Header */}
       <header className="w-full p-6 flex items-center justify-between z-10">
-        <Link to="/" className="text-2xl font-bold tracking-tighter">
-          <span className="text-white">Nova</span><span className="text-brand-purple">Blog</span>
+        <Link to="/" className="flex items-center">
+          <img src="/svg/novablog-lockup-dark.svg" alt="NovaBlog" className="h-12 logo-lockup-dark" />
+          <img src="/svg/novablog-lockup-light.svg" alt="NovaBlog" className="h-12 logo-lockup-light" />
         </Link>
         <Link 
           to={isSignIn ? "/signup" : "/signin"} 

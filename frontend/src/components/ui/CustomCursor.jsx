@@ -6,19 +6,26 @@ const CustomCursor = () => {
   const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
+    const isMobile = window.matchMedia('(pointer: coarse)').matches;
+    if (!isMobile) {
+      document.body.style.cursor = 'none';
+    }
+
     const updateMousePosition = (e) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
     const handleMouseOver = (e) => {
+      if (!e.target) return;
+      const tagName = (e.target.tagName || '').toLowerCase();
       // Check if we are hovering over an interactive element
       if (
-        e.target.tagName.toLowerCase() === 'button' ||
-        e.target.tagName.toLowerCase() === 'a' ||
-        e.target.closest('button') ||
-        e.target.closest('a') ||
-        e.target.closest('input') ||
-        e.target.classList.contains('cursor-pointer')
+        tagName === 'button' ||
+        tagName === 'a' ||
+        e.target.closest?.('button') ||
+        e.target.closest?.('a') ||
+        e.target.closest?.('input') ||
+        e.target.classList?.contains('cursor-pointer')
       ) {
         setIsHovering(true);
       } else {
@@ -30,6 +37,9 @@ const CustomCursor = () => {
     window.addEventListener('mouseover', handleMouseOver);
 
     return () => {
+      if (!isMobile) {
+        document.body.style.cursor = 'auto';
+      }
       window.removeEventListener('mousemove', updateMousePosition);
       window.removeEventListener('mouseover', handleMouseOver);
     };

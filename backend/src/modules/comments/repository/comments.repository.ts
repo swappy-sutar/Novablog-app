@@ -147,6 +147,7 @@ export class CommentsRepository {
     return this.prisma.comment.count({
       where: {
         blogId,
+        parentId: null,
       },
     });
   }

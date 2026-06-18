@@ -209,6 +209,11 @@ const WritePage = () => {
       return;
     }
 
+    if (inFlightRef.current) {
+      toast.error("Autosave is in progress. Please wait a moment.");
+      return;
+    }
+
     // Stop any pending autosave from racing the publish call.
     if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
 

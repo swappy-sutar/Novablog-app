@@ -5,6 +5,7 @@ import { successResponse } from 'src/common/helpers/response.helper';
 import { REDIS_KEYS } from 'src/config/redis/redis.keys';
 import { CACHE_TTL } from 'src/config/redis/redis.ttl';
 import { QueryBookmarkDto } from './dto/query-bookmark.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class BookmarkService {
@@ -32,6 +33,11 @@ export class BookmarkService {
     try {
       await this.bookmarksRepository.create(blogId, userId);
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        return successResponse('Blog bookmarked successfully', {
+          bookmarked: true,
+        });
+      }
       throw new NotFoundException('Blog not found');
     }
 

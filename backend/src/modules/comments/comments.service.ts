@@ -52,6 +52,10 @@ export class CommentsService {
       if (!parentComment) {
         throw new NotFoundException('Parent comment not found');
       }
+
+      if (parentComment.blogId !== blogId) {
+        throw new BadRequestException('Parent comment must belong to the same blog');
+      }
     }
 
     const comment = await this.commentRepository.create({

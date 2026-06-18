@@ -37,7 +37,7 @@ export class NotificationsGateway
 
       // Verify token
       const payload = this.jwtService.verify(token);
-      const userId = payload.sub || payload.userId;
+      const userId = payload.id || payload.sub || payload.userId;
 
       if (!userId) {
         this.logger.warn(`Token payload does not contain user ID: client ID ${client.id}`);

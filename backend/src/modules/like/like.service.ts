@@ -7,7 +7,7 @@ import { REDIS_KEYS } from 'src/config/redis/redis.keys';
 import { CACHE_TTL } from 'src/config/redis/redis.ttl';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
-import { NotificationType } from '@prisma/client';
+import { NotificationType, Prisma } from '@prisma/client';
 
 @Injectable()
 export class LikesService {
@@ -49,6 +49,11 @@ export class LikesService {
         liked: true,
       });
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        return successResponse('Blog liked successfully', {
+          liked: true,
+        });
+      }
       throw new NotFoundException('Blog not found');
     }
   }

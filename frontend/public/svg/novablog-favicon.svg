@@ -1,0 +1,14 @@
+<svg width="160" height="160" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="flareGradFav" x1="10%" y1="0%" x2="90%" y2="100%">
+      <stop offset="0%" stop-color="#E2C9FF"/>
+      <stop offset="100%" stop-color="#8B4FE0"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="160" rx="32" fill="#1A1720"/>
+  <g transform="translate(80, 80)">
+    <path d="M -42 44 C -22 24, -4 8, 8 -6 C 18 -18, 26 -32, 32 -50 L 42 -50 C 34 -22, 20 -2, 8 10 C -6 22, -24 32, -38 50 Z" fill="url(#flareGradFav)"/>
+    <path d="M -36 -30 C -20 -18, -8 -8, 0 0 C -14 0, -28 -8, -42 -18 Z" fill="url(#flareGradFav)"/>
+    <circle cx="2" cy="-2" r="9" fill="#FBF7FF"/>
+  </g>
+</svg>

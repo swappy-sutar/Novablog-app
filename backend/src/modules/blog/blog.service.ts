@@ -155,12 +155,17 @@ export class BlogService {
     return successResponse('User blogs fetched successfully', response);
   }
 
-  async getBlogById(id: string) {
-    const cacheKey = REDIS_KEYS.BLOG(id);
+  async getBlogById(id: string, currentUserId?: string) {
+    await this.blogsRepository.incrementViews(id);
 
-    const cachedBlog = await this.cacheService.get(cacheKey);
+    const cacheKey = REDIS_KEYS.BLOG(id);
+    const cachedBlog = await this.cacheService.get<any>(cacheKey);
 
     if (cachedBlog) {
+      if (cachedBlog.status !== 'PUBLISHED' && cachedBlog.authorId !== currentUserId) {
+        throw new NotFoundException('Blog not found');
+      }
+      cachedBlog.views += 1;
       return successResponse('Blog fetched successfully', cachedBlog);
     }
 
@@ -170,7 +175,9 @@ export class BlogService {
       throw new NotFoundException('Blog not found');
     }
 
-    await this.blogsRepository.incrementViews(id);
+    if (blog.status !== 'PUBLISHED' && blog.authorId !== currentUserId) {
+      throw new NotFoundException('Blog not found');
+    }
 
     blog.views += 1;
 
