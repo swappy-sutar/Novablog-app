@@ -81,6 +81,7 @@ const FeedPage = () => {
   // 3. Trigger reload on filters changes
   useEffect(() => {
     const timer = setTimeout(() => {
+      setPosts([]); // Clear posts to show loading skeletons immediately
       setPage(1);
       fetchFeedPosts(1, activeTab, selectedTag, false);
     }, 0);

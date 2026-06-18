@@ -367,16 +367,40 @@ export class BlogsRepository {
     };
 
     if (tag && tag !== 'All') {
-      whereClause.tags = {
-        some: {
-          tag: {
+      whereClause.OR = [
+        {
+          tags: {
+            some: {
+              tag: {
+                name: {
+                  equals: tag,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        },
+        {
+          title: {
+            contains: tag,
+            mode: 'insensitive',
+          },
+        },
+        {
+          content: {
+            contains: tag,
+            mode: 'insensitive',
+          },
+        },
+        {
+          category: {
             name: {
-              equals: tag,
+              contains: tag,
               mode: 'insensitive',
             },
           },
         },
-      };
+      ];
     }
 
     if (tab === 'Following') {
@@ -426,16 +450,40 @@ export class BlogsRepository {
     };
 
     if (tag && tag !== 'All') {
-      whereClause.tags = {
-        some: {
-          tag: {
+      whereClause.OR = [
+        {
+          tags: {
+            some: {
+              tag: {
+                name: {
+                  equals: tag,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        },
+        {
+          title: {
+            contains: tag,
+            mode: 'insensitive',
+          },
+        },
+        {
+          content: {
+            contains: tag,
+            mode: 'insensitive',
+          },
+        },
+        {
+          category: {
             name: {
-              equals: tag,
+              contains: tag,
               mode: 'insensitive',
             },
           },
         },
-      };
+      ];
     }
 
     if (tab === 'Following') {

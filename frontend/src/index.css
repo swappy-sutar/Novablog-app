@@ -28,6 +28,8 @@
   :root {
     color-scheme: dark;
     scrollbar-gutter: stable;
+    --card-thumbnail-opacity: 0.22;
+    --card-thumbnail-filter: grayscale(10%) brightness(0.9);
   }
 
   :root.light-mode {
@@ -37,6 +39,8 @@
     --color-bg-card-hover: rgba(255, 255, 255, 1);
     --color-border-subtle: rgba(0, 0, 0, 0.1);
     --color-bg-dropdown: #ffffff;
+    --card-thumbnail-opacity: 0.18;
+    --card-thumbnail-filter: grayscale(40%) brightness(1.05) contrast(0.9);
 
     /* Accessibility contrast adjustments for brand elements */
     --color-brand-cyan: #0e7490;

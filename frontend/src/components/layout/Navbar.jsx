@@ -298,25 +298,9 @@ const Navbar = () => {
               />
             </form>
 
-            <button className="lg:hidden text-gray-400 hover:text-gray-200 transition-colors">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </button>
-
             <button
               onClick={toggleTheme}
-              className="relative w-10 h-10 items-center justify-center text-gray-400 hover:text-gray-200 transition-colors hidden sm:flex rounded-full hover:bg-border-subtle"
+              className="relative w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors rounded-full hover:bg-border-subtle"
               aria-label="Toggle Theme"
             >
               <AnimatePresence mode="wait">
@@ -553,7 +537,7 @@ const Navbar = () => {
                 </svg>
                 <input
                   type="text"
-                  placeholder="Search articles..."
+                  placeholder={placeholder}
                   value={searchVal}
                   onChange={(e) => setSearchVal(e.target.value)}
                   className="w-full bg-border-subtle/30 border border-border-subtle focus:border-brand-cyan/50 rounded-full py-2.5 pl-10 pr-4 text-xs text-gray-200 placeholder-gray-400 focus:outline-none focus:bg-border-subtle/50"
@@ -606,25 +590,6 @@ const Navbar = () => {
 
               {/* Actions: Theme toggle, write button, profile/signin */}
               <div className="border-t border-border-subtle/30 pt-4 flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-400 font-medium">Display Theme</span>
-                  <button
-                    onClick={toggleTheme}
-                    className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors rounded-full bg-border-subtle/30"
-                    aria-label="Toggle Theme"
-                  >
-                    {isDark ? (
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                      </svg>
-                    ) : (
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-
                 {user ? (
                   <div className="flex flex-col gap-4">
                     <Link 
