@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { authAPI } from '../lib/api';
+import { authAPI, getErrorMessage } from '../lib/api';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import AuthBackground from '../components/auth/AuthBackground';
@@ -22,7 +22,7 @@ const ForgotPasswordPage = () => {
         setIsSent(true);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
+      toast.error(getErrorMessage(error, "Something went wrong. Please try again."));
     } finally {
       setIsLoading(false);
     }
@@ -43,7 +43,7 @@ const ForgotPasswordPage = () => {
         >
           {isSent ? (
             <div className="text-center">
-              <div className="w-16 h-16 bg-brand-cyan/10 border border-brand-cyan/20 rounded-full flex items-center justify-center mx-auto mb-6 text-brand-cyan">
+              <div className="w-16 h-16 bg-brand-purple/10 border border-brand-purple/20 rounded-full flex items-center justify-center mx-auto mb-6 text-brand-purple">
                 <svg className="w-8 h-8 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 19v-8.93a2 2 0 01.89-1.664l8-4.8a2 2 0 012.22 0l8 4.8A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-2.25-1.5a2 2 0 00-2.22 0l-2.25 1.5" />
                 </svg>
@@ -93,7 +93,7 @@ const ForgotPasswordPage = () => {
               </form>
 
               <div className="text-center mt-6">
-                <Link to="/signin" className="text-sm text-brand-cyan hover:text-brand-blue transition-colors font-medium">
+                <Link to="/signin" className="text-sm text-brand-purple hover:text-[#c4b5fd] transition-colors font-medium">
                   ← Back to login
                 </Link>
               </div>

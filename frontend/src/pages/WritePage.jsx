@@ -1,18 +1,49 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import EditorToolbar from "../components/editor/EditorToolbar";
 import { blogAPI } from "../lib/api";
 
+const AUTOSAVE_DEBOUNCE_MS = 1500;
+
+const SaveStatusIndicator = ({ status }) => {
+  const config = {
+    idle: { label: "All changes saved", dot: "bg-gray-600" },
+    pending: { label: "Unsaved changes", dot: "bg-gray-500" },
+    saving: { label: "Saving…", dot: "bg-amber-400 animate-pulse" },
+    saved: { label: "Saved", dot: "bg-emerald-400" },
+    error: { label: "Couldn't save draft", dot: "bg-red-400" },
+  };
+  const { label, dot } = config[status] || config.idle;
+
+  return (
+    <div className="flex items-center gap-1.5 text-xs text-gray-500 select-none">
+      <span className={`w-1.5 h-1.5 rounded-full ${dot} flex-shrink-0`} />
+      <span>{label}</span>
+    </div>
+  );
+};
+
+const getWordStats = (html) => {
+  const text = html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .trim();
+  const words = text.length ? text.split(/\s+/).filter(Boolean).length : 0;
+  const characters = text.length;
+  const readingMinutes = words ? Math.max(1, Math.round(words / 200)) : 0;
+  return { words, characters, readingMinutes };
+};
+
 const WritePage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const editId = searchParams.get("edit");
-  
+
   const editorRef = useRef(null);
   const [isPublishing, setIsPublishing] = useState(false);
-  
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState([]);
@@ -20,6 +51,16 @@ const WritePage = () => {
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState("");
   const [isFeatured, setIsFeatured] = useState(false);
+
+  // Autosave state
+  const [draftId, setDraftId] = useState(editId || null);
+  const [saveStatus, setSaveStatus] = useState("idle");
+  const autosaveTimerRef = useRef(null);
+  const inFlightRef = useRef(false);
+  const dirtyWhileSavingRef = useRef(false);
+  const hasLoadedRef = useRef(!editId); // skip the first autosave fire while loading an existing post
+
+  const { words, characters, readingMinutes } = getWordStats(content);
 
   // Load blog post for editing
   useEffect(() => {
@@ -46,6 +87,8 @@ const WritePage = () => {
       } catch (e) {
         toast.error("Failed to load blog post for editing.");
         console.error("Load edit blog error:", e);
+      } finally {
+        hasLoadedRef.current = true;
       }
     };
 
@@ -59,11 +102,115 @@ const WritePage = () => {
     }
   }, [content]);
 
+  // Revoke the previous blob URL whenever the thumbnail preview changes or
+  // the page unmounts, so swapping the cover image repeatedly doesn't leak memory.
+  useEffect(() => {
+    return () => {
+      if (thumbnailPreview && thumbnailPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(thumbnailPreview);
+      }
+    };
+  }, [thumbnailPreview]);
+
+  const buildDraftFormData = useCallback(() => {
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("status", "DRAFT");
+    formData.append("isFeatured", isFeatured.toString());
+    tags.forEach((tag) => formData.append("tags[]", tag));
+    if (thumbnail instanceof File) {
+      formData.append("thumbnail", thumbnail);
+    }
+    return formData;
+  }, [title, content, isFeatured, tags, thumbnail]);
+
+  const runAutosaveRef = useRef(null);
+
+  const runAutosave = useCallback(async () => {
+    // Don't create a draft out of nothing — needs at least a title.
+    if (!title.trim()) {
+      setSaveStatus("idle");
+      return;
+    }
+
+    if (inFlightRef.current) {
+      // A save is already running; mark that more changes came in and
+      // let that save's completion handler kick off another pass using
+      // the *latest* runAutosave (via the ref below), not this stale closure.
+      dirtyWhileSavingRef.current = true;
+      return;
+    }
+
+    inFlightRef.current = true;
+    setSaveStatus("saving");
+
+    try {
+      const formData = buildDraftFormData();
+      let response;
+      if (draftId) {
+        response = await blogAPI.updateBlog(draftId, formData);
+      } else {
+        response = await blogAPI.createBlog(formData);
+      }
+
+      if (response.success) {
+        if (!draftId && response.data?.id) {
+          setDraftId(response.data.id);
+        }
+        setSaveStatus("saved");
+        setTimeout(() => setSaveStatus((s) => (s === "saved" ? "idle" : s)), 2000);
+      } else {
+        setSaveStatus("error");
+      }
+    } catch (e) {
+      console.error("Autosave error:", e);
+      setSaveStatus("error");
+    } finally {
+      inFlightRef.current = false;
+      if (dirtyWhileSavingRef.current) {
+        dirtyWhileSavingRef.current = false;
+        // Call through the ref, not the local `runAutosave` name, so this
+        // retry always uses the most recent title/content/tags rather than
+        // whatever was captured when this particular save started.
+        runAutosaveRef.current();
+      }
+    }
+  }, [title, draftId, buildDraftFormData]);
+
+  useEffect(() => {
+    runAutosaveRef.current = runAutosave;
+  }, [runAutosave]);
+
+  // Debounced autosave triggered by edits to title/content/tags/featured flag.
+  useEffect(() => {
+    if (!hasLoadedRef.current) return; // don't autosave while the initial load effect is still running
+    if (isPublishing) return; // publish flow handles its own save
+
+    setSaveStatus("pending");
+    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+    autosaveTimerRef.current = setTimeout(() => {
+      runAutosave();
+    }, AUTOSAVE_DEBOUNCE_MS);
+
+    return () => clearTimeout(autosaveTimerRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title, content, tags, isFeatured, thumbnail]);
+
+  useEffect(() => {
+    return () => {
+      if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+    };
+  }, []);
+
   const handlePublish = async () => {
     if (!title || !content) {
       toast.error("Title and content are required.");
       return;
     }
+
+    // Stop any pending autosave from racing the publish call.
+    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
 
     setIsPublishing(true);
 
@@ -91,6 +238,7 @@ const WritePage = () => {
       formData.append("excerpt", excerpt);
       formData.append("status", "PUBLISHED");
       formData.append("isFeatured", isFeatured.toString());
+      tags.forEach((tag) => formData.append("tags[]", tag));
 
       // Only append if a new file was uploaded
       if (thumbnail instanceof File) {
@@ -98,8 +246,9 @@ const WritePage = () => {
       }
 
       let response;
-      if (editId) {
-        response = await blogAPI.updateBlog(editId, formData);
+      const targetId = draftId || editId;
+      if (targetId) {
+        response = await blogAPI.updateBlog(targetId, formData);
       } else {
         response = await blogAPI.createBlog(formData);
       }
@@ -145,11 +294,12 @@ const WritePage = () => {
               Draft your technical story, add a cover image, and publish it to the technical frontiers.
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
+            <SaveStatusIndicator status={saveStatus} />
             <button
               onClick={handlePublish}
               disabled={isPublishing}
-              className="bg-brand-cyan hover:opacity-90 text-black text-xs sm:text-sm font-semibold py-2.5 px-6 rounded-xl transition-all disabled:opacity-50 cursor-pointer shadow-md shadow-brand-cyan/10 flex items-center gap-2"
+              className="bg-brand-purple hover:opacity-90 text-white text-xs sm:text-sm font-semibold py-2.5 px-6 rounded-xl transition-all disabled:opacity-50 cursor-pointer shadow-md shadow-brand-purple/10 flex items-center gap-2"
             >
               {isPublishing ? "Publishing..." : "Publish Article"}
             </button>
@@ -167,6 +317,9 @@ const WritePage = () => {
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
+                  if (thumbnailPreview && thumbnailPreview.startsWith("blob:")) {
+                    URL.revokeObjectURL(thumbnailPreview);
+                  }
                   setThumbnail(file);
                   setThumbnailPreview(URL.createObjectURL(file));
                 }
@@ -182,6 +335,9 @@ const WritePage = () => {
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                   <button
                     onClick={() => {
+                      if (thumbnailPreview.startsWith("blob:")) {
+                        URL.revokeObjectURL(thumbnailPreview);
+                      }
                       setThumbnail(null);
                       setThumbnailPreview("");
                     }}
@@ -221,7 +377,7 @@ const WritePage = () => {
             placeholder="Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full bg-transparent text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold text-white placeholder-gray-500 focus:outline-none tracking-tight leading-tight"
+            className="w-full bg-transparent text-xl sm:text-2xl md:text-3xl lg:text-[34px] font-bold text-white placeholder-gray-500 focus:outline-none tracking-tight leading-tight"
           />
 
           <div className="flex flex-wrap items-center justify-between gap-4 mb-2">
@@ -269,10 +425,10 @@ const WritePage = () => {
               <span className="text-gray-300 text-sm font-semibold tracking-wide">
                 Featured Post
               </span>
-              <button 
+              <button
                 type="button"
                 onClick={() => setIsFeatured(!isFeatured)}
-                className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors focus:outline-none ${isFeatured ? 'bg-brand-cyan' : 'bg-gray-600'}`}
+                className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors focus:outline-none ${isFeatured ? 'bg-brand-purple' : 'bg-gray-600'}`}
               >
                 <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isFeatured ? 'translate-x-6' : 'translate-x-1'}`} />
               </button>
@@ -288,9 +444,20 @@ const WritePage = () => {
               ref={editorRef}
               contentEditable
               onInput={(e) => setContent(e.currentTarget.innerHTML)}
-              className="w-full min-h-[50vh] sm:min-h-[60vh] prose prose-invert prose-sm sm:prose-base lg:prose-xl max-w-none text-gray-300 leading-loose focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-gray-500 bg-bg-base/40 border border-border-subtle rounded-xl p-4 sm:p-6 md:p-8 focus:border-brand-purple/40 focus:bg-bg-base/60 transition-all shadow-inner"
+              className="w-full min-h-[50vh] sm:min-h-[60vh] prose prose-invert prose-sm sm:prose-base lg:prose-xl max-w-none text-gray-300 leading-loose focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-gray-500 empty:before:italic bg-bg-base/40 border border-border-subtle rounded-xl p-4 sm:p-6 md:p-8 focus:border-brand-purple/40 focus:bg-bg-base/60 transition-all shadow-inner selection:bg-brand-purple/30"
               data-placeholder="Write your story..."
             />
+            <div className="flex items-center justify-end gap-3 mt-3 px-1 text-xs text-gray-500 select-none">
+              <span>{words.toLocaleString()} {words === 1 ? "word" : "words"}</span>
+              <span className="text-gray-700">·</span>
+              <span>{characters.toLocaleString()} characters</span>
+              {readingMinutes > 0 && (
+                <>
+                  <span className="text-gray-700">·</span>
+                  <span>{readingMinutes} min read</span>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </main>

@@ -48,7 +48,7 @@ const AboutPage = () => {
           <Link to="/write">
             <Button
               variant="primary"
-              className="!rounded-xl !py-3.5 !px-8 text-sm bg-gradient-to-r from-brand-cyan to-brand-purple hover:opacity-90 font-semibold"
+              className="!rounded-xl !py-3.5 !px-8 text-sm font-semibold"
             >
               Start Writing
             </Button>
@@ -72,7 +72,7 @@ const AboutPage = () => {
               The Vision
             </p>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-1">
-              The Aetheric Flux <span className="text-brand-cyan">Philosophy</span>
+              The Aetheric Flux <span className="text-brand-purple">Philosophy</span>
             </h2>
           </div>
           <p className="text-gray-400 text-sm sm:text-base leading-relaxed">
@@ -93,7 +93,7 @@ const AboutPage = () => {
             </div>
 
             <div className="flex gap-4 p-4 rounded-xl border border-border-subtle bg-white/[0.01]">
-              <div className="w-10 h-10 rounded-lg bg-brand-cyan/10 border border-brand-cyan/20 flex items-center justify-center text-brand-cyan shrink-0 mt-0.5">
+              <div className="w-10 h-10 rounded-lg bg-brand-purple/10 border border-brand-purple/20 flex items-center justify-center text-brand-purple shrink-0 mt-0.5">
                 <Cpu className="w-5 h-5" />
               </div>
               <div>
@@ -129,7 +129,7 @@ const AboutPage = () => {
           {/* Card 1: Precision */}
           <GlassCard className="p-6 md:p-8 flex flex-col justify-between h-[280px] hover:border-white/10 hover:bg-bg-card-hover/40 transition-all border border-white/5 group">
             <div className="space-y-4">
-              <div className="w-10 h-10 rounded-lg bg-brand-cyan/10 border border-brand-cyan/25 flex items-center justify-center text-brand-cyan">
+              <div className="w-10 h-10 rounded-lg bg-brand-purple/10 border border-brand-purple/25 flex items-center justify-center text-brand-purple">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
               <h3 className="text-lg font-bold text-white tracking-tight">Precision</h3>
@@ -196,13 +196,13 @@ const AboutPage = () => {
           <GlassCard className="p-8 w-full max-w-sm border border-white/5 text-center space-y-6 hover:border-white/10 transition-colors">
             <div className="relative w-32 h-32 mx-auto rounded-full overflow-hidden border-2 border-brand-cyan/30 bg-bg-card flex items-center justify-center">
               {/* Profile Image (Initials placeholder matching the mock styling) */}
-              <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-[#10132c] to-cyan-950 flex items-center justify-center text-4xl font-extrabold text-brand-cyan">
+              <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-[#10132c] to-purple-950 flex items-center justify-center text-4xl font-extrabold text-brand-purple">
                 SS
               </div>
             </div>
             <div className="space-y-1">
               <h3 className="text-lg font-extrabold text-white">Swapnil Sutar</h3>
-              <p className="text-xs text-brand-cyan font-semibold uppercase tracking-wider">Lead Architect & Creator</p>
+              <p className="text-xs text-brand-purple font-semibold uppercase tracking-wider">Lead Architect & Creator</p>
             </div>
             <p className="text-xs text-gray-400 leading-relaxed max-w-xs mx-auto">
               Crafting premium high-fidelity tools to elevate developer storytelling and open source collaboration.
@@ -226,7 +226,7 @@ const AboutPage = () => {
               <Link to="/signup">
                 <Button
                   variant="primary"
-                  className="!rounded-xl !py-3 !px-6 text-xs sm:text-sm bg-gradient-to-r from-brand-cyan to-brand-purple hover:opacity-90 font-semibold"
+                  className="!rounded-xl !py-3 !px-6 text-xs sm:text-sm font-semibold"
                 >
                   Create Account
                 </Button>

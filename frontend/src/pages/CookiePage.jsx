@@ -20,7 +20,7 @@ const CookiePage = () => {
     <div className="max-w-4xl mx-auto px-4 md:px-6 pb-24 pt-6 font-sans space-y-12">
       {/* Page Header */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2 text-[10px] font-bold text-brand-cyan uppercase tracking-widest">
+        <div className="flex items-center gap-2 text-[10px] font-bold text-brand-purple uppercase tracking-widest">
           <Shield className="w-3.5 h-3.5" />
           <span>Legal Framework</span>
         </div>
@@ -58,7 +58,7 @@ const CookiePage = () => {
           <div className="glass-panel border border-border-subtle bg-bg-card p-6 rounded-2xl flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="space-y-2 max-w-2xl">
               <div className="flex items-center gap-2">
-                <Settings className="w-4 h-4 text-brand-cyan" />
+                <Settings className="w-4 h-4 text-brand-purple" />
                 <h3 className="text-sm font-bold text-white">Essential Cookies</h3>
               </div>
               <p className="text-xs text-gray-400 leading-relaxed">
@@ -92,7 +92,7 @@ const CookiePage = () => {
                   onChange={() => setPerformanceEnabled(!performanceEnabled)}
                   className="sr-only peer"
                 />
-                <div className="w-9 h-5 bg-border-subtle/50 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-cyan"></div>
+                <div className="w-9 h-5 bg-border-subtle/50 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-purple"></div>
               </label>
             </div>
           </div>
@@ -117,7 +117,7 @@ const CookiePage = () => {
                   onChange={() => setPersonalizationEnabled(!personalizationEnabled)}
                   className="sr-only peer"
                 />
-                <div className="w-9 h-5 bg-border-subtle/50 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-cyan"></div>
+                <div className="w-9 h-5 bg-border-subtle/50 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-purple"></div>
               </label>
             </div>
           </div>
@@ -136,15 +136,15 @@ const CookiePage = () => {
 
           <ul className="space-y-3 text-sm text-gray-400 pl-0 list-none">
             <li className="flex items-start gap-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan mt-2 shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-purple mt-2 shrink-0" />
               <span>See what cookies are currently stored and delete them individually.</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan mt-2 shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-purple mt-2 shrink-0" />
               <span>Block third-party cookies or cookies from specific sites.</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan mt-2 shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-purple mt-2 shrink-0" />
               <span>Set your browser to clear all cookies when you close it.</span>
             </li>
           </ul>

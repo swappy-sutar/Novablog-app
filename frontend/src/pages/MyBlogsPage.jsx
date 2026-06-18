@@ -320,7 +320,7 @@ const MyBlogsPage = () => {
           </p>
           <button
             onClick={() => toast("Upgrade request received")}
-            className="w-full mt-4 py-2.5 rounded-xl text-xs font-semibold text-[#ffffff] bg-gradient-to-r from-brand-cyan to-brand-purple hover:opacity-90 transition-all shadow-md shadow-brand-purple/20"
+            className="w-full mt-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-brand-purple hover:opacity-90 transition-all shadow-md shadow-brand-purple/20"
           >
             Upgrade to Pro
           </button>
@@ -381,7 +381,7 @@ const MyBlogsPage = () => {
           {/* Stats Summary */}
           <div className="flex items-center gap-6 text-xs text-gray-500 font-medium">
             <div className="flex items-baseline gap-2">
-              <span className="text-lg font-bold text-brand-cyan">
+              <span className="text-lg font-bold text-brand-purple">
                 {formatNumber(totalViews)}
               </span>
               <span>TOTAL VIEWS</span>
@@ -404,7 +404,7 @@ const MyBlogsPage = () => {
             placeholder="Search posts..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-border-subtle/30 border border-border-subtle focus:border-brand-cyan/50 focus:ring-1 focus:ring-brand-cyan/20 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none transition-all"
+            className="w-full bg-border-subtle/30 border border-border-subtle focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none transition-all"
           />
         </div>
 
@@ -605,7 +605,7 @@ const MyBlogsPage = () => {
                                 </span>
                                 <button
                                   onClick={() => navigate(`/write?edit=${blog.id}`)}
-                                  className="text-gray-400 hover:text-brand-cyan p-1 transition-colors"
+                                  className="text-gray-400 hover:text-brand-purple p-1 transition-colors"
                                   title="Quick edit"
                                 >
                                   <Edit className="w-3.5 h-3.5" />
@@ -627,7 +627,7 @@ const MyBlogsPage = () => {
                           <>
                             <Link
                               to={blog.author?.username ? `/profile/${blog.author.username}` : "#"}
-                              className="flex items-center gap-2 hover:text-brand-cyan transition-colors"
+                              className="flex items-center gap-2 hover:text-brand-purple transition-colors"
                               onClick={(e) => e.stopPropagation()}
                             >
                               {blog.author?.avatar ? (

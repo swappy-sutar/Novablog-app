@@ -8,6 +8,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
+import { generateSecret, generateURI, verify } from 'otplib';
+import * as qrcode from 'qrcode';
 import { UsersRepository } from './repositories/users.repository';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -109,6 +111,17 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    if (user.isTwoFactorEnabled) {
+      return successResponse(
+        'Two-factor authentication code required',
+        {
+          isTwoFactorRequired: true,
+          userId: user.id,
+        },
+        HttpStatus.OK,
+      );
+    }
+
     const tokens = await this.generateTokens(user.id, user.email, user.role);
 
     const hashedRefreshToken = await hashPassword(tokens.refreshToken);
@@ -159,8 +172,10 @@ export class AuthService {
         avatar: true,
         websiteUrl: true,
         githubUrl: true,
+        techStack: true,
         role: true,
         isVerified: true,
+        isTwoFactorEnabled: true,
         createdAt: true,
         updatedAt: true,
         blogs: {
@@ -229,6 +244,7 @@ export class AuthService {
           avatar: true,
           websiteUrl: true,
           githubUrl: true,
+          techStack: true,
           role: true,
           isVerified: true,
           createdAt: true,
@@ -385,6 +401,24 @@ export class AuthService {
 
     if (dto.githubUrl !== undefined) {
       data.githubUrl = dto.githubUrl.trim() || null;
+    }
+
+    if (dto.techStack !== undefined) {
+      if (!Array.isArray(dto.techStack)) {
+        throw new BadRequestException('Tech stack must be an array of strings');
+      }
+      const cleaned = Array.from(
+        new Set(dto.techStack.map((t) => t.trim()).filter(Boolean)),
+      );
+      if (cleaned.length > 15) {
+        throw new BadRequestException('Tech stack cannot have more than 15 items');
+      }
+      for (const tag of cleaned) {
+        if (tag.length > 30) {
+          throw new BadRequestException('Each tech tag must be less than 30 characters');
+        }
+      }
+      data.techStack = cleaned;
     }
 
     if (Object.keys(data).length === 0) {
@@ -719,10 +753,131 @@ export class AuthService {
       },
     });
 
+    return successResponse('Data exported successfully', user);
+  }
+
+  async generateTwoFactor(userId: string) {
+    const user = await this.usersRepository.findById(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    return successResponse('Data exported successfully', user);
+    const secret = generateSecret();
+    const otpauthUrl = generateURI({
+      label: user.email,
+      issuer: 'Nova Blogs',
+      secret,
+    });
+
+    // Save secret to database temporarily (it becomes active after verify/enable)
+    await this.usersRepository.update(userId, {
+      twoFactorSecret: secret,
+    });
+
+    const qrCodeDataUrl = await qrcode.toDataURL(otpauthUrl);
+
+    // Evict user caches
+    await this.cacheService.del(REDIS_KEYS.USER(userId));
+    await this.cacheService.del(REDIS_KEYS.USER_PROFILE(userId));
+
+    return successResponse('2FA secret generated successfully', {
+      secret,
+      qrCodeDataUrl,
+    });
+  }
+
+  async enableTwoFactor(userId: string, code: string) {
+    const user = await this.usersRepository.findById(userId);
+    if (!user || !user.twoFactorSecret) {
+      throw new BadRequestException('Two-factor authentication is not set up');
+    }
+
+    const result = await verify({
+      token: code,
+      secret: user.twoFactorSecret,
+    });
+
+    if (!result || !result.valid) {
+      throw new BadRequestException('Invalid verification code');
+    }
+
+    await this.usersRepository.update(userId, {
+      isTwoFactorEnabled: true,
+    });
+
+    // Evict user caches
+    await this.cacheService.del(REDIS_KEYS.USER(userId));
+    await this.cacheService.del(REDIS_KEYS.USER_PROFILE(userId));
+
+    return successResponse('Two-factor authentication enabled successfully', {
+      isTwoFactorEnabled: true,
+    });
+  }
+
+  async disableTwoFactor(userId: string, code: string) {
+    const user = await this.usersRepository.findById(userId);
+    if (!user || !user.twoFactorSecret) {
+      throw new BadRequestException('Two-factor authentication is not enabled');
+    }
+
+    const result = await verify({
+      token: code,
+      secret: user.twoFactorSecret,
+    });
+
+    if (!result || !result.valid) {
+      throw new BadRequestException('Invalid verification code');
+    }
+
+    await this.usersRepository.update(userId, {
+      isTwoFactorEnabled: false,
+      twoFactorSecret: null,
+    });
+
+    // Evict user caches
+    await this.cacheService.del(REDIS_KEYS.USER(userId));
+    await this.cacheService.del(REDIS_KEYS.USER_PROFILE(userId));
+
+    return successResponse('Two-factor authentication disabled successfully', {
+      isTwoFactorEnabled: false,
+    });
+  }
+
+  async verifyTwoFactorLogin(userId: string, code: string) {
+    const user = await this.usersRepository.findById(userId);
+    if (!user || !user.twoFactorSecret || !user.isTwoFactorEnabled) {
+      throw new UnauthorizedException('Two-factor authentication is not enabled');
+    }
+
+    const result = await verify({
+      token: code,
+      secret: user.twoFactorSecret,
+    });
+
+    if (!result || !result.valid) {
+      throw new UnauthorizedException('Invalid verification code');
+    }
+
+    // Standard tokens generation & logic
+    const tokens = await this.generateTokens(user.id, user.email, user.role);
+    const hashedRefreshToken = await hashPassword(tokens.refreshToken);
+
+    await this.usersRepository.update(user.id, {
+      refreshToken: hashedRefreshToken,
+    });
+
+    const { password, refreshToken, ...safeUser } = user;
+
+    await this.cacheService.set(
+      REDIS_KEYS.USER_PROFILE(user.id),
+      safeUser,
+      CACHE_TTL.USER_PROFILE,
+    );
+
+    return successResponse('Login successful', {
+      user: safeUser,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    });
   }
 }

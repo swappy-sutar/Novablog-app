@@ -123,7 +123,7 @@ const FeedPage = () => {
                   }}
                   className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                     isActive
-                      ? "bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan shadow-sm"
+                      ? "bg-brand-purple/10 border border-brand-purple/30 text-brand-purple shadow-sm"
                       : "text-gray-400 hover:text-gray-200 border border-transparent"
                   }`}
                 >

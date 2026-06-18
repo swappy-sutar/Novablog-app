@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { MessageSquare, Trash2, Send } from 'lucide-react';
 import GlassCard from '../ui/GlassCard';
 import Button from '../ui/Button';
-import { commentsAPI } from '../../lib/api';
+import { commentsAPI, getErrorMessage } from '../../lib/api';
 
 const Discussion = ({ blog }) => {
   const [comments, setComments] = useState([]);
@@ -13,6 +13,8 @@ const Discussion = ({ blog }) => {
   const [replyingToId, setReplyingToId] = useState(null);
   const [replyText, setReplyText] = useState("");
   const [sortBy, setSortBy] = useState("newest");
+  const [isPostingComment, setIsPostingComment] = useState(false);
+  const [isPostingReply, setIsPostingReply] = useState(null);
 
   // Get current logged-in user
   const storedUser = localStorage.getItem('user');
@@ -43,6 +45,7 @@ const Discussion = ({ blog }) => {
   const handlePostComment = async (e) => {
     e.preventDefault();
     if (!newCommentText.trim()) return;
+    setIsPostingComment(true);
     try {
       const res = await commentsAPI.createComment(blog.id, { content: newCommentText });
       if (res.success) {
@@ -51,8 +54,10 @@ const Discussion = ({ blog }) => {
         loadComments();
       }
     } catch (e) {
-      toast.error("Failed to post comment.");
+      toast.error(getErrorMessage(e, "Failed to post comment."));
       console.error(e);
+    } finally {
+      setIsPostingComment(false);
     }
   };
 
@@ -60,6 +65,7 @@ const Discussion = ({ blog }) => {
   const handlePostReply = async (e, parentId) => {
     e.preventDefault();
     if (!replyText.trim()) return;
+    setIsPostingReply(parentId);
     try {
       const res = await commentsAPI.createComment(blog.id, {
         content: replyText,
@@ -72,8 +78,10 @@ const Discussion = ({ blog }) => {
         loadComments();
       }
     } catch (e) {
-      toast.error("Failed to post reply.");
+      toast.error(getErrorMessage(e, "Failed to post reply."));
       console.error(e);
+    } finally {
+      setIsPostingReply(null);
     }
   };
 
@@ -120,7 +128,7 @@ const Discussion = ({ blog }) => {
     }
     const initials = `${userObj?.firstname?.[0] || ''}${userObj?.lastname?.[0] || ''}`.toUpperCase() || userObj?.username?.[0]?.toUpperCase() || 'U';
     return (
-      <div className={`${sizeClass} rounded-full bg-gradient-to-br from-brand-purple/40 to-brand-cyan/20 flex items-center justify-center text-[10px] font-bold text-[#ffffff] border border-white/5`}>
+      <div className={`${sizeClass} rounded-full bg-gradient-to-br from-brand-purple/40 to-brand-purple/20 flex items-center justify-center text-[10px] font-bold text-[#ffffff] border border-white/5`}>
         {initials}
       </div>
     );
@@ -152,7 +160,7 @@ const Discussion = ({ blog }) => {
         <select 
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value === "Newest" || e.target.value === "newest" ? "newest" : "oldest")}
-          className="bg-bg-base border border-border-subtle text-xs text-gray-400 py-1.5 px-3 rounded-lg focus:outline-none focus:border-brand-cyan cursor-pointer"
+          className="bg-bg-base border border-border-subtle text-xs text-gray-400 py-1.5 px-3 rounded-lg focus:outline-none focus:border-brand-purple cursor-pointer"
         >
           <option value="newest">Sort by: Newest</option>
           <option value="oldest">Sort by: Oldest</option>
@@ -161,7 +169,7 @@ const Discussion = ({ blog }) => {
 
       {/* Main Comment Input / Join Wall */}
       {!currentUser ? (
-        <GlassCard className="p-8 text-center border-dashed border-brand-cyan/25 flex flex-col items-center gap-4 mb-10">
+        <GlassCard className="p-8 text-center border-dashed border-brand-purple/25 flex flex-col items-center gap-4 mb-10">
           <MessageSquare className="w-10 h-10 text-gray-500 mb-2" />
           <h4 className="text-base font-bold text-white">Join the discussion</h4>
           <p className="text-xs text-gray-400 max-w-sm leading-relaxed">
@@ -181,7 +189,7 @@ const Discussion = ({ blog }) => {
           </div>
         </GlassCard>
       ) : (
-        <GlassCard className="p-6 mb-10 border-brand-cyan/20">
+        <GlassCard className="p-6 mb-10 border-brand-purple/20">
           <div className="flex gap-4">
             {renderAvatar(currentUser, "w-10 h-10")}
             <div className="flex-grow">
@@ -189,14 +197,21 @@ const Discussion = ({ blog }) => {
                 <textarea 
                   value={newCommentText}
                   onChange={(e) => setNewCommentText(e.target.value)}
-                  className="w-full bg-border-subtle/30 border border-border-subtle rounded-xl p-4 text-sm text-white placeholder-gray-500 focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan/10 focus:outline-none min-h-[90px] resize-none"
+                  className="w-full bg-border-subtle/30 border border-border-subtle rounded-xl p-4 text-sm text-white placeholder-gray-500 focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 focus:outline-none min-h-[90px] resize-none"
                   placeholder="Add to the discussion..."
                   required
                 />
                 <div className="flex items-center justify-between mt-3">
                   <span className="text-[10px] text-gray-500">markdown supported</span>
-                  <Button type="submit" variant="primary" className="!rounded-xl !py-2 !px-5 text-xs">
-                    Post Comment
+                  <Button 
+                    type="submit" 
+                    variant="primary" 
+                    className="!rounded-xl !py-2 !px-5 text-xs"
+                    disabled={isPostingComment}
+                  >
+                    {isPostingComment ? (
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : "Post Comment"}
                   </Button>
                 </div>
               </form>
@@ -208,7 +223,7 @@ const Discussion = ({ blog }) => {
       {/* Comment Thread */}
       {loading && comments.length === 0 ? (
         <div className="flex justify-center py-10">
-          <div className="w-6 h-6 border-2 border-brand-cyan border-t-transparent rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-brand-purple border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
         <div className="space-y-6">
@@ -224,7 +239,7 @@ const Discussion = ({ blog }) => {
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
-                      <Link to={comment.user?.username ? `/profile/${comment.user.username}` : "#"} className="font-semibold text-gray-200 text-sm hover:text-brand-cyan transition-colors cursor-pointer">
+                      <Link to={comment.user?.username ? `/profile/${comment.user.username}` : "#"} className="font-semibold text-gray-200 text-sm hover:text-brand-purple transition-colors cursor-pointer">
                         {getUserName(comment.user)}
                       </Link>
                       {isBlogAuthor && (
@@ -280,7 +295,7 @@ const Discussion = ({ blog }) => {
                         onChange={(e) => setReplyText(e.target.value)}
                         placeholder="Type reply..."
                         required
-                        className="w-full bg-border-subtle/30 border border-border-subtle rounded-xl px-3 py-2 text-xs text-gray-200 placeholder-gray-500 focus:border-brand-cyan focus:outline-none min-h-[50px] resize-none"
+                        className="w-full bg-border-subtle/30 border border-border-subtle rounded-xl px-3 py-2 text-xs text-gray-200 placeholder-gray-500 focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 focus:outline-none min-h-[50px] resize-none"
                         />
                         <div className="flex justify-end gap-2 mt-2">
                           <button
@@ -292,9 +307,16 @@ const Discussion = ({ blog }) => {
                           </button>
                           <button
                             type="submit"
-                            className="px-3 py-1.5 rounded-lg bg-brand-cyan text-black text-[10px] font-bold flex items-center gap-1.5 hover:opacity-90"
+                            disabled={isPostingReply === comment.id}
+                            className="px-3 py-1.5 rounded-lg bg-brand-purple text-white text-[10px] font-bold flex items-center gap-1.5 hover:opacity-90 disabled:opacity-50"
                           >
-                            <Send className="w-3 h-3" /> Reply
+                            {isPostingReply === comment.id ? (
+                              <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <>
+                                <Send className="w-3 h-3" /> Reply
+                              </>
+                            )}
                           </button>
                         </div>
                       </div>
@@ -316,7 +338,7 @@ const Discussion = ({ blog }) => {
                             <div className="flex-1">
                               <div className="flex items-center justify-between mb-0.5">
                                 <div className="flex items-center gap-1.5">
-                                  <Link to={reply.user?.username ? `/profile/${reply.user.username}` : "#"} className="font-semibold text-gray-200 text-xs hover:text-brand-cyan transition-colors cursor-pointer">
+                                  <Link to={reply.user?.username ? `/profile/${reply.user.username}` : "#"} className="font-semibold text-gray-200 text-xs hover:text-brand-purple transition-colors cursor-pointer">
                                     {getUserName(reply.user)}
                                   </Link>
                                   {isReplyBlogAuthor && (

@@ -17,7 +17,19 @@ const searchPhrases = [
 const Navbar = () => {
   const navigate = useNavigate();
   const [searchVal, setSearchVal] = useState("");
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(() => {
+    try {
+      const raw = localStorage.getItem('novablog_settings_prefs_v1');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.theme === 'light') return false;
+        if (parsed.theme === 'dark') return true;
+      }
+    } catch {
+      /* ignore */
+    }
+    return !document.documentElement.classList.contains('light-mode');
+  });
   const [user, setUser] = useState(null);
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -43,8 +55,8 @@ const Navbar = () => {
   };
 
   const linkActiveStyle =
-    "text-brand-cyan relative after:absolute after:-bottom-2 after:left-0 after:w-full after:h-0.5 after:bg-brand-cyan after:rounded-full";
-  const linkInactiveStyle = "text-gray-400 hover:text-gray-200 transition-colors";
+    "text-brand-purple relative after:absolute after:-bottom-2 after:left-0 after:w-full after:h-0.5 after:bg-brand-purple after:rounded-full";
+  const linkInactiveStyle = "text-text-muted hover:text-text-input transition-colors";
 
   useEffect(() => {
     // Check theme
@@ -82,7 +94,36 @@ const Navbar = () => {
     };
   }, []);
 
-  const toggleTheme = () => setIsDark(!isDark);
+  useEffect(() => {
+    const syncTheme = () => {
+      try {
+        const raw = localStorage.getItem('novablog_settings_prefs_v1');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          setIsDark(parsed.theme !== 'light');
+        }
+      } catch {
+        /* ignore */
+      }
+    };
+    window.addEventListener('storage', syncTheme);
+    return () => window.removeEventListener('storage', syncTheme);
+  }, []);
+
+  const toggleTheme = () => {
+    const nextDark = !isDark;
+    setIsDark(nextDark);
+    try {
+      const key = 'novablog_settings_prefs_v1';
+      const raw = localStorage.getItem(key);
+      const parsed = raw ? JSON.parse(raw) : { theme: 'dark' };
+      parsed.theme = nextDark ? 'dark' : 'light';
+      localStorage.setItem(key, JSON.stringify(parsed));
+      window.dispatchEvent(new Event('storage'));
+    } catch {
+      /* ignore */
+    }
+  };
 
   const notificationsRef = useRef(null);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -294,7 +335,7 @@ const Navbar = () => {
                 placeholder={placeholder}
                 value={searchVal}
                 onChange={(e) => setSearchVal(e.target.value)}
-                className="bg-border-subtle/30 border border-border-subtle focus:border-brand-cyan/50 rounded-full py-2 pl-10 pr-4 text-sm text-gray-200 placeholder-gray-400 w-64 transition-all duration-300 focus:w-80 focus:outline-none focus:bg-border-subtle/50 focus:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                className="bg-border-subtle/30 border border-border-subtle focus:border-brand-cyan/50 rounded-full py-2 pl-10 pr-4 text-sm text-text-input placeholder-text-muted/50 w-64 transition-all duration-300 focus:w-80 focus:outline-none focus:bg-border-subtle/50 focus:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
               />
             </form>
 
@@ -366,9 +407,9 @@ const Navbar = () => {
                         aria-label="Notifications"
                       >
                         <Bell className="w-5 h-5" />
-                        {notifications.some((n) => !n.isRead) && (
-                          <span className="absolute top-2 right-2.5 w-2 h-2 bg-brand-cyan rounded-full shadow-[0_0_8px_#06b6d4] animate-pulse" />
-                        )}
+                         {notifications.some((n) => !n.isRead) && (
+                           <span className="absolute top-2 right-2.5 w-2 h-2 bg-brand-purple rounded-full shadow-[0_0_8px_#8b5cf6] animate-pulse" />
+                         )}
                       </button>
 
                       <AnimatePresence>
@@ -385,7 +426,7 @@ const Navbar = () => {
                               {notifications.some((n) => !n.isRead) && (
                                 <button
                                   onClick={handleMarkAllRead}
-                                  className="text-[10px] font-bold text-brand-cyan hover:underline uppercase tracking-wider cursor-pointer"
+                                  className="text-[10px] font-bold text-brand-purple hover:underline uppercase tracking-wider cursor-pointer"
                                 >
                                   Mark read
                                 </button>
@@ -403,7 +444,7 @@ const Navbar = () => {
                                     onClick={() => !n.isRead && handleMarkSingleRead(n.id)}
                                     className={`p-2.5 rounded-xl border transition-colors flex flex-col gap-1 text-left ${
                                       !n.isRead
-                                        ? "bg-brand-cyan/5 border-brand-cyan/20 cursor-pointer hover:bg-brand-cyan/10"
+                                        ? "bg-brand-purple/5 border-brand-purple/20 cursor-pointer hover:bg-brand-purple/10"
                                         : "bg-white/[0.01] border-transparent hover:bg-white/[0.03]"
                                     }`}
                                   >
@@ -437,12 +478,12 @@ const Navbar = () => {
                       </Button>
                     </Link>
 
-                    <Link
-                      to="/profile"
-                      className="w-8 h-8 rounded-full bg-brand-cyan/20 border border-brand-cyan flex items-center justify-center text-brand-cyan font-bold text-xs hover:bg-brand-cyan/40 transition-colors"
-                      title="Profile"
-                      aria-label="View profile"
-                    >
+                     <Link
+                       to="/profile"
+                       className="w-8 h-8 rounded-full bg-brand-purple/20 border border-brand-purple flex items-center justify-center text-brand-purple font-bold text-xs hover:bg-brand-purple/40 transition-colors"
+                       title="Profile"
+                       aria-label="View profile"
+                     >
                       {user.firstname?.[0]?.toUpperCase() || "U"}
                     </Link>
                   </motion.div>
@@ -607,7 +648,7 @@ const Navbar = () => {
                         onClick={() => setIsMobileMenuOpen(false)}
                         className="flex items-center gap-3 text-sm text-white font-medium"
                       >
-                        <div className="w-9 h-9 rounded-full bg-brand-cyan/20 border border-brand-cyan flex items-center justify-center text-brand-cyan font-bold text-sm">
+                        <div className="w-9 h-9 rounded-full bg-brand-purple/20 border border-brand-purple flex items-center justify-center text-brand-purple font-bold text-sm">
                           {user.firstname?.[0]?.toUpperCase() || "U"}
                         </div>
                         <span>{user.firstname} {user.lastname || ""}</span>

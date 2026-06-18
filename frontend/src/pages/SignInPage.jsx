@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { authAPI } from '../lib/api';
+import { authAPI, getErrorMessage } from '../lib/api';
 import toast from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
 import AuthBackground from '../components/auth/AuthBackground';
@@ -13,6 +13,12 @@ const SignInPage = () => {
     email: '',
     password: ''
   });
+
+  // 2FA login states
+  const [is2FARequired, setIs2FARequired] = useState(false);
+  const [tempUserId, setTempUserId] = useState('');
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [isVerifying2FA, setIsVerifying2FA] = useState(false);
 
   const handleChange = (e) => {
     setFormData(prev => ({
@@ -29,6 +35,13 @@ const SignInPage = () => {
       const response = await authAPI.login(formData);
       
       if (response.success) {
+        if (response.data?.isTwoFactorRequired) {
+          setIs2FARequired(true);
+          setTempUserId(response.data.userId);
+          setIsLoading(false);
+          return;
+        }
+
         toast.success("Welcome back!");
         
         // Save tokens
@@ -45,9 +58,39 @@ const SignInPage = () => {
         navigate('/');
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Invalid credentials. Please try again.");
+      toast.error(getErrorMessage(error, "Invalid credentials. Please try again."));
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handle2FAVerifySubmit = async (e) => {
+    e.preventDefault();
+    if (twoFactorCode.trim().length !== 6) {
+      toast.error('Please enter a 6-digit verification code');
+      return;
+    }
+    setIsVerifying2FA(true);
+    try {
+      const response = await authAPI.verify2FALogin({
+        userId: tempUserId,
+        code: twoFactorCode.trim(),
+      });
+      if (response.success) {
+        toast.success("Welcome back!");
+        localStorage.setItem('accessToken', response.data.accessToken);
+        if (response.data.refreshToken) {
+          localStorage.setItem('refreshToken', response.data.refreshToken);
+        }
+        localStorage.setItem('user', JSON.stringify(response.data.user)); 
+        
+        window.dispatchEvent(new Event('auth-change'));
+        navigate('/');
+      }
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Invalid verification code. Please try again."));
+    } finally {
+      setIsVerifying2FA(false);
     }
   };
 
@@ -66,56 +109,96 @@ const SignInPage = () => {
       >
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
-            Welcome back
+            {is2FARequired ? "Two-Factor Auth" : "Welcome back"}
           </h1>
           <p className="text-gray-400 text-sm px-4">
-            Log in to continue where you left off.
+            {is2FARequired ? "Enter the 6-digit code from your authenticator app." : "Log in to continue where you left off."}
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className={labelClass}>Email Address</label>
-            <input 
-              type="email" 
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="alex@nova.dev" 
-              className={inputClass}
-              required 
-            />
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Password</label>
-              <Link to="/forgot-password" className="text-xs text-brand-cyan hover:underline">Forgot password?</Link>
-            </div>
-            <div className="relative">
+        {is2FARequired ? (
+          <form onSubmit={handle2FAVerifySubmit} className="space-y-5">
+            <div>
+              <label className={labelClass}>Verification Code</label>
               <input 
-                type="password" 
-                name="password"
-                value={formData.password}
+                type="text" 
+                name="twoFactorCode"
+                value={twoFactorCode}
+                onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, ''))}
+                placeholder="000000" 
+                className="w-full bg-white/[0.04] border border-border-subtle rounded-xl px-4 py-3 text-center text-lg font-mono font-bold tracking-widest text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
+                required 
+                maxLength={6}
+              />
+            </div>
+
+            <Button 
+              type="submit" 
+              disabled={isVerifying2FA || twoFactorCode.length !== 6}
+              variant="primary"
+              className="w-full tracking-wider text-sm py-3.5 uppercase mt-8 shadow-[0_0_20px_rgba(139,92,246,0.3)]"
+            >
+              {isVerifying2FA ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : "Verify & Log In"}
+            </Button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIs2FARequired(false);
+                setTwoFactorCode('');
+              }}
+              className="w-full text-center text-xs text-brand-cyan hover:underline mt-4 cursor-pointer block"
+            >
+              Back to Login
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className={labelClass}>Email Address</label>
+              <input 
+                type="email" 
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
-                placeholder="••••••••" 
+                placeholder="alex@nova.dev" 
                 className={inputClass}
                 required 
               />
             </div>
-          </div>
 
-          <Button 
-            type="submit" 
-            disabled={isLoading}
-            variant="primary"
-            className="w-full tracking-wider text-sm py-3.5 uppercase mt-8 shadow-[0_0_20px_rgba(139,92,246,0.3)]"
-          >
-            {isLoading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : "Log In"}
-          </Button>
-        </form>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Password</label>
+                <Link to="/forgot-password" className="text-xs text-brand-cyan hover:underline">Forgot password?</Link>
+              </div>
+              <div className="relative">
+                <input 
+                  type="password" 
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••" 
+                  className={inputClass}
+                  required 
+                />
+              </div>
+            </div>
+
+            <Button 
+              type="submit" 
+              disabled={isLoading}
+              variant="primary"
+              className="w-full tracking-wider text-sm py-3.5 uppercase mt-8 shadow-[0_0_20px_rgba(139,92,246,0.3)]"
+            >
+              {isLoading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : "Log In"}
+            </Button>
+          </form>
+        )}
         
         <p className="mt-6 text-center text-sm text-gray-400">
           Don't have an account? <Link to="/signup" className="text-brand-cyan hover:text-brand-blue transition-colors font-medium">Sign up</Link>

@@ -17,7 +17,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import Button from '../components/ui/Button';
-import { authAPI } from '../lib/api';
+import { authAPI, getErrorMessage } from '../lib/api';
 
 const PREFS_KEY = 'novablog_settings_prefs_v1';
 
@@ -81,6 +81,7 @@ function persistUserFromProfile(data) {
         bio: data.bio,
         websiteUrl: data.websiteUrl,
         githubUrl: data.githubUrl,
+        techStack: data.techStack,
         role: data.role,
       }),
     );
@@ -99,11 +100,11 @@ function Toggle({ on, onChange, disabled }) {
       aria-checked={on}
       onClick={() => onChange(!on)}
       className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${
-        on ? 'bg-brand-cyan' : 'bg-gray-700'
+        on ? 'bg-brand-purple' : 'bg-gray-800'
       } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
     >
       <span
-        className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${
+        className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-[#ffffff] shadow transition-transform ${
           on ? 'translate-x-5' : 'translate-x-0'
         }`}
       />
@@ -122,7 +123,9 @@ const SettingsPage = () => {
     bio: '',
     websiteUrl: '',
     githubUrl: '',
+    techStack: [],
   });
+  const [newTechInput, setNewTechInput] = useState('');
 
   // API settings modals states
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -136,6 +139,19 @@ const SettingsPage = () => {
   const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [isExportingData, setIsExportingData] = useState(false);
+
+  // 2FA States
+  const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+  const [is2FAModalOpen, setIs2FAModalOpen] = useState(false);
+  const [isGenerating2FA, setIsGenerating2FA] = useState(false);
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState('');
+  const [twoFactorSecret, setTwoFactorSecret] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [isVerifying2FA, setIsVerifying2FA] = useState(false);
+
+  const [isDisable2FAModalOpen, setIsDisable2FAModalOpen] = useState(false);
+  const [disableCode, setDisableCode] = useState('');
+  const [isDisabling2FA, setIsDisabling2FA] = useState(false);
   
   const initialPrefs = loadPrefs();
   const prefsBaseline = useRef(JSON.parse(JSON.stringify(initialPrefs)));
@@ -179,6 +195,7 @@ const SettingsPage = () => {
       const res = await authAPI.getProfile();
       if (res.success && res.data) {
         setProfile(res.data);
+        setIs2FAEnabled(res.data.isTwoFactorEnabled || false);
         persistUserFromProfile(res.data);
         const dn = formatDisplayName(res.data);
         setForm({
@@ -186,15 +203,16 @@ const SettingsPage = () => {
           bio: res.data.bio ?? '',
           websiteUrl: res.data.websiteUrl ?? '',
           githubUrl: res.data.githubUrl ?? '',
+          techStack: res.data.techStack ?? [],
         });
         setLoadState({ loading: false, error: null });
       } else {
         setLoadState({ loading: false, error: 'Unexpected response' });
       }
     } catch (e) {
-      const msg = e.response?.data?.message || e.message || 'Could not load profile';
+      const msg = getErrorMessage(e, 'Could not load profile');
       setLoadState({ loading: false, error: msg });
-      toast.error(typeof msg === 'string' ? msg : 'Could not load profile');
+      toast.error(msg);
     }
   }, []);
 
@@ -204,6 +222,25 @@ const SettingsPage = () => {
     }, 0);
     return () => clearTimeout(timer);
   }, [loadProfile]);
+
+  useEffect(() => {
+    const syncTheme = () => {
+      try {
+        const raw = localStorage.getItem(PREFS_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          setPrefs((p) => {
+            if (p.theme === parsed.theme) return p;
+            return { ...p, theme: parsed.theme };
+          });
+        }
+      } catch {
+        /* ignore */
+      }
+    };
+    window.addEventListener('storage', syncTheme);
+    return () => window.removeEventListener('storage', syncTheme);
+  }, []);
 
   // Scrollspy logic
   useEffect(() => {
@@ -263,8 +300,119 @@ const SettingsPage = () => {
       bio: profile.bio ?? '',
       websiteUrl: profile.websiteUrl ?? '',
       githubUrl: profile.githubUrl ?? '',
+      techStack: profile.techStack ?? [],
     });
   }, [profile]);
+
+  const openEnable2FAModal = async () => {
+    setIs2FAModalOpen(true);
+    setIsGenerating2FA(true);
+    setVerificationCode('');
+    try {
+      const res = await authAPI.generate2FA();
+      if (res.success && res.data) {
+        setQrCodeDataUrl(res.data.qrCodeDataUrl);
+        setTwoFactorSecret(res.data.secret);
+      } else {
+        toast.error('Failed to generate 2FA secret key');
+        setIs2FAModalOpen(false);
+      }
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Failed to generate 2FA secret key'));
+      setIs2FAModalOpen(false);
+    } finally {
+      setIsGenerating2FA(false);
+    }
+  };
+
+  const handleEnable2FASubmit = async (e) => {
+    e.preventDefault();
+    if (verificationCode.trim().length !== 6) {
+      toast.error('Please enter a 6-digit verification code');
+      return;
+    }
+    setIsVerifying2FA(true);
+    try {
+      const res = await authAPI.enable2FA(verificationCode.trim());
+      if (res.success) {
+        toast.success('Two-factor authentication enabled successfully');
+        setIs2FAEnabled(true);
+        setIs2FAModalOpen(false);
+        setVerificationCode('');
+      }
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Invalid verification code'));
+    } finally {
+      setIsVerifying2FA(false);
+    }
+  };
+
+  const openDisable2FAModal = () => {
+    setDisableCode('');
+    setIsDisable2FAModalOpen(true);
+  };
+
+  const handleDisable2FASubmit = async (e) => {
+    e.preventDefault();
+    if (disableCode.trim().length !== 6) {
+      toast.error('Please enter a 6-digit verification code');
+      return;
+    }
+    setIsDisabling2FA(true);
+    try {
+      const res = await authAPI.disable2FA(disableCode.trim());
+      if (res.success) {
+        toast.success('Two-factor authentication disabled successfully');
+        setIs2FAEnabled(false);
+        setIsDisable2FAModalOpen(false);
+        setDisableCode('');
+      }
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Invalid verification code'));
+    } finally {
+      setIsDisabling2FA(false);
+    }
+  };
+
+  const handleAddTechTag = () => {
+    const tag = newTechInput.trim();
+    if (!tag) return;
+    
+    if (tag.length > 30) {
+      toast.error('Technology tag name must be less than 30 characters');
+      return;
+    }
+
+    if (form.techStack.some((t) => t.toLowerCase() === tag.toLowerCase())) {
+      toast.error('This tag is already added');
+      return;
+    }
+
+    if (form.techStack.length >= 15) {
+      toast.error('You can add up to 15 tech stack tags');
+      return;
+    }
+
+    setForm((f) => ({
+      ...f,
+      techStack: [...f.techStack, tag],
+    }));
+    setNewTechInput('');
+  };
+
+  const handleTechInputKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddTechTag();
+    }
+  };
+
+  const handleRemoveTechTag = (tagToRemove) => {
+    setForm((f) => ({
+      ...f,
+      techStack: f.techStack.filter((t) => t !== tagToRemove),
+    }));
+  };
 
   const handlePickPhoto = () => fileRef.current?.click();
 
@@ -284,8 +432,7 @@ const SettingsPage = () => {
         toast.success(res.message || 'Profile picture updated');
       }
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Upload failed';
-      toast.error(typeof msg === 'string' ? msg : 'Upload failed');
+      toast.error(getErrorMessage(err, 'Upload failed'));
     } finally {
       setUploading(false);
     }
@@ -305,6 +452,7 @@ const SettingsPage = () => {
         bio: form.bio.trim(),
         websiteUrl: form.websiteUrl.trim(),
         githubUrl: form.githubUrl.trim(),
+        techStack: form.techStack,
       });
       if (res.success && res.data) {
         setProfile(res.data);
@@ -312,14 +460,7 @@ const SettingsPage = () => {
         return true;
       }
     } catch (err) {
-      const msg =
-        err.response?.data?.message ||
-        (Array.isArray(err.response?.data?.message)
-          ? err.response.data.message.join(', ')
-          : null) ||
-        err.message ||
-        'Could not save profile';
-      toast.error(typeof msg === 'string' ? msg : 'Could not save profile');
+      toast.error(getErrorMessage(err, 'Could not save profile'));
     } finally {
       setSaving(false);
     }
@@ -372,8 +513,7 @@ const SettingsPage = () => {
         setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
       }
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Failed to change password';
-      toast.error(typeof msg === 'string' ? msg : 'Failed to change password');
+      toast.error(getErrorMessage(err, 'Failed to change password'));
     } finally {
       setIsChangingPassword(false);
     }
@@ -399,8 +539,7 @@ const SettingsPage = () => {
         setEmailForm({ newEmail: '' });
       }
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Failed to update email';
-      toast.error(typeof msg === 'string' ? msg : 'Failed to update email');
+      toast.error(getErrorMessage(err, 'Failed to update email'));
     } finally {
       setIsUpdatingEmail(false);
     }
@@ -426,8 +565,7 @@ const SettingsPage = () => {
         window.location.href = '/';
       }
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Failed to delete account';
-      toast.error(typeof msg === 'string' ? msg : 'Failed to delete account');
+      toast.error(getErrorMessage(err, 'Failed to delete account'));
     } finally {
       setIsDeletingAccount(false);
     }
@@ -452,8 +590,7 @@ const SettingsPage = () => {
         toast.success('Data export download started');
       }
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Failed to export data';
-      toast.error(typeof msg === 'string' ? msg : 'Failed to export data');
+      toast.error(getErrorMessage(err, 'Failed to export data'));
     } finally {
       setIsExportingData(false);
     }
@@ -488,8 +625,8 @@ const SettingsPage = () => {
   }
 
   const inputClass =
-    'w-full bg-white/[0.04] border border-border-subtle rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all';
-  const labelClass = 'block text-xs font-semibold text-gray-400 mb-2';
+    'w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-3 text-sm text-text-input placeholder-text-muted/50 focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all';
+  const labelClass = 'block text-xs font-semibold text-text-muted mb-2';
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col lg:flex-row gap-8 lg:gap-10 pb-28 pt-12">
@@ -527,8 +664,8 @@ const SettingsPage = () => {
                 onClick={() => scrollToSection(item.id)}
                 className={`text-left px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-3 border ${
                   isActive
-                    ? 'bg-brand-purple/15 text-[#c4b5fd] border-brand-purple/20'
-                    : 'text-gray-400 border-transparent hover:text-white hover:bg-white/[0.04]'
+                    ? 'bg-brand-purple/15 text-brand-purple border-brand-purple/20'
+                    : 'text-text-muted border-transparent hover:text-text-input hover:bg-bg-input'
                 }`}
               >
                 <Icon className="w-4 h-4 opacity-75" />
@@ -539,11 +676,11 @@ const SettingsPage = () => {
 
           <div className="hidden lg:block my-2 border-t border-border-subtle" />
 
-          <button onClick={() => toast("Advanced config loaded")} className="text-left px-4 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/[0.04] flex items-center gap-3 border border-transparent">
+          <button onClick={() => toast("Advanced config loaded")} className="text-left px-4 py-2.5 rounded-xl text-sm font-medium text-text-muted hover:text-text-input hover:bg-bg-input flex items-center gap-3 border border-transparent">
             <Settings className="w-4 h-4 opacity-75" />
             Settings
           </button>
-          <button onClick={() => toast("Help center loaded")} className="text-left px-4 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/[0.04] flex items-center gap-3 border border-transparent">
+          <button onClick={() => toast("Help center loaded")} className="text-left px-4 py-2.5 rounded-xl text-sm font-medium text-text-muted hover:text-text-input hover:bg-bg-input flex items-center gap-3 border border-transparent">
             <HelpCircle className="w-4 h-4 opacity-75" />
             Help
           </button>
@@ -559,7 +696,7 @@ const SettingsPage = () => {
           <button 
             type="button"
             onClick={() => toast("Upgrade request received")}
-            className="w-full mt-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-indigo-500 via-brand-purple to-brand-cyan shadow-lg shadow-brand-purple/20 hover:opacity-95 transition-opacity"
+            className="w-full mt-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-gradient-premium shadow-lg shadow-brand-purple/20 hover:opacity-95 transition-opacity"
           >
             Upgrade to Pro
           </button>
@@ -584,7 +721,7 @@ const SettingsPage = () => {
                 {profile?.avatar ? (
                   <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-purple/30 to-brand-cyan/20 text-2xl font-bold text-white">
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-purple/30 to-brand-purple/20 text-2xl font-bold text-white">
                     {initials}
                   </div>
                 )}
@@ -673,6 +810,52 @@ const SettingsPage = () => {
               </div>
             </div>
           </div>
+
+          <div>
+            <label className={labelClass}>Tech Stack (Max 15 technologies)</label>
+            <div className="space-y-3">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  className={inputClass}
+                  placeholder="Add technology (e.g. React, Docker, Rust) and press Enter"
+                  value={newTechInput}
+                  onChange={(e) => setNewTechInput(e.target.value)}
+                  onKeyDown={handleTechInputKeyDown}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleAddTechTag}
+                  className="!rounded-xl !py-2.5 !px-5 text-sm"
+                >
+                  Add
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2 p-3 bg-white/[0.02] border border-border-subtle rounded-xl min-h-[60px] items-center">
+                {form.techStack.length === 0 ? (
+                  <span className="text-xs text-gray-500 italic px-1">No custom technologies added. Showcase defaults will be shown on profile.</span>
+                ) : (
+                  form.techStack.map((tech) => (
+                    <span
+                      key={tech}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#8b5cf6]/20 bg-[#8b5cf6]/10 text-gray-300"
+                    >
+                      {tech}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTechTag(tech)}
+                        className="text-gray-400 hover:text-white transition-colors cursor-pointer text-[10px]"
+                        aria-label={`Remove ${tech}`}
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* ACCOUNT SECURITY CARD */}
@@ -684,9 +867,9 @@ const SettingsPage = () => {
             Account Security
           </h2>
 
-          <div className="rounded-xl border border-border-subtle bg-[#0c0d1c]/40 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="rounded-xl border border-border-subtle bg-bg-card-sub p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-lg bg-white/[0.03] text-gray-400">
+              <div className="p-2.5 rounded-lg bg-bg-input text-gray-400">
                 <Mail className="w-5 h-5" />
               </div>
               <div>
@@ -697,15 +880,15 @@ const SettingsPage = () => {
             <button
               type="button"
               onClick={() => setIsEmailModalOpen(true)}
-              className="text-xs font-semibold text-brand-cyan hover:text-cyan-300 py-1.5 px-4 rounded-lg bg-brand-cyan/5 border border-brand-cyan/20 transition-all text-center cursor-pointer"
+              className="text-xs font-semibold text-brand-purple hover:bg-brand-purple/10 py-1.5 px-4 rounded-lg bg-brand-purple/5 border border-brand-purple/20 transition-all text-center cursor-pointer"
             >
               Update
             </button>
           </div>
 
-          <div className="rounded-xl border border-border-subtle bg-[#0c0d1c]/40 p-5 flex items-start sm:items-center justify-between gap-4">
+          <div className="rounded-xl border border-border-subtle bg-bg-card-sub p-5 flex items-start sm:items-center justify-between gap-4">
             <div className="flex items-start sm:items-center gap-3">
-              <div className="p-2.5 rounded-lg bg-white/[0.03] text-gray-400 shrink-0">
+              <div className="p-2.5 rounded-lg bg-bg-input text-gray-400 shrink-0">
                 <Shield className="w-5 h-5" />
               </div>
               <div>
@@ -716,8 +899,14 @@ const SettingsPage = () => {
               </div>
             </div>
             <Toggle
-              on={prefs.twoFactor}
-              onChange={(v) => setPrefs((p) => ({ ...p, twoFactor: v }))}
+              on={is2FAEnabled}
+              onChange={(v) => {
+                if (v) {
+                  openEnable2FAModal();
+                } else {
+                  openDisable2FAModal();
+                }
+              }}
             />
           </div>
 
@@ -755,13 +944,13 @@ const SettingsPage = () => {
                   onClick={() => setPrefs((p) => ({ ...p, theme: t.id }))}
                   className={`rounded-xl border p-4 text-left text-sm font-semibold transition-all flex items-center justify-between cursor-pointer ${
                     isSelected
-                      ? 'border-brand-cyan bg-brand-cyan/5 text-white ring-1 ring-brand-cyan/25'
+                      ? 'border-brand-purple bg-brand-purple/5 text-white ring-1 ring-brand-purple/25'
                       : 'border-border-subtle bg-white/[0.01] text-gray-400 hover:border-gray-600 hover:bg-white/[0.03]'
                   }`}
                 >
                   <span>{t.label}</span>
                   {isSelected && (
-                    <span className="w-5 h-5 rounded-full bg-brand-cyan text-black flex items-center justify-center text-xs">
+                    <span className="w-5 h-5 rounded-full bg-brand-purple text-white flex items-center justify-center text-xs">
                       <Check className="w-3.5 h-3.5 stroke-[3]" />
                     </span>
                   )}
@@ -776,7 +965,7 @@ const SettingsPage = () => {
               <span>Text Size Adjustment</span>
               <span className="text-white bg-white/[0.05] px-2 py-0.5 rounded">{prefs.fontScale}%</span>
             </div>
-            <div className="flex items-center gap-4 bg-[#0c0d1c]/30 border border-border-subtle px-5 py-4 rounded-xl">
+            <div className="flex items-center gap-4 bg-bg-card-sub border border-border-subtle px-5 py-4 rounded-xl">
               <span className="text-gray-500 text-xs font-medium select-none">Aa</span>
               <input
                 type="range"
@@ -835,7 +1024,7 @@ const SettingsPage = () => {
           ].map((row) => (
             <div
               key={row.key}
-              className="grid grid-cols-[1fr_50px_50px] gap-4 items-center p-3 rounded-xl border border-white/[0.02] bg-[#0c0d1c]/20"
+              className="grid grid-cols-[1fr_50px_50px] gap-4 items-center p-3 rounded-xl border border-border-subtle bg-bg-card-sub-light"
             >
               <div>
                 <p className="text-sm font-semibold text-gray-200">{row.title}</p>
@@ -882,7 +1071,7 @@ const SettingsPage = () => {
             Privacy
           </h2>
 
-          <div className="rounded-xl border border-border-subtle bg-[#0c0d1c]/40 p-5 space-y-5">
+          <div className="rounded-xl border border-border-subtle bg-bg-card-sub p-5 space-y-5">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-sm font-semibold text-gray-200">Public Profile Visibility</p>
@@ -890,9 +1079,9 @@ const SettingsPage = () => {
                   When enabled, your profile and posts are visible to everyone on the internet. Turning this off limits visibility to approved followers.
                 </p>
               </div>
-              <span className="text-[#a5b4fc]/70 p-2.5 rounded-lg bg-white/[0.03] shrink-0">
+              <div className="p-2.5 rounded-lg bg-bg-input text-gray-400 shrink-0">
                 <Globe className="w-5 h-5" />
-              </span>
+              </div>
             </div>
             
             <div className="flex items-center gap-4 flex-wrap pt-2">
@@ -944,11 +1133,11 @@ const SettingsPage = () => {
 
       {/* Sticky Bottom Actions Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border-subtle bg-bg-base/90 backdrop-blur-lg">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between sm:justify-end gap-6">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between sm:justify-end gap-4 sm:gap-6">
           <button
             type="button"
             onClick={handleDiscard}
-            className="text-xs font-bold text-gray-500 hover:text-gray-300 transition-colors py-2 uppercase tracking-wide cursor-pointer"
+            className="text-xs font-bold text-text-muted hover:text-text-input transition-colors py-2 uppercase tracking-wide cursor-pointer"
           >
             Discard Changes
           </button>
@@ -956,7 +1145,7 @@ const SettingsPage = () => {
           <Button
             type="button"
             variant="primary"
-            className="!rounded-xl !py-3 !px-8 text-xs font-bold uppercase tracking-wide cursor-pointer bg-gradient-to-r from-brand-cyan via-brand-blue to-brand-purple shadow-lg shadow-brand-purple/20 hover:scale-102"
+            className="!rounded-xl !py-3 !px-5 sm:!px-8 text-xs font-bold uppercase tracking-wide cursor-pointer shadow-lg shadow-brand-purple/20 hover:scale-102"
             onClick={handleSaveAll}
             disabled={saving || uploading}
           >
@@ -980,17 +1169,17 @@ const SettingsPage = () => {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-md bg-[#0c0d1c]/95 border border-border-subtle rounded-2xl p-6 shadow-2xl backdrop-blur-xl z-10"
+              className="relative w-full max-w-md bg-bg-dropdown border border-border-subtle rounded-2xl p-6 shadow-2xl backdrop-blur-xl z-10"
             >
               <div className="flex items-center justify-between border-b border-border-subtle pb-4 mb-5">
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <h3 className="text-lg font-bold text-text-input flex items-center gap-2">
                   <Lock className="w-5 h-5 text-brand-purple" />
                   Change Password
                 </h3>
                 <button
                   type="button"
                   onClick={() => setIsPasswordModalOpen(false)}
-                  className="text-gray-400 hover:text-white text-sm cursor-pointer"
+                  className="text-text-muted hover:text-text-input text-sm cursor-pointer"
                 >
                   ✕
                 </button>
@@ -998,31 +1187,31 @@ const SettingsPage = () => {
 
               <form onSubmit={handleChangePasswordSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-2">Current Password</label>
+                  <label className="block text-xs font-semibold text-text-muted mb-2">Current Password</label>
                   <input
                     type="password"
                     required
-                    className="w-full bg-white/[0.03] border border-border-subtle rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
+                    className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-3 text-sm text-text-input focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
                     value={passwordForm.oldPassword}
                     onChange={(e) => setPasswordForm((f) => ({ ...f, oldPassword: e.target.value }))}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-2">New Password</label>
+                  <label className="block text-xs font-semibold text-text-muted mb-2">New Password</label>
                   <input
                     type="password"
                     required
-                    className="w-full bg-white/[0.03] border border-border-subtle rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
+                    className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-3 text-sm text-text-input focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
                     value={passwordForm.newPassword}
                     onChange={(e) => setPasswordForm((f) => ({ ...f, newPassword: e.target.value }))}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-2">Confirm New Password</label>
+                  <label className="block text-xs font-semibold text-text-muted mb-2">Confirm New Password</label>
                   <input
                     type="password"
                     required
-                    className="w-full bg-white/[0.03] border border-border-subtle rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
+                    className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-3 text-sm text-text-input focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
                     value={passwordForm.confirmPassword}
                     onChange={(e) => setPasswordForm((f) => ({ ...f, confirmPassword: e.target.value }))}
                   />
@@ -1039,7 +1228,7 @@ const SettingsPage = () => {
                   <Button
                     type="submit"
                     variant="primary"
-                    className="!rounded-xl bg-gradient-to-r from-indigo-500 to-brand-purple"
+                    className="!rounded-xl"
                     disabled={isChangingPassword}
                   >
                     {isChangingPassword ? 'Updating...' : 'Update Password'}
@@ -1066,17 +1255,17 @@ const SettingsPage = () => {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-md bg-[#0c0d1c]/95 border border-border-subtle rounded-2xl p-6 shadow-2xl backdrop-blur-xl z-10"
+              className="relative w-full max-w-md bg-bg-dropdown border border-border-subtle rounded-2xl p-6 shadow-2xl backdrop-blur-xl z-10"
             >
               <div className="flex items-center justify-between border-b border-border-subtle pb-4 mb-5">
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <h3 className="text-lg font-bold text-text-input flex items-center gap-2">
                   <Mail className="w-5 h-5 text-brand-cyan" />
                   Update Email Address
                 </h3>
                 <button
                   type="button"
                   onClick={() => setIsEmailModalOpen(false)}
-                  className="text-gray-400 hover:text-white text-sm cursor-pointer"
+                  className="text-text-muted hover:text-text-input text-sm cursor-pointer"
                 >
                   ✕
                 </button>
@@ -1084,15 +1273,15 @@ const SettingsPage = () => {
 
               <form onSubmit={handleUpdateEmailSubmit} className="space-y-4">
                 <div>
-                  <p className="text-xs text-gray-400 mb-4 leading-relaxed">
+                  <p className="text-xs text-text-muted mb-4 leading-relaxed">
                     Note: Your email address is used to log in and receive registered account notifications.
                   </p>
-                  <label className="block text-xs font-semibold text-gray-400 mb-2">New Email Address</label>
+                  <label className="block text-xs font-semibold text-text-muted mb-2">New Email Address</label>
                   <input
                     type="email"
                     required
                     placeholder="you@example.com"
-                    className="w-full bg-white/[0.03] border border-border-subtle rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
+                    className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-3 text-sm text-text-input focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
                     value={emailForm.newEmail}
                     onChange={(e) => setEmailForm((f) => ({ ...f, newEmail: e.target.value }))}
                   />
@@ -1109,7 +1298,7 @@ const SettingsPage = () => {
                   <Button
                     type="submit"
                     variant="primary"
-                    className="!rounded-xl bg-gradient-to-r from-brand-cyan to-brand-blue"
+                    className="!rounded-xl"
                     disabled={isUpdatingEmail}
                   >
                     {isUpdatingEmail ? 'Updating...' : 'Update Email'}
@@ -1136,7 +1325,7 @@ const SettingsPage = () => {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-md bg-[#0c0d1c]/95 border border-red-500/20 rounded-2xl p-6 shadow-2xl backdrop-blur-xl z-10"
+              className="relative w-full max-w-md bg-bg-dropdown border border-red-500/20 rounded-2xl p-6 shadow-2xl backdrop-blur-xl z-10"
             >
               <div className="flex items-center justify-between border-b border-red-500/10 pb-4 mb-5">
                 <h3 className="text-lg font-bold text-red-400 flex items-center gap-2">
@@ -1146,7 +1335,7 @@ const SettingsPage = () => {
                 <button
                   type="button"
                   onClick={() => setIsDeleteModalOpen(false)}
-                  className="text-gray-400 hover:text-white text-sm cursor-pointer"
+                  className="text-text-muted hover:text-text-input text-sm cursor-pointer"
                 >
                   ✕
                 </button>
@@ -1159,14 +1348,14 @@ const SettingsPage = () => {
                   </p>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-400 mb-2">
-                    To confirm, type <span className="text-white font-bold">DELETE</span> below:
+                  <label className="block text-xs font-semibold text-text-muted mb-2">
+                    To confirm, type <span className="text-text-input font-bold">DELETE</span> below:
                   </label>
                   <input
                     type="text"
                     required
                     placeholder="DELETE"
-                    className="w-full bg-white/[0.03] border border-border-subtle rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20 transition-all"
+                    className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-3 text-sm text-text-input focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20 transition-all"
                     value={deleteConfirmText}
                     onChange={(e) => setDeleteConfirmText(e.target.value)}
                   />
@@ -1187,6 +1376,180 @@ const SettingsPage = () => {
                     disabled={isDeletingAccount || deleteConfirmText !== 'DELETE'}
                   >
                     {isDeletingAccount ? 'Deleting...' : 'Delete My Account'}
+                  </Button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ENABLE 2FA MODAL */}
+      <AnimatePresence>
+        {is2FAModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIs2FAModalOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-md bg-bg-dropdown border border-border-subtle rounded-2xl p-6 shadow-2xl backdrop-blur-xl z-10"
+            >
+              <div className="flex items-center justify-between border-b border-border-subtle pb-4 mb-5">
+                <h3 className="text-lg font-bold text-text-input flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-brand-cyan" />
+                  Enable Two-Factor (2FA)
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setIs2FAModalOpen(false)}
+                  className="text-text-muted hover:text-text-input text-sm cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {isGenerating2FA ? (
+                <div className="flex flex-col items-center justify-center py-8 gap-3">
+                  <div className="w-8 h-8 border-2 border-brand-cyan border-t-transparent rounded-full animate-spin" />
+                  <p className="text-xs text-text-muted">Generating secret key...</p>
+                </div>
+              ) : (
+                <form onSubmit={handleEnable2FASubmit} className="space-y-5">
+                  <p className="text-xs text-text-muted leading-relaxed">
+                    Scan this QR code with an authenticator app (like Google Authenticator or Authy) to start receiving login codes.
+                  </p>
+                  
+                  {qrCodeDataUrl && (
+                    <div className="flex justify-center bg-white p-3 rounded-xl w-48 h-48 mx-auto border border-border-subtle">
+                      <img src={qrCodeDataUrl} alt="2FA QR Code" className="w-full h-full object-contain" />
+                    </div>
+                  )}
+
+                  {twoFactorSecret && (
+                    <div className="bg-bg-input border border-border-subtle rounded-xl p-3 text-center">
+                      <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">
+                        Or enter secret key manually
+                      </p>
+                      <code className="text-xs font-mono font-bold text-brand-cyan select-all tracking-wider">
+                        {twoFactorSecret}
+                      </code>
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-xs font-semibold text-text-muted mb-2">
+                      Enter the 6-digit verification code:
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      maxLength={6}
+                      placeholder="000000"
+                      className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-3 text-center text-lg font-mono font-bold tracking-widest text-text-input focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
+                      value={verificationCode}
+                      onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
+                    />
+                  </div>
+
+                  <div className="flex gap-4 justify-end pt-4 border-t border-border-subtle">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="!rounded-xl"
+                      onClick={() => setIs2FAModalOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      className="!rounded-xl"
+                      disabled={isVerifying2FA || verificationCode.length !== 6}
+                    >
+                      {isVerifying2FA ? 'Enabling...' : 'Enable 2FA'}
+                    </Button>
+                  </div>
+                </form>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* DISABLE 2FA MODAL */}
+      <AnimatePresence>
+        {isDisable2FAModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsDisable2FAModalOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-md bg-bg-dropdown border border-red-500/20 rounded-2xl p-6 shadow-2xl backdrop-blur-xl z-10"
+            >
+              <div className="flex items-center justify-between border-b border-red-500/10 pb-4 mb-5">
+                <h3 className="text-lg font-bold text-red-400 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5" />
+                  Disable Two-Factor (2FA)
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setIsDisable2FAModalOpen(false)}
+                  className="text-text-muted hover:text-text-input text-sm cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleDisable2FASubmit} className="space-y-4">
+                <p className="text-xs text-text-muted leading-relaxed">
+                  To disable Two-Factor Authentication, please enter the 6-digit verification code from your authenticator app.
+                </p>
+
+                <div>
+                  <label className="block text-xs font-semibold text-text-muted mb-2">
+                    Verification Code
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    placeholder="000000"
+                    className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-3 text-center text-lg font-mono font-bold tracking-widest text-text-input focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20 transition-all"
+                    value={disableCode}
+                    onChange={(e) => setDisableCode(e.target.value.replace(/\D/g, ''))}
+                  />
+                </div>
+
+                <div className="flex gap-4 justify-end pt-4 border-t border-border-subtle">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="!rounded-xl"
+                    onClick={() => setIsDisable2FAModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="danger"
+                    className="!rounded-xl"
+                    disabled={isDisabling2FA || disableCode.length !== 6}
+                  >
+                    {isDisabling2FA ? 'Disabling...' : 'Disable 2FA'}
                   </Button>
                 </div>
               </form>

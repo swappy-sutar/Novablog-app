@@ -36,10 +36,13 @@ model User {
   avatar        String?
   websiteUrl    String?
   githubUrl     String?
+  techStack     String[]       @default([])
   role          Role           @default(USER)
   isVerified    Boolean        @default(false)
   isActive      Boolean        @default(true)
   refreshToken  String?
+  twoFactorSecret String?
+  isTwoFactorEnabled Boolean       @default(false)
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
   createdAt     DateTime       @default(now())

@@ -17,7 +17,7 @@ const Footer = () => {
             developers, where precision meets clarity.
           </p>
           <div className="flex items-center gap-4 text-gray-400">
-            <a href="#" className="hover:text-white transition-colors">
+            <a href="#" className="hover:text-text-input transition-colors">
               GitHub
             </a>
             <a href="#" className="hover:text-brand-cyan transition-colors">
@@ -30,22 +30,22 @@ const Footer = () => {
           <h4 className="font-semibold mb-4 text-white">Platform</h4>
           <ul className="space-y-3 text-sm text-gray-400">
             <li>
-              <Link to="/feed" className="hover:text-gray-200 transition-colors">
+              <Link to="/feed" className="hover:text-text-input transition-colors">
                 Feed
               </Link>
             </li>
             <li>
-              <Link to="/explore" className="hover:text-gray-200 transition-colors">
+              <Link to="/explore" className="hover:text-text-input transition-colors">
                 Explore
               </Link>
             </li>
             <li>
-              <Link to="/about" className="hover:text-gray-200 transition-colors">
+              <Link to="/about" className="hover:text-text-input transition-colors">
                 About Us
               </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-gray-200 transition-colors">
+              <a href="#" className="hover:text-text-input transition-colors">
                 Changelog
               </a>
             </li>
@@ -56,22 +56,22 @@ const Footer = () => {
           <h4 className="font-semibold mb-4 text-white">Resources</h4>
           <ul className="space-y-3 text-sm text-gray-400">
             <li>
-              <a href="#" className="hover:text-gray-200 transition-colors">
+              <a href="#" className="hover:text-text-input transition-colors">
                 Documentation
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-gray-200 transition-colors">
+              <a href="#" className="hover:text-text-input transition-colors">
                 API Reference
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-gray-200 transition-colors">
+              <a href="#" className="hover:text-text-input transition-colors">
                 Community
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-gray-200 transition-colors">
+              <a href="#" className="hover:text-text-input transition-colors">
                 Guidelines
               </a>
             </li>
@@ -82,17 +82,17 @@ const Footer = () => {
           <h4 className="font-semibold mb-4 text-white">Legal</h4>
           <ul className="space-y-3 text-sm text-gray-400">
             <li>
-              <Link to="/privacy" className="hover:text-gray-200 transition-colors">
+              <Link to="/privacy" className="hover:text-text-input transition-colors">
                 Privacy Policy
               </Link>
             </li>
             <li>
-              <Link to="/terms" className="hover:text-gray-200 transition-colors">
+              <Link to="/terms" className="hover:text-text-input transition-colors">
                 Terms of Service
               </Link>
             </li>
             <li>
-              <Link to="/cookie-policy" className="hover:text-gray-200 transition-colors">
+              <Link to="/cookie-policy" className="hover:text-text-input transition-colors">
                 Cookie Policy
               </Link>
             </li>

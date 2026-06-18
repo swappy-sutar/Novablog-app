@@ -104,6 +104,26 @@ export const authAPI = {
     const response = await api.get('/auth/export-data');
     return response.data;
   },
+
+  generate2FA: async () => {
+    const response = await api.post('/auth/2fa/generate');
+    return response.data;
+  },
+
+  enable2FA: async (code) => {
+    const response = await api.post('/auth/2fa/enable', { code });
+    return response.data;
+  },
+
+  disable2FA: async (code) => {
+    const response = await api.post('/auth/2fa/disable', { code });
+    return response.data;
+  },
+
+  verify2FALogin: async ({ userId, code }) => {
+    const response = await api.post('/auth/2fa/verify-login', { userId, code });
+    return response.data;
+  },
 };
 
 // Blog API endpoints
@@ -312,5 +332,13 @@ api.interceptors.response.use(
     }
   },
 );
+
+export const getErrorMessage = (error, fallback = 'Something went wrong') => {
+  const msg = error.response?.data?.message;
+  if (Array.isArray(msg)) {
+    return msg.join(', ');
+  }
+  return msg || error.message || fallback;
+};
 
 export default api;

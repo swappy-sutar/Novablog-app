@@ -4,15 +4,15 @@ import { authAPI } from "../lib/api";
 const linkClass = ({ isActive }) =>
   `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors border ${
     isActive
-      ? "bg-brand-purple/15 text-[#c4b5fd] border-brand-purple/30"
-      : "text-gray-400 border-transparent hover:text-white hover:bg-white/[0.04]"
+      ? "bg-brand-purple/15 text-brand-purple border-brand-purple/30"
+      : "text-text-muted border-transparent hover:text-text-input hover:bg-bg-input"
   }`;
 
 const ProfileLayout = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col lg:flex-row gap-8 lg:gap-10 pb-20">
       <aside className="lg:w-56 shrink-0 lg:sticky lg:top-24 lg:self-start">
-        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3 px-1">
+        <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3 px-1">
           Account
         </p>
         <nav className="flex flex-row lg:flex-col gap-1 overflow-x-auto pb-1 lg:pb-0 -mx-1">
@@ -57,7 +57,7 @@ const ProfileLayout = () => {
             onClick={() => {
               authAPI.logout();
             }}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors border border-transparent text-gray-400 hover:text-red-400 hover:bg-red-500/10 w-full text-left cursor-pointer"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors border border-transparent text-text-muted hover:text-red-400 hover:bg-red-500/10 w-full text-left cursor-pointer"
           >
             <svg
               className="w-5 h-5 opacity-70"

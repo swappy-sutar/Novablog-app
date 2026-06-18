@@ -29,11 +29,11 @@ function heatLevel(seed) {
 }
 
 const heatColors = [
-  'bg-white/[0.06]',
-  'bg-white/[0.12]',
-  'bg-[#c3c7f3]/25',
-  'bg-[#c3c7f3]/45',
-  'bg-[#70e1f5]/50',
+  'bg-bg-input',
+  'bg-brand-purple/20',
+  'bg-brand-purple/40',
+  'bg-brand-purple/65',
+  'bg-brand-purple/90',
 ];
 
 function WritingHeatmap() {
@@ -233,7 +233,7 @@ const PublicProfilePage = () => {
         <div className="flex justify-end mb-4">
           <Link
             to="/profile/settings"
-            className="text-sm font-medium text-[#a5b4fc] hover:text-[#c4b5fd] transition-colors"
+            className="text-sm font-medium text-brand-purple hover:underline transition-colors"
           >
             Edit profile & settings →
           </Link>
@@ -283,7 +283,7 @@ const PublicProfilePage = () => {
               {profile?.avatar ? (
                 <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-purple/40 to-brand-cyan/30 text-3xl font-semibold text-white">
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-purple/40 to-brand-purple/20 text-3xl font-semibold text-white">
                   {initials}
                 </div>
               )}
@@ -315,7 +315,7 @@ const PublicProfilePage = () => {
                   onClick={handleFollowToggle}
                   className={`!rounded-[10px] !py-2.5 !px-4 ${
                     profile?.isFollowing 
-                      ? "bg-brand-cyan text-black hover:opacity-90 border-transparent" 
+                      ? "bg-brand-purple text-white hover:opacity-90 border-transparent" 
                       : "border-border-subtle bg-white/[0.04] hover:bg-white/[0.08]"
                   }`}
                 >
@@ -377,7 +377,7 @@ const PublicProfilePage = () => {
             </p>
             <p
               className={`text-xl md:text-2xl font-semibold tabular-nums ${
-                stat.accent ? 'text-[#70e1f5]' : 'text-white'
+                stat.accent ? 'text-brand-cyan' : 'text-white'
               }`}
             >
               {stat.value}
@@ -429,7 +429,7 @@ const PublicProfilePage = () => {
                   }
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[#70e1f5] hover:underline truncate"
+                  className="text-brand-cyan hover:underline truncate"
                 >
                   {websiteDisplay}
                 </a>
@@ -450,7 +450,7 @@ const PublicProfilePage = () => {
                   }
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[#70e1f5] hover:underline truncate"
+                  className="text-brand-cyan hover:underline truncate"
                 >
                   GitHub
                 </a>
@@ -474,20 +474,34 @@ const PublicProfilePage = () => {
           </ul>
         </GlassCard>
 
-        <GlassCard hoverEffect={false} className="!rounded-xl p-6 h-full">
-          <h2 className="text-lg font-semibold text-white mb-4">Tech stack</h2>
-          <div className="flex flex-wrap gap-2">
-            {DEFAULT_TECH.map((t) => (
-              <span
-                key={t}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium border border-border-subtle bg-white/[0.04] text-gray-300"
-              >
-                {t}
-              </span>
-            ))}
+        <GlassCard hoverEffect={false} className="!rounded-xl p-6 h-full flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-white">Tech stack</h2>
+              {isOwnProfile && (
+                <Link
+                  to="/profile/settings"
+                  className="text-xs font-medium text-brand-cyan hover:underline"
+                >
+                  Edit
+                </Link>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {(profile?.techStack && profile.techStack.length > 0 ? profile.techStack : DEFAULT_TECH).map((t) => (
+                <span
+                  key={t}
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium border border-border-subtle bg-white/[0.04] text-gray-300"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
           </div>
-          <p className="text-xs text-gray-600 mt-4">
-            Showcase tags are static for now; connect a skills API when ready.
+          <p className="text-xs text-gray-600 mt-4 pt-2 border-t border-border-subtle/30">
+            {profile?.techStack && profile.techStack.length > 0
+              ? "Customized tech stack tags"
+              : "Showcase tags are static for now; connect a skills API when ready."}
           </p>
         </GlassCard>
 

@@ -3,7 +3,19 @@ import { Link, useLocation } from 'react-router-dom';
 
 const EditorNavbar = ({ onPublish, isPublishing, showPublish = true }) => {
   const location = useLocation();
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(() => {
+    try {
+      const raw = localStorage.getItem('novablog_settings_prefs_v1');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.theme === 'light') return false;
+        if (parsed.theme === 'dark') return true;
+      }
+    } catch {
+      /* ignore */
+    }
+    return !document.documentElement.classList.contains('light-mode');
+  });
   const [user] = useState(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser && storedUser !== "undefined") {
@@ -24,7 +36,36 @@ const EditorNavbar = ({ onPublish, isPublishing, showPublish = true }) => {
     }
   }, [isDark]);
 
-  const toggleTheme = () => setIsDark(!isDark);
+  useEffect(() => {
+    const syncTheme = () => {
+      try {
+        const raw = localStorage.getItem('novablog_settings_prefs_v1');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          setIsDark(parsed.theme !== 'light');
+        }
+      } catch {
+        /* ignore */
+      }
+    };
+    window.addEventListener('storage', syncTheme);
+    return () => window.removeEventListener('storage', syncTheme);
+  }, []);
+
+  const toggleTheme = () => {
+    const nextDark = !isDark;
+    setIsDark(nextDark);
+    try {
+      const key = 'novablog_settings_prefs_v1';
+      const raw = localStorage.getItem(key);
+      const parsed = raw ? JSON.parse(raw) : { theme: 'dark' };
+      parsed.theme = nextDark ? 'dark' : 'light';
+      localStorage.setItem(key, JSON.stringify(parsed));
+      window.dispatchEvent(new Event('storage'));
+    } catch {
+      /* ignore */
+    }
+  };
 
   return (
     <nav className="fixed top-0 w-full z-50 glass-panel !rounded-none border-t-0 border-x-0 bg-bg-base/70">
@@ -48,13 +89,13 @@ const EditorNavbar = ({ onPublish, isPublishing, showPublish = true }) => {
         <Link to="#" className="text-gray-400 hover:text-white transition-colors">Explore</Link>
         <Link 
           to="/write" 
-          className={location.pathname === '/write' ? "text-brand-cyan relative after:absolute after:-bottom-2 after:left-0 after:w-full after:h-0.5 after:bg-brand-cyan after:rounded-full" : "text-gray-400 hover:text-white transition-colors"}
+          className={location.pathname === '/write' ? "text-brand-purple relative after:absolute after:-bottom-2 after:left-0 after:w-full after:h-0.5 after:bg-brand-purple after:rounded-full" : "text-gray-400 hover:text-white transition-colors"}
         >
           Write
         </Link>
         <Link 
           to="/my-blogs" 
-          className={location.pathname === '/my-blogs' ? "text-brand-cyan relative after:absolute after:-bottom-2 after:left-0 after:w-full after:h-0.5 after:bg-brand-cyan after:rounded-full" : "text-gray-400 hover:text-white transition-colors"}
+          className={location.pathname === '/my-blogs' ? "text-brand-purple relative after:absolute after:-bottom-2 after:left-0 after:w-full after:h-0.5 after:bg-brand-purple after:rounded-full" : "text-gray-400 hover:text-white transition-colors"}
         >
           My Blogs
         </Link>
@@ -83,14 +124,14 @@ const EditorNavbar = ({ onPublish, isPublishing, showPublish = true }) => {
             <button 
               onClick={onPublish}
               disabled={isPublishing}
-              className="bg-[#38bdf8] hover:bg-[#0ea5e9] text-white text-xs sm:text-sm font-semibold py-1.5 px-4 sm:px-6 rounded-full transition-colors disabled:opacity-70 flex-shrink-0"
+              className="bg-brand-purple hover:bg-brand-purple/90 text-white text-xs sm:text-sm font-semibold py-1.5 px-4 sm:px-6 rounded-full transition-colors disabled:opacity-70 flex-shrink-0"
             >
               {isPublishing ? "Publishing..." : "Publish"}
             </button>
           )}
 
           {/* User Avatar */}
-          <div className="w-8 h-8 rounded-full bg-brand-cyan/20 border border-brand-cyan flex items-center justify-center text-brand-cyan font-bold text-xs flex-shrink-0 ml-1 sm:ml-2">
+          <div className="w-8 h-8 rounded-full bg-brand-purple/20 border border-brand-purple flex items-center justify-center text-brand-purple font-bold text-xs flex-shrink-0 ml-1 sm:ml-2">
             {user?.firstname?.[0]?.toUpperCase() || 'U'}
           </div>
         </div>

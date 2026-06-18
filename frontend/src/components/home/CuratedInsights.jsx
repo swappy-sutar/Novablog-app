@@ -141,7 +141,7 @@ const CuratedInsights = () => {
         </div>
         <Link 
           to="/explore" 
-          className="text-xs font-bold text-brand-cyan hover:text-brand-blue transition-colors flex items-center gap-1"
+          className="text-xs font-bold text-brand-purple hover:text-[#c4b5fd] transition-colors flex items-center gap-1"
         >
           View All <span className="text-sm">→</span>
         </Link>
@@ -149,7 +149,7 @@ const CuratedInsights = () => {
         
         {/* Left Column: One large featured post card */}
         <div className="lg:col-span-8 flex flex-col">
-          <GlassCard className="relative p-0 border border-border-subtle bg-bg-card hover:border-brand-cyan/40 transition-all duration-300 h-full overflow-hidden flex flex-col justify-end min-h-[480px] group">
+          <GlassCard className="relative p-0 border border-border-subtle bg-bg-card hover:border-brand-purple/40 transition-all duration-300 h-full overflow-hidden flex flex-col justify-end min-h-[480px] group">
             
             {/* Full-bleed Thumbnail Background */}
             <Link to={`/post/${mainBlog.id}`} className="absolute inset-0 w-full h-full -z-10 cursor-pointer block">
@@ -165,12 +165,12 @@ const CuratedInsights = () => {
             <div className="p-8 space-y-4 z-10">
               <Link to={`/post/${mainBlog.id}`} className="block space-y-4 group/text cursor-pointer">
                 <div>
-                  <span className="inline-block px-3 py-1.5 rounded-lg bg-brand-cyan/25 border border-brand-cyan/30 text-[10px] font-bold text-brand-cyan tracking-widest uppercase">
+                  <span className="inline-block px-3 py-1.5 rounded-lg bg-brand-purple/25 border border-brand-purple/30 text-[10px] font-bold text-brand-purple tracking-widest uppercase">
                     {mainBlog.category}
                   </span>
                 </div>
  
-                <h3 className="text-2xl sm:text-3xl font-extrabold text-[#ffffff] tracking-tight leading-tight group-hover/text:text-brand-cyan transition-colors max-w-2xl">
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-[#ffffff] tracking-tight leading-tight group-hover/text:text-brand-purple transition-colors max-w-2xl">
                   {mainBlog.title}
                 </h3>
                 
@@ -188,10 +188,10 @@ const CuratedInsights = () => {
                   <img 
                     src={mainBlog.author.avatar} 
                     alt={mainBlog.author.name} 
-                    className="w-8 h-8 rounded-full object-cover border border-border-subtle group-hover/author:border-brand-cyan/50 transition-colors"
+                    className="w-8 h-8 rounded-full object-cover border border-border-subtle group-hover/author:border-brand-purple/50 transition-colors"
                   />
                   <div className="flex items-center gap-2 text-xs">
-                    <h4 className="font-bold text-[#ffffff] leading-none group-hover/author:text-brand-cyan transition-colors">{mainBlog.author.name}</h4>
+                    <h4 className="font-bold text-[#ffffff] leading-none group-hover/author:text-brand-purple transition-colors">{mainBlog.author.name}</h4>
                     <span className="text-gray-500">•</span>
                     <span className="text-[#9ca3af] font-medium">{mainBlog.readTime}</span>
                     <span className="text-gray-500">•</span>
@@ -212,7 +212,7 @@ const CuratedInsights = () => {
                 <span className="text-[10px] font-bold text-brand-purple tracking-widest uppercase block">
                   {post.category}
                 </span>
-                <h4 className="text-lg font-bold text-white group-hover/link:text-brand-cyan transition-colors line-clamp-2 leading-snug">
+                <h4 className="text-lg font-bold text-white group-hover/link:text-brand-purple transition-colors line-clamp-2 leading-snug">
                   {post.title}
                 </h4>
                 <p className="text-gray-400 text-xs line-clamp-3 leading-relaxed">
@@ -229,14 +229,14 @@ const CuratedInsights = () => {
                     <img 
                       src={post.author.avatar} 
                       alt={post.author.name} 
-                      className="w-6 h-6 rounded-full object-cover border border-border-subtle/50 group-hover/author:border-brand-cyan/50 transition-colors"
+                      className="w-6 h-6 rounded-full object-cover border border-border-subtle/50 group-hover/author:border-brand-purple/50 transition-colors"
                     />
                   ) : (
-                    <div className="w-6 h-6 rounded-full bg-brand-purple/20 border border-brand-purple/30 flex items-center justify-center text-[10px] font-bold text-white group-hover/author:border-brand-cyan/50 transition-colors">
+                    <div className="w-6 h-6 rounded-full bg-brand-purple/20 border border-brand-purple/30 flex items-center justify-center text-[10px] font-bold text-white group-hover/author:border-brand-purple/50 transition-colors">
                       {post.author.initials}
                     </div>
                   )}
-                  <span className="text-xs text-gray-300 font-medium group-hover/author:text-brand-cyan transition-colors">
+                  <span className="text-xs text-gray-300 font-medium group-hover/author:text-brand-purple transition-colors">
                     {post.author.name}
                   </span>
                 </Link>

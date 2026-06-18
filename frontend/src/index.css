@@ -22,6 +22,14 @@
   --color-gray-400: #94a3b8;
   --color-gray-500: #64748b;
   --color-gray-800: #1f2937;
+
+  /* Custom input colors */
+  --color-bg-input: rgba(255, 255, 255, 0.04);
+  --color-bg-input-hover: rgba(255, 255, 255, 0.07);
+  --color-text-input: #ffffff;
+  --color-text-muted: #94a3b8;
+  --color-bg-card-sub: rgba(12, 13, 28, 0.4);
+  --color-bg-card-sub-light: rgba(12, 13, 28, 0.2);
 }
 
 @layer base {
@@ -45,6 +53,14 @@
     /* Accessibility contrast adjustments for brand elements */
     --color-brand-cyan: #0e7490;
     --color-brand-purple: #6d28d9;
+
+    /* Custom input overrides */
+    --color-bg-input: rgba(15, 23, 42, 0.04);
+    --color-bg-input-hover: rgba(15, 23, 42, 0.07);
+    --color-text-input: #0f172a;
+    --color-text-muted: #475569;
+    --color-bg-card-sub: rgba(15, 23, 42, 0.03);
+    --color-bg-card-sub-light: rgba(15, 23, 42, 0.015);
 
     /* Invert tailwind standard colors with WCAG compliant contrast ratios */
     --color-white: #0f172a;
@@ -162,7 +178,7 @@
   }
 
   .bg-gradient-premium {
-    @apply bg-gradient-to-r from-brand-cyan via-brand-blue to-brand-purple;
+    @apply bg-brand-purple;
   }
 }
 
@@ -254,3 +270,18 @@
 .light-mode .hover\:text-gray-400:hover {
   color: #475569 !important;
 }
+
+/* Premium background dot grid and mask utilities */
+.bg-dot-grid {
+  background-size: 28px 28px;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1.2px, transparent 1.2px);
+}
+
+.light-mode .bg-dot-grid {
+  background-image: radial-gradient(rgba(15, 23, 42, 0.05) 1.2px, transparent 1.2px);
+}
+
+.mask-radial-fade {
+  mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 80%);
+  -webkit-mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 80%);
+}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { authAPI } from '../lib/api';
+import { authAPI, getErrorMessage } from '../lib/api';
 import toast from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
 import AuthBackground from '../components/auth/AuthBackground';
@@ -52,7 +52,7 @@ const SignUpPage = () => {
         navigate('/signin');
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Registration failed. Please try again.");
+      toast.error(getErrorMessage(error, "Registration failed. Please try again."));
     } finally {
       setIsLoading(false);
     }

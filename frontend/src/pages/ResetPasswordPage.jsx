@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { authAPI } from '../lib/api';
+import { authAPI, getErrorMessage } from '../lib/api';
 import toast from 'react-hot-toast';
 import AuthBackground from '../components/auth/AuthBackground';
 import Button from '../components/ui/Button';
@@ -57,7 +57,7 @@ const ResetPasswordPage = () => {
         }, 2000);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Invalid or expired link. Please request a new one.");
+      toast.error(getErrorMessage(error, "Invalid or expired link. Please request a new one."));
     } finally {
       setIsLoading(false);
     }

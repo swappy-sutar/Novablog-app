@@ -8,7 +8,7 @@ import ArticleContent from '../components/blog/ArticleContent';
 import ShareToolbar from '../components/blog/ShareToolbar';
 import Discussion from '../components/blog/Discussion';
 import GlassCard from '../components/ui/GlassCard';
-import { blogAPI, likeAPI, bookmarkAPI } from '../lib/api';
+import { blogAPI, likeAPI, bookmarkAPI, getErrorMessage } from '../lib/api';
 
 const BlogDetailsPage = () => {
   const { id } = useParams();
@@ -103,26 +103,41 @@ const BlogDetailsPage = () => {
   }, [blog]);
 
   const handleToggleLike = async () => {
+    const previousUserLiked = userLiked;
+    const previousLikeCount = likeCount;
+
+    // Optimistically update states
+    const newUserLiked = !previousUserLiked;
+    setUserLiked(newUserLiked);
+    setLikeCount((prev) => (newUserLiked ? prev + 1 : Math.max(0, prev - 1)));
+
     try {
       const res = await likeAPI.toggleLike(id);
       if (res.success && res.data) {
         const liked = res.data.liked;
         setUserLiked(liked);
-        setLikeCount((prev) => (liked ? prev + 1 : Math.max(0, prev - 1)));
         toast.success(liked ? "Post liked!" : "Post unliked.");
       }
     } catch (e) {
       console.error(e);
-      // Check if user is logged in
+      // Roll back state on failure
+      setUserLiked(previousUserLiked);
+      setLikeCount(previousLikeCount);
+
       if (e.response?.status === 401) {
         toast.error("Please log in to like posts.");
       } else {
-        toast.error("Failed to toggle like.");
+        toast.error(getErrorMessage(e, "Failed to toggle like."));
       }
     }
   };
 
   const handleToggleBookmark = async () => {
+    const previousUserBookmarked = userBookmarked;
+
+    // Optimistically update state
+    setUserBookmarked(!previousUserBookmarked);
+
     try {
       const res = await bookmarkAPI.toggleBookmark(id);
       if (res.success && res.data) {
@@ -132,10 +147,13 @@ const BlogDetailsPage = () => {
       }
     } catch (e) {
       console.error(e);
+      // Roll back state on failure
+      setUserBookmarked(previousUserBookmarked);
+
       if (e.response?.status === 401) {
         toast.error("Please log in to bookmark posts.");
       } else {
-        toast.error("Failed to toggle bookmark.");
+        toast.error(getErrorMessage(e, "Failed to toggle bookmark."));
       }
     }
   };

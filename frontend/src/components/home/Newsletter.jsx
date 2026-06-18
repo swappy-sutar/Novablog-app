@@ -28,7 +28,7 @@ const Newsletter = () => {
               className="w-full bg-border-subtle/20 border border-border-subtle rounded-xl px-5 py-3 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-brand-cyan transition-colors"
               required
             />
-            <Button variant="primary" className="py-3 px-6 text-xs font-bold uppercase tracking-wider whitespace-nowrap !rounded-xl bg-gradient-to-r from-brand-cyan to-brand-purple hover:opacity-95 transition-opacity shadow-[0_0_15px_rgba(139,92,246,0.3)]">
+            <Button variant="primary" className="py-3 px-6 text-xs font-bold uppercase tracking-wider whitespace-nowrap !rounded-xl bg-gradient-premium hover:opacity-95 transition-opacity shadow-[0_0_15px_rgba(139,92,246,0.3)]">
               Subscribe
             </Button>
           </form>

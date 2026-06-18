@@ -1,4 +1,4 @@
-import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsArray, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UpdateProfileDto {
   @IsOptional()
@@ -26,4 +26,9 @@ export class UpdateProfileDto {
   @IsString()
   @MaxLength(2048)
   githubUrl?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  techStack?: string[];
 }

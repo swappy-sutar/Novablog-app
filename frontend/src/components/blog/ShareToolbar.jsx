@@ -98,11 +98,11 @@ const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked
           <motion.div
             whileHover={{ scale: 1.12 }}
             whileTap={{ scale: 0.88 }}
-            className="p-3 bg-border-subtle/30 text-gray-400 hover:text-brand-cyan hover:bg-brand-cyan/10 rounded-full transition-colors duration-300"
+            className="p-3 bg-border-subtle/30 text-gray-400 hover:text-brand-purple hover:bg-brand-purple/10 rounded-full transition-colors duration-300"
           >
             <MessageCircle className="w-5 h-5" strokeWidth={2} />
           </motion.div>
-          <span className="text-[10px] text-gray-400 font-bold mt-1 group-hover:text-brand-cyan transition-colors duration-300">
+          <span className="text-[10px] text-gray-400 font-bold mt-1 group-hover:text-brand-purple transition-colors duration-300">
             {blog?._count?.comments || 0}
           </span>
         </button>
@@ -121,17 +121,17 @@ const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked
             }}
             transition={{ type: "spring", stiffness: 450, damping: 15 }}
             className={`p-3 rounded-full transition-colors duration-300 ${userBookmarked
-              ? 'bg-brand-cyan/10 text-brand-cyan'
-              : 'bg-border-subtle/30 text-gray-400 hover:text-brand-cyan hover:bg-brand-cyan/10'
+              ? 'bg-brand-purple/10 text-brand-purple'
+              : 'bg-border-subtle/30 text-gray-400 hover:text-brand-purple hover:bg-brand-purple/10'
               }`}
           >
             <Bookmark
               className="w-5 h-5 transition-transform duration-300"
-              fill={userBookmarked ? "#06b6d4" : "none"}
+              fill={userBookmarked ? "#8b5cf6" : "none"}
               strokeWidth={2}
             />
           </motion.div>
-          <span className={`text-[9px] font-bold mt-1 uppercase tracking-wider transition-colors duration-300 ${userBookmarked ? 'text-brand-cyan' : 'text-gray-500 group-hover:text-brand-cyan'}`}>
+          <span className={`text-[9px] font-bold mt-1 uppercase tracking-wider transition-colors duration-300 ${userBookmarked ? 'text-brand-purple' : 'text-gray-500 group-hover:text-brand-purple'}`}>
             {userBookmarked ? 'Saved' : 'Save'}
           </span>
         </button>
@@ -234,7 +234,7 @@ const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked
                     copyLink();
                     setShowShareMenu(false);
                   }}
-                  className="p-2.5 rounded-xl bg-border-subtle/30 hover:bg-border-subtle/80 text-white hover:text-brand-cyan transition-colors duration-300 cursor-pointer flex items-center justify-center"
+                  className="p-2.5 rounded-xl bg-border-subtle/30 hover:bg-border-subtle/80 text-white hover:text-brand-purple transition-colors duration-300 cursor-pointer flex items-center justify-center"
                   title="Copy link"
                 >
                   <Link2 className="w-4 h-4" />

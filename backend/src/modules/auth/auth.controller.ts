@@ -131,4 +131,30 @@ export class AuthController {
   async exportData(@CurrentUser() user: any) {
     return this.authService.exportData(user.id);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('2fa/generate')
+  async generate2FA(@CurrentUser() user: any) {
+    return this.authService.generateTwoFactor(user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('2fa/enable')
+  async enable2FA(@CurrentUser() user: any, @Body('code') code: string) {
+    return this.authService.enableTwoFactor(user.id, code);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('2fa/disable')
+  async disable2FA(@CurrentUser() user: any, @Body('code') code: string) {
+    return this.authService.disableTwoFactor(user.id, code);
+  }
+
+  @Post('2fa/verify-login')
+  async verify2FALogin(
+    @Body('userId') userId: string,
+    @Body('code') code: string,
+  ) {
+    return this.authService.verifyTwoFactorLogin(userId, code);
+  }
 }

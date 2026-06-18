@@ -159,7 +159,7 @@ const ExplorePage = () => {
     }
     const initials = `${author?.firstname?.[0] || ""}${author?.lastname?.[0] || ""}`.toUpperCase() || author?.username?.[0]?.toUpperCase() || "U";
     return (
-      <div className={`${sizeClass} rounded-full border border-white/10 bg-gradient-to-br from-brand-purple/40 to-brand-cyan/30 flex items-center justify-center text-[10px] font-bold text-white`}>
+      <div className={`${sizeClass} rounded-full border border-white/10 bg-gradient-to-br from-brand-purple/40 to-brand-purple/20 flex items-center justify-center text-[10px] font-bold text-white`}>
         {initials}
       </div>
     );
@@ -191,13 +191,13 @@ const ExplorePage = () => {
       <section className="max-w-3xl mx-auto space-y-5">
         <form onSubmit={handleSearchSubmit} className="relative flex items-center">
           <div className="relative w-full group">
-            <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-cyan transition-colors" />
+            <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-purple transition-colors" />
             <input
               type="text"
               placeholder="Search for technical insights..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/[0.03] border border-border-subtle focus:border-brand-cyan/50 focus:ring-1 focus:ring-brand-cyan/25 rounded-2xl py-4 pl-12 pr-40 text-sm sm:text-base text-white placeholder-gray-500 focus:outline-none transition-all duration-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)]"
+              className="w-full bg-white/[0.03] border border-border-subtle focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 rounded-2xl py-4 pl-12 pr-40 text-sm sm:text-base text-white placeholder-gray-500 focus:outline-none transition-all duration-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)]"
             />
           </div>
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
@@ -213,7 +213,7 @@ const ExplorePage = () => {
             <Button
               type="submit"
               variant="primary"
-              className="!rounded-xl !py-2.5 !px-5 text-xs sm:text-sm bg-gradient-to-r from-brand-cyan to-brand-purple hover:opacity-90 transition-all font-semibold"
+              className="!rounded-xl !py-2.5 !px-5 text-xs sm:text-sm font-semibold"
             >
               Search Insights
             </Button>
@@ -227,7 +227,7 @@ const ExplorePage = () => {
               key={tag.label}
               onClick={() => handleTagClick(tag.query)}
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all border ${activeQuery.toLowerCase() === tag.query.toLowerCase()
-                ? "bg-brand-cyan/15 text-brand-cyan border-brand-cyan/30"
+                ? "bg-brand-purple/15 text-brand-purple border-brand-purple/30"
                 : "bg-white/[0.02] text-gray-400 border-white/[0.04] hover:text-white hover:bg-white/[0.06] hover:border-white/10"
                 }`}
             >
@@ -251,7 +251,7 @@ const ExplorePage = () => {
             <div className="flex items-center justify-between border-b border-border-subtle pb-4">
               <div>
                 <h2 className="text-2xl font-bold text-white">
-                  Search Results for <span className="text-brand-cyan">"{activeQuery}"</span>
+                  Search Results for <span className="text-brand-purple">"{activeQuery}"</span>
                 </h2>
                 <p className="text-xs text-gray-400 mt-1">
                   Found {searchResults.length} articles matching your criteria
@@ -259,7 +259,7 @@ const ExplorePage = () => {
               </div>
               <button
                 onClick={clearSearch}
-                className="text-xs text-brand-cyan hover:underline font-semibold"
+                className="text-xs text-brand-purple hover:underline font-semibold"
               >
                 Back to Explore
               </button>
@@ -290,7 +290,7 @@ const ExplorePage = () => {
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       )}
-                      <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-brand-cyan/20 text-brand-cyan border border-brand-cyan/30 shadow-sm backdrop-blur-md">
+                      <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-brand-purple/20 text-brand-purple border border-brand-purple/30 shadow-sm backdrop-blur-md">
                         {blog.category?.name || "Insight"}
                       </span>
                     </Link>
@@ -298,7 +298,7 @@ const ExplorePage = () => {
                     {/* Content */}
                     <div className="p-5 flex-1 flex flex-col justify-between">
                       <Link to={`/post/${blog.id}`} className="space-y-2 block group/link cursor-pointer">
-                        <h3 className="text-base font-bold text-white leading-snug group-hover/link:text-brand-cyan transition-colors line-clamp-2">
+                        <h3 className="text-base font-bold text-white leading-snug group-hover/link:text-brand-purple transition-colors line-clamp-2">
                           {blog.title}
                         </h3>
                         <p className="text-xs text-gray-400 line-clamp-3 leading-relaxed">
@@ -311,7 +311,7 @@ const ExplorePage = () => {
                           className="flex items-center gap-2 group/author cursor-pointer"
                         >
                           {renderAvatar(blog.author, "w-6 h-6")}
-                          <span className="text-white font-medium group-hover/author:text-brand-cyan transition-colors">{getAuthorName(blog.author)}</span>
+                          <span className="text-white font-medium group-hover/author:text-brand-purple transition-colors">{getAuthorName(blog.author)}</span>
                         </Link>
                         <div className="flex items-center gap-1">
                           <Clock className="w-3.5 h-3.5 opacity-60" />
@@ -327,7 +327,7 @@ const ExplorePage = () => {
                 <p className="text-gray-400 text-sm">No insights found for "{activeQuery}". Try another keyword or check spelling.</p>
                 <button
                   onClick={clearSearch}
-                  className="mt-4 text-xs text-brand-purple hover:text-brand-cyan transition-colors font-bold uppercase tracking-wider"
+                  className="mt-4 text-xs text-brand-purple hover:text-brand-purple/80 transition-colors font-bold uppercase tracking-wider"
                 >
                   Clear search
                 </button>
@@ -352,7 +352,7 @@ const ExplorePage = () => {
                 </div>
                 <button
                   onClick={() => handleTagClick("System Design")}
-                  className="text-xs text-brand-cyan hover:text-brand-blue flex items-center gap-1 font-semibold transition-colors"
+                  className="text-xs text-brand-purple hover:text-[#c4b5fd] flex items-center gap-1 font-semibold transition-colors"
                 >
                   View All <ArrowRight className="w-3.5 h-3.5" />
                 </button>
@@ -374,16 +374,16 @@ const ExplorePage = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-bg-base/90 via-bg-base/30 to-transparent" />
 
                       <div className="relative space-y-4">
-                        <span className="inline-block px-3 py-1 bg-brand-cyan/20 text-brand-cyan text-[10px] font-bold tracking-widest uppercase rounded-md border border-brand-cyan/30 backdrop-blur-md">
+                        <span className="inline-block px-3 py-1 bg-brand-purple/20 text-brand-purple text-[10px] font-bold tracking-widest uppercase rounded-md border border-brand-purple/30 backdrop-blur-md">
                           {featuredBlog.category?.name || "Featured"}
                         </span>
-                        <h3 className="text-3xl font-extrabold text-white leading-tight tracking-tight group-hover:text-brand-cyan transition-colors line-clamp-2">
+                        <h3 className="text-3xl font-extrabold text-white leading-tight tracking-tight group-hover:text-brand-purple transition-colors line-clamp-2">
                           {featuredBlog.title}
                         </h3>
                         <p className="text-gray-300 text-sm max-w-xl leading-relaxed line-clamp-2">
                           {stripHtml(featuredBlog.excerpt) || (featuredBlog.content ? stripHtml(featuredBlog.content).slice(0, 180) + "..." : "No summary available.")}
                         </p>
-                        <div className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-white/[0.06] hover:bg-brand-cyan hover:text-black border border-white/5 transition-all w-fit cursor-pointer">
+                        <div className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-white/[0.06] hover:bg-brand-purple hover:text-white border border-white/5 transition-all w-fit cursor-pointer">
                           <BookOpen className="w-4 h-4" />
                           Read Article
                         </div>
@@ -401,10 +401,10 @@ const ExplorePage = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-bg-base/90 via-bg-base/30 to-transparent" />
 
                       <div className="relative space-y-4">
-                        <span className="inline-block px-3 py-1 bg-brand-cyan/20 text-brand-cyan text-[10px] font-bold tracking-widest uppercase rounded-md border border-brand-cyan/30 backdrop-blur-md">
+                        <span className="inline-block px-3 py-1 bg-brand-purple/20 text-brand-purple text-[10px] font-bold tracking-widest uppercase rounded-md border border-brand-purple/30 backdrop-blur-md">
                           Series
                         </span>
-                        <h3 className="text-3xl font-extrabold text-white leading-tight tracking-tight group-hover:text-brand-cyan transition-colors">
+                        <h3 className="text-3xl font-extrabold text-white leading-tight tracking-tight group-hover:text-brand-purple transition-colors">
                           Mastering Memory Safety in Embedded Systems
                         </h3>
                         <p className="text-gray-300 text-sm max-w-xl leading-relaxed">
@@ -412,7 +412,7 @@ const ExplorePage = () => {
                         </p>
                         <button
                           onClick={() => handleTagClick("Rust")}
-                          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-white/[0.06] hover:bg-brand-cyan hover:text-black border border-white/5 transition-all w-fit cursor-pointer"
+                          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-white/[0.06] hover:bg-brand-purple hover:text-white border border-white/5 transition-all w-fit cursor-pointer"
                         >
                           <Play className="w-4 h-4 fill-current" />
                           Start Series
@@ -432,10 +432,10 @@ const ExplorePage = () => {
                     popularBlogs.map((blog, idx) => (
                       <GlassCard key={blog.id} className="p-6 flex flex-col justify-between h-[228px] hover:bg-bg-card-hover/40 transition-colors border border-white/5 group">
                         <Link to={`/post/${blog.id}`} className="space-y-2.5 block group/link cursor-pointer">
-                          <span className={`text-[10px] font-bold tracking-wider uppercase ${idx === 0 ? "text-brand-purple" : "text-brand-cyan"}`}>
+                          <span className="text-[10px] font-bold tracking-wider uppercase text-brand-purple">
                             {blog.category?.name || (idx === 0 ? "Trending" : "Popular")}
                           </span>
-                          <h4 className={`text-lg font-bold text-white leading-snug transition-colors line-clamp-2 ${idx === 0 ? "group-hover/link:text-brand-purple" : "group-hover/link:text-brand-cyan"}`}>
+                          <h4 className="text-lg font-bold text-white leading-snug transition-colors line-clamp-2 group-hover/link:text-brand-purple">
                             {blog.title}
                           </h4>
                           <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
@@ -448,7 +448,7 @@ const ExplorePage = () => {
                             className="flex items-center gap-2 group/author cursor-pointer"
                           >
                             {renderAvatar(blog.author, "w-6 h-6")}
-                            <span className="text-gray-300 group-hover/author:text-brand-cyan transition-colors">{getAuthorName(blog.author)}</span>
+                            <span className="text-gray-300 group-hover/author:text-brand-purple transition-colors">{getAuthorName(blog.author)}</span>
                           </Link>
                           <div className="flex items-center gap-1">
                             <Clock className="w-3.5 h-3.5 opacity-60" />
@@ -484,10 +484,10 @@ const ExplorePage = () => {
                       {/* Card 2 Fallback */}
                       <GlassCard className="p-6 flex flex-col justify-between h-[228px] hover:bg-bg-card-hover/40 transition-colors border border-white/5 group">
                         <div className="space-y-2.5">
-                          <span className="text-[10px] font-bold tracking-wider text-brand-cyan uppercase">
+                          <span className="text-[10px] font-bold tracking-wider text-brand-purple uppercase">
                             Case Study
                           </span>
-                          <h4 className="text-lg font-bold text-white leading-snug group-hover:text-brand-cyan transition-colors">
+                          <h4 className="text-lg font-bold text-white leading-snug group-hover:text-brand-purple transition-colors">
                             Scaling to 10M RPM
                           </h4>
                           <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
@@ -496,7 +496,7 @@ const ExplorePage = () => {
                         </div>
                         <div className="flex items-center justify-between border-t border-border-subtle pt-3 mt-4 text-xs text-gray-500">
                           <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-brand-cyan/20 border border-brand-cyan flex items-center justify-center text-[10px] font-bold text-white">SJ</div>
+                            <div className="w-6 h-6 rounded-full bg-brand-purple/20 border border-brand-purple flex items-center justify-center text-[10px] font-bold text-white">SJ</div>
                             <span className="text-gray-300">Sarah Jenkins</span>
                           </div>
                           <span>15 min read</span>
@@ -540,7 +540,7 @@ const ExplorePage = () => {
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           />
                         )}
-                        <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-brand-cyan/20 text-brand-cyan border border-brand-cyan/30 shadow-sm backdrop-blur-md">
+                        <span className="absolute top-4 left-4 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-brand-purple/20 text-brand-purple border border-brand-purple/30 shadow-sm backdrop-blur-md">
                           {blog.category?.name || "Insight"}
                         </span>
                       </Link>
@@ -548,7 +548,7 @@ const ExplorePage = () => {
                       {/* Content */}
                       <div className="p-5 flex-1 flex flex-col justify-between">
                         <Link to={`/post/${blog.id}`} className="space-y-2 block group/link cursor-pointer">
-                          <h3 className="text-base font-bold text-white leading-snug group-hover/link:text-brand-cyan transition-colors line-clamp-2">
+                          <h3 className="text-base font-bold text-white leading-snug group-hover/link:text-brand-purple transition-colors line-clamp-2">
                             {blog.title}
                           </h3>
                           <p className="text-xs text-gray-400 line-clamp-3 leading-relaxed">
@@ -561,7 +561,7 @@ const ExplorePage = () => {
                             className="flex items-center gap-2 group/author cursor-pointer"
                           >
                             {renderAvatar(blog.author, "w-6 h-6")}
-                            <span className="text-white font-medium group-hover/author:text-brand-cyan transition-colors">{getAuthorName(blog.author)}</span>
+                            <span className="text-white font-medium group-hover/author:text-brand-purple transition-colors">{getAuthorName(blog.author)}</span>
                           </Link>
                           <div className="flex items-center gap-1">
                             <Clock className="w-3.5 h-3.5 opacity-60" />
