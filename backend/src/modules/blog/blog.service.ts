@@ -156,8 +156,6 @@ export class BlogService {
   }
 
   async getBlogById(id: string, currentUserId?: string) {
-    await this.blogsRepository.incrementViews(id);
-
     const cacheKey = REDIS_KEYS.BLOG(id);
     const cachedBlog = await this.cacheService.get<any>(cacheKey);
 
@@ -165,6 +163,7 @@ export class BlogService {
       if (cachedBlog.status !== 'PUBLISHED' && cachedBlog.authorId !== currentUserId) {
         throw new NotFoundException('Blog not found');
       }
+      await this.blogsRepository.incrementViews(id);
       cachedBlog.views += 1;
       return successResponse('Blog fetched successfully', cachedBlog);
     }
@@ -179,6 +178,7 @@ export class BlogService {
       throw new NotFoundException('Blog not found');
     }
 
+    await this.blogsRepository.incrementViews(id);
     blog.views += 1;
 
     await this.cacheService.set(cacheKey, blog, CACHE_TTL.BLOG);

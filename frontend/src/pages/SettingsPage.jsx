@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { 
@@ -14,7 +15,8 @@ import {
   Check, 
   ChevronRight, 
   Download,
-  AlertTriangle
+  AlertTriangle,
+  ArrowLeft
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { authAPI, getErrorMessage } from '../lib/api';
@@ -45,6 +47,7 @@ function loadPrefs() {
 
 function savePrefs(prefs) {
   localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+  window.dispatchEvent(new Event('storage'));
 }
 
 function formatDisplayName(p) {
@@ -113,6 +116,7 @@ function Toggle({ on, onChange, disabled }) {
 }
 
 const SettingsPage = () => {
+  const navigate = useNavigate();
   const [active, setActive] = useState('profile');
   const [profile, setProfile] = useState(null);
   const [loadState, setLoadState] = useState({ loading: true, error: null });
@@ -178,6 +182,15 @@ const SettingsPage = () => {
     }
   }, []);
 
+  const handlePreferenceChange = (key, value) => {
+    setPrefs((p) => {
+      const next = { ...p, [key]: value };
+      savePrefs(next);
+      prefsBaseline.current = JSON.parse(JSON.stringify(next));
+      return next;
+    });
+  };
+
   useEffect(() => {
     applyTheme(prefs.theme);
   }, [prefs.theme, applyTheme]);
@@ -185,6 +198,16 @@ const SettingsPage = () => {
   useEffect(() => {
     document.documentElement.style.fontSize = `${prefs.fontScale}%`;
     return () => {
+      try {
+        const raw = localStorage.getItem(PREFS_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed.fontScale === "number") {
+            document.documentElement.style.fontSize = `${parsed.fontScale}%`;
+            return;
+          }
+        }
+      } catch (e) {}
       document.documentElement.style.fontSize = '';
     };
   }, [prefs.fontScale]);
@@ -224,22 +247,22 @@ const SettingsPage = () => {
   }, [loadProfile]);
 
   useEffect(() => {
-    const syncTheme = () => {
+    const syncPrefs = () => {
       try {
         const raw = localStorage.getItem(PREFS_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
           setPrefs((p) => {
-            if (p.theme === parsed.theme) return p;
-            return { ...p, theme: parsed.theme };
+            if (p.theme === parsed.theme && p.fontScale === parsed.fontScale) return p;
+            return { ...p, theme: parsed.theme, fontScale: parsed.fontScale };
           });
         }
       } catch {
         /* ignore */
       }
     };
-    window.addEventListener('storage', syncTheme);
-    return () => window.removeEventListener('storage', syncTheme);
+    window.addEventListener('storage', syncPrefs);
+    return () => window.removeEventListener('storage', syncPrefs);
   }, []);
 
   // Scrollspy logic
@@ -640,6 +663,14 @@ const SettingsPage = () => {
 
       {/* Settings Navigation Sidebar */}
       <aside className="lg:w-64 shrink-0 lg:sticky lg:top-24 lg:self-start space-y-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-xs font-semibold text-text-muted hover:text-white transition-all duration-200 group/back cursor-pointer bg-white/[0.02] border border-border-subtle hover:border-brand-purple/40 hover:bg-brand-purple/5 px-3 py-1.5 rounded-lg w-fit mb-2"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover/back:-translate-x-0.5 duration-200 text-brand-purple" />
+          <span>Go Back</span>
+        </button>
+
         <div className="px-1">
           <h1 className="text-2xl font-bold text-white tracking-tight">Settings</h1>
           <p className="text-xs font-medium text-brand-purple tracking-wide uppercase mt-0.5">
@@ -941,7 +972,7 @@ const SettingsPage = () => {
                 <button
                   key={t.id}
                   type="button"
-                  onClick={() => setPrefs((p) => ({ ...p, theme: t.id }))}
+                  onClick={() => handlePreferenceChange('theme', t.id)}
                   className={`rounded-xl border p-4 text-left text-sm font-semibold transition-all flex items-center justify-between cursor-pointer ${
                     isSelected
                       ? 'border-brand-purple bg-brand-purple/5 text-white ring-1 ring-brand-purple/25'
@@ -974,7 +1005,7 @@ const SettingsPage = () => {
                 step={5}
                 value={prefs.fontScale}
                 onChange={(e) =>
-                  setPrefs((p) => ({ ...p, fontScale: Number(e.target.value) }))
+                  handlePreferenceChange('fontScale', Number(e.target.value))
                 }
                 className="flex-1 accent-brand-cyan h-1.5 rounded-full bg-gray-800 cursor-pointer"
               />

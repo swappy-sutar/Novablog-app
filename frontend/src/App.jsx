@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import ScrollToTop from "./components/layout/ScrollToTop";
@@ -22,6 +23,29 @@ import TermsPage from "./pages/TermsPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 function App() {
+  useEffect(() => {
+    const syncFontScale = () => {
+      try {
+        const raw = localStorage.getItem("novablog_settings_prefs_v1");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed.fontScale === "number") {
+            document.documentElement.style.fontSize = `${parsed.fontScale}%`;
+          }
+        }
+      } catch (e) {
+        /* ignore */
+      }
+    };
+
+    // Apply on mount
+    syncFontScale();
+
+    // Sync if updated anywhere
+    window.addEventListener("storage", syncFontScale);
+    return () => window.removeEventListener("storage", syncFontScale);
+  }, []);
+
   return (
     <Router>
       <ScrollToTop />

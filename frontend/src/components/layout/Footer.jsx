@@ -153,10 +153,10 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-8 pt-8 border-t border-border-subtle flex flex-col md:flex-row items-center justify-between text-xs text-gray-500 gap-4">
           <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3 text-center sm:text-left">
-            <p>© 2026 Swapnil Sutar (Swappy). All rights reserved.</p>
+            <p>© 2026 <a href="https://er-swapppy.vercel.app" target="_blank" rel="noopener noreferrer" className="hover:text-brand-purple hover:underline transition-colors font-medium">Swapnil Sutar</a>. All rights reserved.</p>
             <span className="hidden sm:inline text-gray-600">|</span>
             <p className="flex items-center gap-1">
-              Made with <Heart className="w-3.5 h-3.5 text-brand-purple fill-brand-purple inline animate-pulse" /> for developers.
+              Made with <Heart className="w-3.5 h-3.5 text-brand-purple fill-brand-purple inline animate-pulse" /> by <a href="https://er-swapppy.vercel.app" target="_blank" rel="noopener noreferrer" className="text-brand-purple underline transition-colors font-medium">Er-Swappy</a> for developers.
             </p>
           </div>
 
