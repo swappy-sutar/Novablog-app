@@ -49,4 +49,27 @@ export class EmailService {
       },
     );
   }
+
+  async sendVerifyEmail(
+    email: string,
+    firstname: string,
+    verifyLink: string,
+  ) {
+    await this.emailQueue.add(
+      'verify-email',
+      {
+        email,
+        firstname,
+        verifyLink,
+      },
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 3000,
+        },
+        removeOnComplete: true,
+      },
+    );
+  }
 }

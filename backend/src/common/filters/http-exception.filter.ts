@@ -29,7 +29,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     let message = 'Internal server error';
 
-    if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+    if (typeof exceptionResponse === 'string') {
+      message = exceptionResponse;
+    } else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
       message = (exceptionResponse as any).message || message;
     }
 

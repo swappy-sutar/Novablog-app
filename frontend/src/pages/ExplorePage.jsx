@@ -344,169 +344,90 @@ const ExplorePage = () => {
             className="space-y-16"
           >
             {/* Curated Collections Section */}
-            <section className="space-y-8">
-              <div className="flex items-end justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold text-white tracking-tight">Curated Collections</h2>
-                  <p className="text-sm text-gray-400 mt-1">Hand-picked deep dives from our technical staff.</p>
-                </div>
-                <button
-                  onClick={() => handleTagClick("System Design")}
-                  className="text-xs text-brand-purple hover:text-[#c4b5fd] flex items-center gap-1 font-semibold transition-colors"
-                >
-                  View All <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Large Card */}
-                {loadingExplore ? (
-                  <ExploreFeaturedSkeleton className="lg:col-span-2" />
-                ) : featuredBlog ? (
-                  <Link to={`/post/${featuredBlog.id}`} className="lg:col-span-2 block group relative">
-                    <GlassCard className="relative h-[480px] overflow-hidden flex flex-col justify-end p-8 border border-white/5 bg-gradient-to-t from-bg-base via-bg-base/40 to-transparent">
-                      {/* Visual coding background layer */}
-                      <img
-                        src={featuredBlog.thumbnail || "https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2664&auto=format&fit=crop"}
-                        alt={featuredBlog.title}
-                        className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-[1.02] transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-bg-base/90 via-bg-base/30 to-transparent" />
-
-                      <div className="relative space-y-4">
-                        <span className="inline-block px-3 py-1 bg-brand-purple/20 text-brand-purple text-[10px] font-bold tracking-widest uppercase rounded-md border border-brand-purple/30 backdrop-blur-md">
-                          {featuredBlog.category?.name || "Featured"}
-                        </span>
-                        <h3 className="text-3xl font-extrabold text-white leading-tight tracking-tight group-hover:text-brand-purple transition-colors line-clamp-2">
-                          {featuredBlog.title}
-                        </h3>
-                        <p className="text-gray-300 text-sm max-w-xl leading-relaxed line-clamp-2">
-                          {stripHtml(featuredBlog.excerpt) || (featuredBlog.content ? stripHtml(featuredBlog.content).slice(0, 180) + "..." : "No summary available.")}
-                        </p>
-                        <div className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-white/[0.06] hover:bg-brand-purple hover:text-white border border-white/5 transition-all w-fit cursor-pointer">
-                          <BookOpen className="w-4 h-4" />
-                          Read Article
-                        </div>
-                      </div>
-                    </GlassCard>
-                  </Link>
-                ) : (
-                  <div className="lg:col-span-2 block group relative">
-                    <GlassCard className="relative h-[480px] overflow-hidden flex flex-col justify-end p-8 border border-white/5 bg-gradient-to-t from-bg-base via-bg-base/40 to-transparent">
-                      <img
-                        src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"
-                        alt="Memory Safety"
-                        className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-[1.02] transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-bg-base/90 via-bg-base/30 to-transparent" />
-
-                      <div className="relative space-y-4">
-                        <span className="inline-block px-3 py-1 bg-brand-purple/20 text-brand-purple text-[10px] font-bold tracking-widest uppercase rounded-md border border-brand-purple/30 backdrop-blur-md">
-                          Series
-                        </span>
-                        <h3 className="text-3xl font-extrabold text-white leading-tight tracking-tight group-hover:text-brand-purple transition-colors">
-                          Mastering Memory Safety in Embedded Systems
-                        </h3>
-                        <p className="text-gray-300 text-sm max-w-xl leading-relaxed">
-                          An exhaustive 12-part exploration into zero-cost abstractions and modern memory management.
-                        </p>
-                        <button
-                          onClick={() => handleTagClick("Rust")}
-                          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-white/[0.06] hover:bg-brand-purple hover:text-white border border-white/5 transition-all w-fit cursor-pointer"
-                        >
-                          <Play className="w-4 h-4 fill-current" />
-                          Start Series
-                        </button>
-                      </div>
-                    </GlassCard>
+            {(loadingExplore || featuredBlog || (popularBlogs && popularBlogs.length > 0)) && (
+              <section className="space-y-8">
+                <div className="flex items-end justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold text-white tracking-tight">Curated Collections</h2>
+                    <p className="text-sm text-gray-400 mt-1">Hand-picked deep dives from our technical staff.</p>
                   </div>
-                )}
-
-                {/* Right Stacked Cards */}
-                <div className="flex flex-col gap-6">
-                  {loadingExplore ? (
-                    [1, 2].map((n) => (
-                      <ExplorePopularSkeleton key={n} />
-                    ))
-                  ) : popularBlogs && popularBlogs.length > 0 ? (
-                    popularBlogs.map((blog, idx) => (
-                      <GlassCard key={blog.id} className="p-6 flex flex-col justify-between h-[228px] hover:bg-bg-card-hover/40 transition-colors border border-white/5 group">
-                        <Link to={`/post/${blog.id}`} className="space-y-2.5 block group/link cursor-pointer">
-                          <span className="text-[10px] font-bold tracking-wider uppercase text-brand-purple">
-                            {blog.category?.name || (idx === 0 ? "Trending" : "Popular")}
-                          </span>
-                          <h4 className="text-lg font-bold text-white leading-snug transition-colors line-clamp-2 group-hover/link:text-brand-purple">
-                            {blog.title}
-                          </h4>
-                          <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
-                            {stripHtml(blog.excerpt) || (blog.content ? stripHtml(blog.content).slice(0, 120) + "..." : "No summary available.")}
-                          </p>
-                        </Link>
-                        <div className="flex items-center justify-between border-t border-border-subtle pt-3 mt-4 text-xs text-gray-500">
-                          <Link
-                            to={blog.author?.username ? `/profile/${blog.author.username}` : "#"}
-                            className="flex items-center gap-2 group/author cursor-pointer"
-                          >
-                            {renderAvatar(blog.author, "w-6 h-6")}
-                            <span className="text-gray-300 group-hover/author:text-brand-purple transition-colors">{getAuthorName(blog.author)}</span>
-                          </Link>
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5 opacity-60" />
-                            <span>{blog.readTime || 5} min read</span>
-                          </div>
-                        </div>
-                      </GlassCard>
-                    ))
-                  ) : (
-                    <>
-                      {/* Card 1 Fallback */}
-                      <GlassCard className="p-6 flex flex-col justify-between h-[228px] hover:bg-bg-card-hover/40 transition-colors border border-white/5 group">
-                        <div className="space-y-2.5">
-                          <span className="text-[10px] font-bold tracking-wider text-brand-purple uppercase">
-                            Rising Star
-                          </span>
-                          <h4 className="text-lg font-bold text-white leading-snug group-hover:text-brand-purple transition-colors">
-                            The Quantum Web
-                          </h4>
-                          <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
-                            How entanglement might redefine the HTTP protocol by 2030.
-                          </p>
-                        </div>
-                        <div className="flex items-center justify-between border-t border-border-subtle pt-3 mt-4 text-xs text-gray-500">
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-brand-purple/20 border border-brand-purple flex items-center justify-center text-[10px] font-bold text-white">AC</div>
-                            <span className="text-gray-300">Alex Chen</span>
-                          </div>
-                          <span>8 min read</span>
-                        </div>
-                      </GlassCard>
-
-                      {/* Card 2 Fallback */}
-                      <GlassCard className="p-6 flex flex-col justify-between h-[228px] hover:bg-bg-card-hover/40 transition-colors border border-white/5 group">
-                        <div className="space-y-2.5">
-                          <span className="text-[10px] font-bold tracking-wider text-brand-purple uppercase">
-                            Case Study
-                          </span>
-                          <h4 className="text-lg font-bold text-white leading-snug group-hover:text-brand-purple transition-colors">
-                            Scaling to 10M RPM
-                          </h4>
-                          <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
-                            Lessons from the infrastructure overhaul of Titan Labs.
-                          </p>
-                        </div>
-                        <div className="flex items-center justify-between border-t border-border-subtle pt-3 mt-4 text-xs text-gray-500">
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-brand-purple/20 border border-brand-purple flex items-center justify-center text-[10px] font-bold text-white">SJ</div>
-                            <span className="text-gray-300">Sarah Jenkins</span>
-                          </div>
-                          <span>15 min read</span>
-                        </div>
-                      </GlassCard>
-                    </>
-                  )}
                 </div>
-              </div>
-            </section>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Left Large Card */}
+                  {loadingExplore ? (
+                    <ExploreFeaturedSkeleton className="lg:col-span-2" />
+                  ) : featuredBlog ? (
+                    <Link to={`/post/${featuredBlog.id}`} className={`${popularBlogs && popularBlogs.length > 0 ? "lg:col-span-2" : "lg:col-span-3"} block group relative`}>
+                      <GlassCard className="relative h-[480px] overflow-hidden flex flex-col justify-end p-8 border border-white/5 bg-gradient-to-t from-bg-base via-bg-base/40 to-transparent">
+                        <img
+                          src={featuredBlog.thumbnail || "https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2664&auto=format&fit=crop"}
+                          alt={featuredBlog.title}
+                          className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-[1.02] transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-bg-base/90 via-bg-base/30 to-transparent" />
+
+                        <div className="relative space-y-4">
+                          <span className="inline-block px-3 py-1 bg-brand-purple/20 text-brand-purple text-[10px] font-bold tracking-widest uppercase rounded-md border border-brand-purple/30 backdrop-blur-md">
+                            {featuredBlog.category?.name || "Featured"}
+                          </span>
+                          <h3 className="text-3xl font-extrabold text-white leading-tight tracking-tight group-hover:text-brand-purple transition-colors line-clamp-2">
+                            {featuredBlog.title}
+                          </h3>
+                          <p className="text-gray-300 text-sm max-w-xl leading-relaxed line-clamp-2">
+                            {stripHtml(featuredBlog.excerpt) || (featuredBlog.content ? stripHtml(featuredBlog.content).slice(0, 180) + "..." : "No summary available.")}
+                          </p>
+                          <div className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-white/[0.06] hover:bg-brand-purple hover:text-white border border-white/5 transition-all w-fit cursor-pointer">
+                            <BookOpen className="w-4 h-4" />
+                            Read Article
+                          </div>
+                        </div>
+                      </GlassCard>
+                    </Link>
+                  ) : null}
+
+                  {/* Right Stacked Cards */}
+                  {loadingExplore ? (
+                    <div className="flex flex-col gap-6">
+                      {[1, 2].map((n) => (
+                        <ExplorePopularSkeleton key={n} />
+                      ))}
+                    </div>
+                  ) : popularBlogs && popularBlogs.length > 0 ? (
+                    <div className={`${featuredBlog ? "lg:col-span-1" : "lg:col-span-3"} flex flex-col gap-6`}>
+                      {popularBlogs.map((blog, idx) => (
+                        <GlassCard key={blog.id} className="p-6 flex flex-col justify-between h-[228px] hover:bg-bg-card-hover/40 transition-colors border border-white/5 group">
+                          <Link to={`/post/${blog.id}`} className="space-y-2.5 block group/link cursor-pointer">
+                            <span className="text-[10px] font-bold tracking-wider uppercase text-brand-purple">
+                              {blog.category?.name || (idx === 0 ? "Trending" : "Popular")}
+                            </span>
+                            <h4 className="text-lg font-bold text-white leading-snug transition-colors line-clamp-2 group-hover/link:text-brand-purple">
+                              {blog.title}
+                            </h4>
+                            <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">
+                              {stripHtml(blog.excerpt) || (blog.content ? stripHtml(blog.content).slice(0, 120) + "..." : "No summary available.")}
+                            </p>
+                          </Link>
+                          <div className="flex items-center justify-between border-t border-border-subtle pt-3 mt-4 text-xs text-gray-500">
+                            <Link
+                              to={blog.author?.username ? `/profile/${blog.author.username}` : "#"}
+                              className="flex items-center gap-2 group/author cursor-pointer"
+                            >
+                              {renderAvatar(blog.author, "w-6 h-6")}
+                              <span className="text-gray-300 group-hover/author:text-brand-purple transition-colors">{getAuthorName(blog.author)}</span>
+                            </Link>
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-3.5 h-3.5 opacity-60" />
+                              <span>{blog.readTime || 5} min read</span>
+                            </div>
+                          </div>
+                        </GlassCard>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              </section>
+            )}
 
             {/* General Insights Feed */}
             <section className="space-y-8">

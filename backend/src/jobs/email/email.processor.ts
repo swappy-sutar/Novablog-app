@@ -28,6 +28,15 @@ export class EmailProcessor extends WorkerHost {
         );
 
         break;
+
+      case 'verify-email':
+        await this.mailProvider.sendVerifyEmail(
+          job.data.email,
+          job.data.firstname,
+          job.data.verifyLink,
+        );
+
+        break;
     }
   }
 }

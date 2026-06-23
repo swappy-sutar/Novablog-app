@@ -10,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
 import { generateSecret, generateURI, verify } from 'otplib';
 import * as qrcode from 'qrcode';
+import { v4 as uuidv4 } from 'uuid';
 import { UsersRepository } from './repositories/users.repository';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -74,16 +75,30 @@ export class AuthService {
       refreshToken: hashedRefreshToken,
     });
 
+    // Redis Session Storage
+    const sessionKey = `session:${user.id}`;
+    await this.cacheService.set(sessionKey, hashedRefreshToken, 604800); // 7 days TTL
+
+    // Redis Email Verification Token
+    const verificationToken = uuidv4();
+    const verifyTokenKey = `email-verification:${verificationToken}`;
+    await this.cacheService.set(verifyTokenKey, user.id, 86400); // 24 hours TTL
+
     const { password, refreshToken, ...safeUser } = user;
 
     await this.cacheService.del(REDIS_KEYS.USER(user.id));
 
     await this.cacheService.del(REDIS_KEYS.USER_PROFILE(user.id));
 
+    const verifyLink = `${
+      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:5173'
+    }/verify-email?token=${verificationToken}`;
+
+    await this.emailService.sendVerifyEmail(user.email, user.firstname, verifyLink);
     await this.emailService.sendWelcomeEmail(user.email, user.firstname);
 
     return successResponse(
-      'User registered successfully',
+      'User registered successfully. Please verify your email.',
       {
         user: safeUser,
         accessToken: tokens.accessToken,
@@ -102,13 +117,39 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    // Account Lockout check
+    if (user.lockedUntil && user.lockedUntil > new Date()) {
+      throw new UnauthorizedException('Account is locked. Try again in 15 minutes.');
+    }
+
     const isPasswordMatched = await comparePassword(
       loginDto.password,
       user.password,
     );
 
     if (!isPasswordMatched) {
+      const failedAttempts = user.failedAttempts + 1;
+      const updateData: any = { failedAttempts };
+      
+      if (failedAttempts >= 5) {
+        updateData.lockedUntil = new Date(Date.now() + 15 * 60 * 1000);
+      }
+      
+      await this.usersRepository.update(user.id, updateData);
+      
+      if (failedAttempts >= 5) {
+        throw new UnauthorizedException('Account is locked. Try again in 15 minutes.');
+      }
+      
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    // Reset failed attempts upon successful login
+    if (user.failedAttempts > 0 || user.lockedUntil) {
+      await this.usersRepository.update(user.id, {
+        failedAttempts: 0,
+        lockedUntil: null,
+      });
     }
 
     if (user.isTwoFactorEnabled) {
@@ -129,6 +170,10 @@ export class AuthService {
     await this.usersRepository.update(user.id, {
       refreshToken: hashedRefreshToken,
     });
+
+    // Redis Session Storage
+    const sessionKey = `session:${user.id}`;
+    await this.cacheService.set(sessionKey, hashedRefreshToken, 604800); // 7 days TTL
 
     const { password, refreshToken, ...safeUser } = user;
 
@@ -449,6 +494,13 @@ export class AuthService {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET')!,
       });
 
+      // Verify the session in Redis first
+      const sessionKey = `session:${payload.id}`;
+      const cachedSession = await this.cacheService.get<string>(sessionKey);
+      if (!cachedSession) {
+        throw new UnauthorizedException('Session expired or invalid');
+      }
+
       const user = await this.usersRepository.findById(payload.id);
 
       if (!user || !user.refreshToken) {
@@ -460,7 +512,7 @@ export class AuthService {
         user.refreshToken,
       );
 
-      if (!isRefreshTokenMatched) {
+      if (!isRefreshTokenMatched || cachedSession !== user.refreshToken) {
         throw new UnauthorizedException('Invalid refresh token');
       }
 
@@ -471,6 +523,9 @@ export class AuthService {
       await this.usersRepository.update(user.id, {
         refreshToken: hashedRefreshToken,
       });
+
+      // Update the Redis session
+      await this.cacheService.set(sessionKey, hashedRefreshToken, 604800); // 7 days TTL
 
       return successResponse(
         'Token refreshed successfully',
@@ -490,6 +545,9 @@ export class AuthService {
     await this.cacheService.del(REDIS_KEYS.USER(userId));
 
     await this.cacheService.del(REDIS_KEYS.USER_PROFILE(userId));
+
+    // Delete Redis Session
+    await this.cacheService.del(`session:${userId}`);
 
     return successResponse('Logout successful', null, HttpStatus.OK);
   }
@@ -573,12 +631,10 @@ export class AuthService {
         expiresIn: '1h',
       },
     );
-    const resetTokenExpires = new Date(Date.now() + 3600000); // 1 hour
 
-    await this.usersRepository.update(user.id, {
-      resetPasswordToken: resetToken,
-      resetPasswordExpires: resetTokenExpires,
-    });
+    // Save token in Redis with user ID as value and 1 hour TTL
+    const resetTokenKey = `password-reset:${resetToken}`;
+    await this.cacheService.set(resetTokenKey, user.id, 3600); // 1 hour TTL
 
     const resetLink = `${
       this.configService.get<string>('FRONTEND_URL') || 'http://localhost:5173'
@@ -594,25 +650,26 @@ export class AuthService {
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
-    const user = await this.usersRepository.findByResetToken(
-      resetPasswordDto.token,
-    );
+    const resetTokenKey = `password-reset:${resetPasswordDto.token}`;
+    const userId = await this.cacheService.get<string>(resetTokenKey);
 
-    if (!user) {
+    if (!userId) {
       throw new BadRequestException('Invalid or expired token');
     }
 
-    if (!user.resetPasswordExpires || new Date() > user.resetPasswordExpires) {
-      throw new BadRequestException('Token has expired');
+    const user = await this.usersRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
 
     const hashedPassword = await hashPassword(resetPasswordDto.password);
 
     await this.usersRepository.update(user.id, {
       password: hashedPassword,
-      resetPasswordToken: null,
-      resetPasswordExpires: null,
     });
+
+    // Delete token from Redis
+    await this.cacheService.del(resetTokenKey);
 
     await this.cacheService.del(REDIS_KEYS.USER(user.id));
     await this.cacheService.del(REDIS_KEYS.USER_PROFILE(user.id));
@@ -623,6 +680,36 @@ export class AuthService {
     }
 
     return successResponse('Password reset successfully', null);
+  }
+
+  async verifyEmail(token: string) {
+    const verifyTokenKey = `email-verification:${token}`;
+    const userId = await this.cacheService.get<string>(verifyTokenKey);
+
+    if (!userId) {
+      throw new BadRequestException('Invalid or expired verification token');
+    }
+
+    const user = await this.usersRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.usersRepository.verifyUser(userId);
+
+    // Delete token from Redis
+    await this.cacheService.del(verifyTokenKey);
+
+    // Invalidate caches
+    await this.cacheService.del(REDIS_KEYS.USER(userId));
+    await this.cacheService.del(REDIS_KEYS.USER_PROFILE(userId));
+    if (user.username) {
+      await this.cacheService.del(
+        REDIS_KEYS.USER_PROFILE_BY_USERNAME(user.username),
+      );
+    }
+
+    return successResponse('Email verified successfully', null);
   }
 
   async changePassword(userId: string, dto: ChangePasswordDto) {
@@ -769,10 +856,9 @@ export class AuthService {
       secret,
     });
 
-    // Save secret to database temporarily (it becomes active after verify/enable)
-    await this.usersRepository.update(userId, {
-      twoFactorSecret: secret,
-    });
+    // Save secret to Redis temporarily (10 minutes TTL) instead of database
+    const tempSecretKey = `2fa-temp-secret:${userId}`;
+    await this.cacheService.set(tempSecretKey, secret, 600);
 
     const qrCodeDataUrl = await qrcode.toDataURL(otpauthUrl);
 
@@ -788,13 +874,19 @@ export class AuthService {
 
   async enableTwoFactor(userId: string, code: string) {
     const user = await this.usersRepository.findById(userId);
-    if (!user || !user.twoFactorSecret) {
-      throw new BadRequestException('Two-factor authentication is not set up');
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const tempSecretKey = `2fa-temp-secret:${userId}`;
+    const secret = await this.cacheService.get<string>(tempSecretKey);
+    if (!secret) {
+      throw new BadRequestException('Two-factor authentication setup expired or not initiated');
     }
 
     const result = await verify({
       token: code,
-      secret: user.twoFactorSecret,
+      secret,
     });
 
     if (!result || !result.valid) {
@@ -803,7 +895,11 @@ export class AuthService {
 
     await this.usersRepository.update(userId, {
       isTwoFactorEnabled: true,
+      twoFactorSecret: secret,
     });
+
+    // Remove temp secret from Redis
+    await this.cacheService.del(tempSecretKey);
 
     // Evict user caches
     await this.cacheService.del(REDIS_KEYS.USER(userId));
@@ -865,6 +961,10 @@ export class AuthService {
     await this.usersRepository.update(user.id, {
       refreshToken: hashedRefreshToken,
     });
+
+    // Redis Session Storage
+    const sessionKey = `session:${user.id}`;
+    await this.cacheService.set(sessionKey, hashedRefreshToken, 604800); // 7 days TTL
 
     const { password, refreshToken, ...safeUser } = user;
 

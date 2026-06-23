@@ -3,41 +3,6 @@ import { Link } from 'react-router-dom';
 import GlassCard from '../ui/GlassCard';
 import { blogAPI } from '../../lib/api';
 
-const MOCK_CONTRIBUTORS = [
-  {
-    name: 'Marcus Thorne',
-    handle: '1.2M READS',
-    role: 'Specialist in Dist. Systems',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
-    glowColor: 'shadow-[0_0_20px_rgba(6,182,212,0.4)] border-brand-cyan',
-    username: 'marcus'
-  },
-  {
-    name: 'Sarah Chen',
-    handle: '980K READS',
-    role: 'Embedded Systems Pioneer',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200',
-    glowColor: 'shadow-[0_0_20px_rgba(139,92,246,0.4)] border-brand-purple',
-    username: 'sarah'
-  },
-  {
-    name: 'Julian Vogt',
-    handle: '880K READS',
-    role: 'Full-Stack Architect',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200',
-    glowColor: 'shadow-[0_0_20px_rgba(59,130,246,0.4)] border-brand-blue',
-    username: 'julian'
-  },
-  {
-    name: 'Nara Williams',
-    handle: '720K READS',
-    role: 'Cloud Native Strategist',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
-    glowColor: 'shadow-[0_0_20px_rgba(236,72,153,0.4)] border-pink-500',
-    username: 'nara'
-  }
-];
-
 const GLOW_COLORS = [
   'shadow-[0_0_20px_rgba(6,182,212,0.4)] border-brand-cyan',
   'shadow-[0_0_20px_rgba(139,92,246,0.4)] border-brand-purple',
@@ -81,25 +46,23 @@ const TopContributors = () => {
             };
           });
 
-          let finalContributors = [...mapped];
-          while (finalContributors.length < 4 && finalContributors.length < MOCK_CONTRIBUTORS.length) {
-            const mockItem = MOCK_CONTRIBUTORS[finalContributors.length];
-            finalContributors.push(mockItem);
-          }
-
-          setContributors(finalContributors);
+          setContributors(mapped);
         } else {
-          setContributors(MOCK_CONTRIBUTORS);
+          setContributors([]);
         }
       } catch (err) {
         console.error("Failed to load top contributors:", err);
-        setContributors(MOCK_CONTRIBUTORS);
+        setContributors([]);
       } finally {
         setLoading(false);
       }
     };
     fetchContributors();
   }, []);
+
+  if (!loading && contributors.length === 0) {
+    return null;
+  }
 
   return (
     <section className="max-w-7xl mx-auto px-6 mb-20">

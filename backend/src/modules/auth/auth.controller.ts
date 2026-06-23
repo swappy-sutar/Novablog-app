@@ -6,9 +6,15 @@ import {
   Param,
   Patch,
   Post,
+  Query,
+  Req,
+  Res,
+  UnauthorizedException,
   UploadedFile,
   UseGuards,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
+import * as express from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -28,13 +34,63 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  async register(@Body() registerDto: RegisterDto) {
-    return this.authService.register(registerDto);
+  async register(
+    @Body() registerDto: RegisterDto,
+    @Res({ passthrough: true }) res: express.Response,
+  ) {
+    const result = await this.authService.register(registerDto);
+    const data = result.data as any;
+    if (data && data.refreshToken) {
+      const { accessToken, refreshToken, user } = data;
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: '/',
+      });
+      return {
+        ...result,
+        data: {
+          user,
+          accessToken,
+        },
+      };
+    }
+    return result;
+  }
+
+  @Get('verify-email')
+  async verifyEmail(@Query('token') token: string) {
+    return this.authService.verifyEmail(token);
   }
 
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: express.Response,
+  ) {
+    const result = await this.authService.login(loginDto);
+    const data = result.data as any;
+    if (data && data.refreshToken) {
+      const { accessToken, refreshToken, user } = data;
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: '/',
+      });
+      return {
+        ...result,
+        data: {
+          user,
+          accessToken,
+        },
+      };
+    }
+    return result;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -82,14 +138,49 @@ export class AuthController {
   }
 
   @Post('refresh-token')
-  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
-    return this.authService.refreshToken(refreshTokenDto.refreshToken);
+  async refreshToken(
+    @Req() req: express.Request,
+    @Res({ passthrough: true }) res: express.Response,
+  ) {
+    const refreshToken = req.cookies?.refreshToken;
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token not found');
+    }
+    const result = await this.authService.refreshToken(refreshToken);
+    const data = result.data as any;
+    if (data && data.refreshToken) {
+      const { accessToken, refreshToken: newRefreshToken } = data;
+      res.cookie('refreshToken', newRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: '/',
+      });
+      return {
+        ...result,
+        data: {
+          accessToken,
+        },
+      };
+    }
+    return result;
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('logout')
-  async logout(@CurrentUser() user: any) {
-    return this.authService.logout(user.id);
+  async logout(
+    @CurrentUser() user: any,
+    @Res({ passthrough: true }) res: express.Response,
+  ) {
+    const result = await this.authService.logout(user.id);
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      path: '/',
+    });
+    return result;
   }
 
   @Post('forgot-password')
@@ -154,7 +245,27 @@ export class AuthController {
   async verify2FALogin(
     @Body('userId') userId: string,
     @Body('code') code: string,
+    @Res({ passthrough: true }) res: express.Response,
   ) {
-    return this.authService.verifyTwoFactorLogin(userId, code);
+    const result = await this.authService.verifyTwoFactorLogin(userId, code);
+    const data = result.data as any;
+    if (data && data.refreshToken) {
+      const { accessToken, refreshToken, user } = data;
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: '/',
+      });
+      return {
+        ...result,
+        data: {
+          user,
+          accessToken,
+        },
+      };
+    }
+    return result;
   }
 }

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaModule } from './config/prisma/prisma.module';
 import { RedisModule } from './config/redis/redis.module';
 import { BlogModule } from './modules/blog/blog.module';
@@ -13,11 +13,33 @@ import { JobsEmailModule } from './jobs/email/email.module';
 import { BullMQModule } from './config/bullmq/bull.module';
 import { ResendModule } from './config/resend/resend.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
+import { APP_GUARD } from '@nestjs/core';
+import Redis from 'ioredis';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        throttlers: [
+          {
+            ttl: 60000,
+            limit: 100,
+          },
+        ],
+        storage: new ThrottlerStorageRedisService(
+          new Redis({
+            host: config.get<string>('REDIS_HOST') || 'localhost',
+            port: Number(config.get<string>('REDIS_PORT')) || 6379,
+          }),
+        ),
+      }),
     }),
     AuthModule,
     PrismaModule,
@@ -32,6 +54,12 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     NotificationsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

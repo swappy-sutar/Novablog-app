@@ -13,6 +13,17 @@ const DEFAULT_TAGS = [
   { label: '#Cryptography', query: 'Cryptography' }
 ];
 
+const MARQUEE_ITEMS = [
+  { text: 'NovaBlog Architecture 💻', color: 'text-brand-cyan' },
+  { text: 'Built by Developers for Developers 🛠', color: 'text-gray-500' },
+  { text: 'Markdown-First Editor ✍', color: 'text-gray-500' },
+  { text: 'Scale Beyond Limits ⚡', color: 'text-brand-purple' },
+  { text: 'SEO Optimized for Tech Articles 📈', color: 'text-gray-500' },
+  { text: 'Ultra-Fast Static Site Speeds 🚀', color: 'text-gray-500' },
+  { text: 'Open Source Friendly 🌐', color: 'text-gray-500' },
+  { text: 'Write Once · Reach Millions ✦', color: 'text-brand-cyan' }
+];
+
 const TrendingTags = () => {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -40,13 +51,14 @@ const TrendingTags = () => {
     <section className="space-y-8 mb-16">
       {/* Horizontal Ticker / Marquee */}
       <div className="w-full overflow-hidden border-y border-border-subtle/50 bg-bg-card/30 py-3.5 relative">
-        <div className="flex whitespace-nowrap animate-[marquee_25s_linear_infinite] gap-12 text-xs font-mono tracking-widest text-gray-500 uppercase">
-          {Array(4).fill(null).map((_, groupIdx) => (
+        <div className="flex whitespace-nowrap animate-[marquee_30s_linear_infinite] gap-12 text-xs font-mono tracking-widest uppercase">
+          {Array(3).fill(null).map((_, groupIdx) => (
             <React.Fragment key={groupIdx}>
-              <span>Join 50k+ Engineers ❄</span>
-              <span className="text-brand-cyan">NovaBlog Architecture 💻</span>
-              <span>Join 50k+ Engineers ❄</span>
-              <span className="text-brand-purple">Scale Beyond Limits ⚡</span>
+              {MARQUEE_ITEMS.map((item, itemIdx) => (
+                <span key={itemIdx} className={item.color}>
+                  {item.text}
+                </span>
+              ))}
             </React.Fragment>
           ))}
         </div>

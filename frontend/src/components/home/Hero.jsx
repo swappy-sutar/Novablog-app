@@ -1,10 +1,116 @@
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Button from '../ui/Button';
 import GradientText from '../ui/GradientText';
 import GlassCard from '../ui/GlassCard';
 
+const TerminalMockup = () => {
+  const [history, setHistory] = useState([]);
+  const [currentInput, setCurrentInput] = useState('');
+  const scrollRef = useRef(null);
+  
+  const script = [
+    { type: 'input', text: 'novablog search "react hooks"' },
+    { type: 'output', text: '# Searching 50k+ articles...', color: 'text-gray-500' },
+    { type: 'output', text: '✓ Found 342 results', color: 'text-indigo-400' },
+    { type: 'input', text: 'novablog publish --draft' },
+    { type: 'output', text: '✓ Draft saved · slug: react-hooks-deep-dive', color: 'text-indigo-400' },
+    { type: 'output', text: '✓ Estimated read: 8 min · SEO score: 94', color: 'text-indigo-400' },
+    { type: 'input', text: 'novablog analytics --week' },
+    { type: 'output', text: '# Views +24% · Followers +12', color: 'text-gray-500' },
+    { type: 'output', text: '✓ Top post: "TypeScript Generics" · 4.2k views', color: 'text-indigo-400' }
+  ];
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [history, currentInput]);
+
+  useEffect(() => {
+    let scriptIdx = 0;
+    let charIdx = 0;
+    let timer;
+
+    const runScript = () => {
+      if (scriptIdx >= script.length) {
+        return;
+      }
+
+      const step = script[scriptIdx];
+
+      if (step.type === 'input') {
+        if (charIdx < step.text.length) {
+          setCurrentInput(step.text.slice(0, charIdx + 1));
+          charIdx++;
+          timer = setTimeout(runScript, 50);
+        } else {
+          setHistory(prev => [...prev, { type: 'input', text: step.text }]);
+          setCurrentInput('');
+          scriptIdx++;
+          charIdx = 0;
+          timer = setTimeout(runScript, 600);
+        }
+      } else if (step.type === 'output') {
+        setHistory(prev => [...prev, { type: 'output', text: step.text, color: step.color }]);
+        scriptIdx++;
+        timer = setTimeout(runScript, 300);
+      }
+    };
+
+    timer = setTimeout(runScript, 800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <GlassCard className="relative border border-border-subtle bg-[#090915]/95 shadow-2xl overflow-hidden flex flex-col p-6 h-[360px] font-mono text-xs sm:text-sm text-gray-300">
+      <div className="flex items-center justify-between pb-4 border-b border-white/5 select-none">
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 rounded-full bg-rose-500" />
+          <span className="w-3 h-3 rounded-full bg-amber-500" />
+          <span className="w-3 h-3 rounded-full bg-emerald-500" />
+          <span className="text-[10px] text-gray-500 ml-2 font-mono">novablog ~ terminal</span>
+        </div>
+      </div>
+
+      <div ref={scrollRef} className="mt-4 space-y-3 text-left overflow-y-auto leading-relaxed flex-1 scrollbar-hide">
+        {history.map((line, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+          >
+            {line.type === 'input' ? (
+              <div className="flex items-center gap-2">
+                <span className="text-emerald-400 font-bold">&gt;</span>
+                <span className="text-white font-bold">{line.text}</span>
+              </div>
+            ) : (
+              <p className={`mt-0.5 ${line.color || 'text-gray-300'}`}>{line.text}</p>
+            )}
+          </motion.div>
+        ))}
+        
+        <div className="flex items-center gap-2">
+          <span className="text-emerald-400 font-bold">&gt;</span>
+          <span className="text-white font-bold">{currentInput}</span>
+          <span className="w-2 h-4 bg-gray-400 animate-pulse inline-block" />
+        </div>
+      </div>
+    </GlassCard>
+  );
+};
+
 const Hero = () => {
+  const handleScrollClick = () => {
+    window.scrollTo({
+      top: window.innerHeight - 80,
+      behavior: 'smooth'
+    });
+  };
+
   return (
     <section className="relative pt-24 pb-16 lg:pt-40 lg:pb-35 overflow-hidden">
       {/* Dotted Grid Background */}
@@ -155,32 +261,45 @@ const Hero = () => {
               }}
               className="flex-grow flex flex-col"
             >
-              <GlassCard className="relative border border-border-subtle bg-bg-card/75 shadow-2xl overflow-hidden group flex-grow flex flex-col justify-between p-6 min-h-[260px] sm:min-h-[340px]">
-                {/* Header Status Bar */}
-                <div className="flex items-center justify-between z-10 relative">
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-bg-base/60 backdrop-blur-md border border-border-subtle/60">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[9px] font-mono tracking-widest text-gray-300 uppercase">NETWORK_STATUS</span>
-                  </div>
-                  <div className="px-3 py-1.5 rounded-lg bg-bg-base/60 backdrop-blur-md border border-border-subtle/60 text-[9px] font-mono font-bold text-emerald-400">
-                    99.9% UPTIME
-                  </div>
-                </div>
-
-                {/* Crystal Network Asset */}
-                <div className="absolute inset-0 w-full h-full -z-10">
-                  <img
-                    src="/crystal_network_status.png"
-                    alt="Network Status Grid"
-                    className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/40 to-transparent" />
-                </div>
-              </GlassCard>
+              <TerminalMockup />
             </motion.div>
           </motion.div>
         </div>
       </div>
+
+      {/* Scroll Down Indicator */}
+      <button
+        onClick={handleScrollClick}
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 select-none cursor-pointer pointer-events-auto z-10 hidden sm:flex border-none bg-transparent outline-none focus:outline-none group"
+      >
+        <div className="flex flex-col items-center">
+          {[0, 1, 2].map((idx) => (
+            <motion.svg
+              key={idx}
+              animate={{
+                opacity: [0.15, 1, 0.15],
+                y: [0, 2, 0]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: idx * 0.25,
+                ease: "easeInOut"
+              }}
+              className="w-4 h-4 text-brand-cyan/60 group-hover:text-brand-cyan transition-colors duration-300 -mt-2.5 first:-mt-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2.5"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </motion.svg>
+          ))}
+        </div>
+        <span className="text-[7.5px] font-mono tracking-[0.4em] text-gray-500 uppercase mt-1 group-hover:text-brand-cyan/80 transition-colors duration-300">
+          Scroll
+        </span>
+      </button>
     </section>
   );
 };
