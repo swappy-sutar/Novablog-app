@@ -22,10 +22,10 @@ const Footer = () => {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-brand-purple/5 rounded-full blur-[80px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 pb-10">
+        <div className="grid grid-cols-2 md:grid-cols-12 gap-x-8 gap-y-10 pb-10">
           
           {/* Brand & Description */}
-          <div className="col-span-1 sm:col-span-2 md:col-span-4 flex flex-col justify-between">
+          <div className="col-span-2 md:col-span-4 flex flex-col justify-between gap-6 md:gap-0">
             <div>
               <Link to="/" className="mb-5 inline-block group transition-transform duration-300 hover:scale-[1.01]">
                 <img src="/svg/novablog-lockup-dark.svg" alt="NovaBlog" className="h-12 logo-lockup-dark" />
@@ -78,7 +78,7 @@ const Footer = () => {
           </div>
 
           {/* Platform Column */}
-          <div className="col-span-1 sm:col-span-1 md:col-span-2">
+          <div className="col-span-1 md:col-span-2">
             <h4 className="font-semibold text-xs uppercase tracking-wider mb-5 text-gray-900 dark:text-white">Platform</h4>
             <ul className="space-y-3.5 text-sm text-gray-500 dark:text-gray-400">
               <li>
@@ -100,7 +100,7 @@ const Footer = () => {
           </div>
 
           {/* Legal Column */}
-          <div className="col-span-1 sm:col-span-1 md:col-span-2">
+          <div className="col-span-1 md:col-span-2">
             <h4 className="font-semibold text-xs uppercase tracking-wider mb-5 text-gray-900 dark:text-white">Legal</h4>
             <ul className="space-y-3.5 text-sm text-gray-500 dark:text-gray-400">
               <li>
@@ -122,7 +122,7 @@ const Footer = () => {
           </div>
 
           {/* Newsletter Column */}
-          <div className="col-span-1 sm:col-span-2 md:col-span-4">
+          <div className="col-span-2 md:col-span-4">
             <h4 className="font-semibold text-xs uppercase tracking-wider mb-5 text-gray-900 dark:text-white">Stay Updated</h4>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-5 leading-relaxed">
               Subscribe to the newsletter for coding trends, developer insights, and community news.
