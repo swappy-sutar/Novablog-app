@@ -33,7 +33,7 @@ const CuratedInsights = () => {
   useEffect(() => {
     const fetchInsights = async () => {
       try {
-        const res = await blogAPI.getAllBlogs({ page: 1, limit: 4 });
+        const res = await blogAPI.getAllBlogs({ page: 1, limit: 3 });
         if (res.success && res.data && res.data.blogs?.length > 0) {
           setBlogs(res.data.blogs);
         }
@@ -98,7 +98,7 @@ const CuratedInsights = () => {
     }
   };
 
-  const sideBlogs = blogs.slice(1, 4).map((apiBlog) => {
+  const sideBlogs = blogs.slice(1, 3).map((apiBlog) => {
     const authorName = `${apiBlog.author?.firstname || ""} ${apiBlog.author?.lastname || ""}`.trim() || apiBlog.author?.username || "Anonymous";
     const initials = `${apiBlog.author?.firstname?.[0] || ""}${apiBlog.author?.lastname?.[0] || ""}`.toUpperCase() || apiBlog.author?.username?.[0]?.toUpperCase() || "U";
     return {

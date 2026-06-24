@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { MessageSquare, Trash2, Send } from 'lucide-react';
 import GlassCard from '../ui/GlassCard';
 import Button from '../ui/Button';
+import Loader from '../ui/Loader';
 import { commentsAPI, getErrorMessage } from '../../lib/api';
 
 const Discussion = ({ blog }) => {
@@ -223,7 +224,7 @@ const Discussion = ({ blog }) => {
       {/* Comment Thread */}
       {loading && comments.length === 0 ? (
         <div className="flex justify-center py-10">
-          <div className="w-6 h-6 border-2 border-brand-purple border-t-transparent rounded-full animate-spin" />
+          <Loader message="Retrieving discussion thread..." size="sm" />
         </div>
       ) : (
         <div className="space-y-6">

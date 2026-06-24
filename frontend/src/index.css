@@ -96,33 +96,48 @@
 
   /* Custom scrollbar for Webkit browsers (Chrome, Safari, Edge) */
   ::-webkit-scrollbar,
-  *::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  *::-webkit-scrollbar,
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
   }
 
   ::-webkit-scrollbar-track,
-  *::-webkit-scrollbar-track {
+  *::-webkit-scrollbar-track,
+  html::-webkit-scrollbar-track,
+  body::-webkit-scrollbar-track {
     background: transparent;
   }
 
   ::-webkit-scrollbar-thumb,
-  *::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid transparent;
-    background-clip: padding-box;
+  *::-webkit-scrollbar-thumb,
+  html::-webkit-scrollbar-thumb,
+  body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
     border-radius: 9999px;
   }
 
   :root.light-mode ::-webkit-scrollbar-thumb,
-  :root.light-mode *::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.25);
+  :root.light-mode *::-webkit-scrollbar-thumb,
+  :root.light-mode html::-webkit-scrollbar-thumb,
+  :root.light-mode body::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.18);
   }
 
-  /* Hide main window scrollbars */
-  html::-webkit-scrollbar,
-  body::-webkit-scrollbar {
-    display: none;
+  /* Hover effects for custom scrollbar thumb */
+  ::-webkit-scrollbar-thumb:hover,
+  *::-webkit-scrollbar-thumb:hover,
+  html::-webkit-scrollbar-thumb:hover,
+  body::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+  }
+
+  :root.light-mode ::-webkit-scrollbar-thumb:hover,
+  :root.light-mode *::-webkit-scrollbar-thumb:hover,
+  :root.light-mode html::-webkit-scrollbar-thumb:hover,
+  :root.light-mode body::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.35) !important;
   }
 
   /* Standard CSS Scrollbars only for Firefox to avoid overriding Webkit styling in Chrome */
@@ -134,10 +149,6 @@
 
     :root.light-mode * {
       scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
-    }
-
-    html, body {
-      scrollbar-width: none;
     }
   }
 
@@ -284,11 +295,11 @@
 /* Premium background dot grid and mask utilities */
 .bg-dot-grid {
   background-size: 28px 28px;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1.2px, transparent 1.2px);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1.2px, transparent 1.2px);
 }
 
 .light-mode .bg-dot-grid {
-  background-image: radial-gradient(rgba(15, 23, 42, 0.05) 1.2px, transparent 1.2px);
+  background-image: radial-gradient(rgba(15, 23, 42, 0.15) 1.2px, transparent 1.2px);
 }
 
 .mask-radial-fade {
@@ -308,4 +319,139 @@
 }
 .light-mode .logo-lockup-light {
   display: block;
+}
+
+/* ==========================================
+   Tech Stack Card & Icon Light/Dark Styling
+   ========================================== */
+
+/* Dark Mode (Default) Card Styling */
+.tech-card {
+  background: radial-gradient(circle at 15% 15%, rgba(var(--card-glow-rgb), 0.08) 0%, transparent 60%), var(--color-bg-card) !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2), 0 0 24px rgba(var(--card-glow-rgb), 0.01);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.tech-card:hover {
+  background: radial-gradient(circle at 15% 15%, rgba(var(--card-glow-rgb), 0.15) 0%, transparent 60%), var(--color-bg-card-hover) !important;
+  border-color: rgba(var(--card-glow-rgb), 0.25) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35), 0 0 32px rgba(var(--card-glow-rgb), 0.06);
+}
+
+/* Light Mode Overrides for Tech Card */
+.light-mode .tech-card {
+  background: radial-gradient(circle at 15% 15%, rgba(var(--card-glow-rgb), 0.06) 0%, transparent 60%), var(--color-bg-card) !important;
+  border-color: rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02), 0 0 20px rgba(var(--card-glow-rgb), 0.01);
+}
+
+.light-mode .tech-card:hover {
+  background: radial-gradient(circle at 15% 15%, rgba(var(--card-glow-rgb), 0.12) 0%, transparent 60%), var(--color-bg-card-hover) !important;
+  border-color: rgba(var(--card-glow-rgb), 0.35) !important;
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08), 0 0 25px rgba(var(--card-glow-rgb), 0.05);
+}
+
+/* Ambient Glow Element (Top Left) */
+.tech-card-ambient {
+  background: rgba(var(--card-glow-rgb), 0.05);
+  transition: background 0.5s ease;
+}
+
+.tech-card:hover .tech-card-ambient {
+  background: rgba(var(--card-glow-rgb), 0.08);
+}
+
+.light-mode .tech-card-ambient {
+  background: rgba(var(--card-glow-rgb), 0.025);
+}
+
+.light-mode .tech-card:hover .tech-card-ambient {
+  background: rgba(var(--card-glow-rgb), 0.05);
+}
+
+/* Tech Icon Container Box */
+.tech-icon-container {
+  background: linear-gradient(135deg, rgba(var(--card-glow-rgb), 0.12), rgba(var(--card-glow-rgb), 0.03)) !important;
+  border: 1px solid rgba(var(--card-glow-rgb), 0.2) !important;
+  box-shadow: 0 0 12px rgba(var(--card-glow-rgb), 0.06);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.tech-card:hover .tech-icon-container {
+  border-color: rgba(var(--card-glow-rgb), 0.45) !important;
+  box-shadow: 0 0 18px rgba(var(--card-glow-rgb), 0.2);
+}
+
+/* Light Mode Overrides for Tech Icon Container */
+.light-mode .tech-icon-container {
+  background: linear-gradient(135deg, rgba(var(--card-glow-rgb), 0.08), rgba(var(--card-glow-rgb), 0.01)) !important;
+  border-color: rgba(var(--card-glow-rgb), 0.15) !important;
+  box-shadow: 0 2px 8px rgba(var(--card-glow-rgb), 0.02);
+}
+
+.light-mode .tech-card:hover .tech-icon-container {
+  border-color: rgba(var(--card-glow-rgb), 0.35) !important;
+  box-shadow: 0 4px 15px rgba(var(--card-glow-rgb), 0.12);
+}
+
+/* Premium Loader Custom Animations */
+@keyframes orbit-cw {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orbit-ccw {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes logo-breathing {
+  0%, 100% {
+    transform: scale(0.93);
+    filter: drop-shadow(0 0 8px rgba(155, 93, 229, 0.25));
+  }
+  50% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 20px rgba(155, 93, 229, 0.6));
+  }
+}
+
+@keyframes text-shimmer {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: 0% center;
+  }
+}
+
+.animate-orbit-cw {
+  animation: orbit-cw 4s linear infinite;
+}
+
+.animate-orbit-ccw {
+  animation: orbit-ccw 6s linear infinite;
+}
+
+.animate-logo-breathing {
+  animation: logo-breathing 3s ease-in-out infinite;
+}
+
+.animate-text-shimmer {
+  animation: text-shimmer 3s linear infinite;
+}
+
+/* Light Mode Overrides for Loader text */
+.light-mode .light-mode-loader-text {
+  background-image: linear-gradient(90deg, #4b5563, #111827, #4b5563) !important;
+  background-size: 200% auto;
 }

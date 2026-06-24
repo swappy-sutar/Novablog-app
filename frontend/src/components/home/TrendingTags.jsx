@@ -51,24 +51,35 @@ const TrendingTags = () => {
     <section className="space-y-8 mb-16">
       {/* Horizontal Ticker / Marquee */}
       <div className="w-full overflow-hidden border-y border-border-subtle/50 bg-bg-card/30 py-3.5 relative">
-        <div className="flex whitespace-nowrap animate-[marquee_30s_linear_infinite] gap-12 text-xs font-mono tracking-widest uppercase">
-          {Array(3).fill(null).map((_, groupIdx) => (
-            <React.Fragment key={groupIdx}>
-              {MARQUEE_ITEMS.map((item, itemIdx) => (
-                <span key={itemIdx} className={item.color}>
-                  {item.text}
-                </span>
-              ))}
-            </React.Fragment>
-          ))}
+        <div className="flex w-max animate-[marquee_50s_linear_infinite] marquee-track">
+          {/* Group 1 */}
+          <div className="flex gap-12 pr-12 whitespace-nowrap text-xs font-mono tracking-widest uppercase">
+            {MARQUEE_ITEMS.map((item, itemIdx) => (
+              <span key={itemIdx} className={item.color}>
+                {item.text}
+              </span>
+            ))}
+          </div>
+          {/* Group 2 (Duplicate for seamless loop) */}
+          <div className="flex gap-12 pr-12 whitespace-nowrap text-xs font-mono tracking-widest uppercase">
+            {MARQUEE_ITEMS.map((item, itemIdx) => (
+              <span key={itemIdx} className={item.color}>
+                {item.text}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Tailwind keyframe insertion for marquee */}
       <style>{`
         @keyframes marquee {
-          0% { transform: translateX(0%); }
+          0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
+        }
+        .marquee-track:hover {
+          animation-play-state: paused;
+          cursor: pointer;
         }
       `}</style>
 
