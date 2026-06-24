@@ -112,7 +112,10 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative pt-24 pb-16 lg:pt-40 lg:pb-35 overflow-hidden">
+    <section 
+      className="relative flex items-center pt-24 pb-16 lg:pt-32 lg:pb-32 overflow-hidden"
+      style={{ minHeight: 'calc(100vh - 5rem)' }}
+    >
       {/* Dotted Grid Background */}
       <div className="absolute inset-0 bg-dot-grid mask-radial-fade -z-20 opacity-80 pointer-events-none" />
 
@@ -182,7 +185,7 @@ const Hero = () => {
         className="absolute top-[60%] left-[45%] w-12 h-12 rounded-full border border-brand-blue/20 dark:border-brand-blue/10 bg-gradient-to-br from-brand-blue/5 to-transparent -z-10 blur-[3px] pointer-events-none hidden lg:block"
       />
 
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
+      <div className="w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
         {/* Left Column: Copy */}
         <div className="lg:col-span-7 space-y-6 text-left flex flex-col justify-center">
           <div className="space-y-6">
