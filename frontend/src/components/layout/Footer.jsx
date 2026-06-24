@@ -31,7 +31,7 @@ const Footer = () => {
                 <img src="/svg/novablog-lockup-dark.svg" alt="NovaBlog" className="h-12 logo-lockup-dark" />
                 <img src="/svg/novablog-lockup-light.svg" alt="NovaBlog" className="h-12 logo-lockup-light" />
               </Link>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-sm leading-relaxed">
+              <p className="text-sm text-text-muted mb-6 max-w-sm leading-relaxed">
                 Building the future of technical writing. A premium workspace for developers where code precision meets storytelling clarity.
               </p>
             </div>
@@ -42,7 +42,7 @@ const Footer = () => {
                 href="https://github.com" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="w-10 h-10 rounded-xl bg-bg-input border border-border-subtle flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-purple/10 hover:border-brand-purple/35 transition-all duration-300 shadow-sm"
+                className="w-10 h-10 rounded-xl bg-bg-input border border-border-subtle flex items-center justify-center text-text-muted hover:text-white hover:bg-brand-purple/10 hover:border-brand-purple/35 transition-all duration-300 shadow-sm"
                 aria-label="GitHub"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -54,7 +54,7 @@ const Footer = () => {
                 href="https://twitter.com" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="w-10 h-10 rounded-xl bg-bg-input border border-border-subtle flex items-center justify-center text-gray-400 hover:text-brand-cyan hover:bg-brand-cyan/10 hover:border-brand-cyan/35 transition-all duration-300 shadow-sm"
+                className="w-10 h-10 rounded-xl bg-bg-input border border-border-subtle flex items-center justify-center text-text-muted hover:text-brand-cyan hover:bg-brand-cyan/10 hover:border-brand-cyan/35 transition-all duration-300 shadow-sm"
                 aria-label="Twitter"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -65,7 +65,7 @@ const Footer = () => {
                 href="https://linkedin.com" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="w-10 h-10 rounded-xl bg-bg-input border border-border-subtle flex items-center justify-center text-gray-400 hover:text-brand-blue hover:bg-brand-blue/10 hover:border-brand-blue/35 transition-all duration-300 shadow-sm"
+                className="w-10 h-10 rounded-xl bg-bg-input border border-border-subtle flex items-center justify-center text-text-muted hover:text-brand-blue hover:bg-brand-blue/10 hover:border-brand-blue/35 transition-all duration-300 shadow-sm"
                 aria-label="LinkedIn"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -79,8 +79,8 @@ const Footer = () => {
 
           {/* Platform Column */}
           <div className="col-span-1 md:col-span-2">
-            <h4 className="font-semibold text-xs uppercase tracking-wider mb-5 text-gray-900 dark:text-white">Platform</h4>
-            <ul className="space-y-3.5 text-sm text-gray-500 dark:text-gray-400">
+            <h4 className="font-semibold text-xs uppercase tracking-wider mb-5 text-text-input">Platform</h4>
+            <ul className="space-y-3.5 text-sm text-text-muted">
               <li>
                 <Link to="/feed" className="hover:text-brand-cyan hover:translate-x-1 inline-block transition-all duration-200">
                   Feed
@@ -101,8 +101,8 @@ const Footer = () => {
 
           {/* Legal Column */}
           <div className="col-span-1 md:col-span-2">
-            <h4 className="font-semibold text-xs uppercase tracking-wider mb-5 text-gray-900 dark:text-white">Legal</h4>
-            <ul className="space-y-3.5 text-sm text-gray-500 dark:text-gray-400">
+            <h4 className="font-semibold text-xs uppercase tracking-wider mb-5 text-text-input">Legal</h4>
+            <ul className="space-y-3.5 text-sm text-text-muted">
               <li>
                 <Link to="/terms" className="hover:text-brand-cyan hover:translate-x-1 inline-block transition-all duration-200">
                   Terms of Service
@@ -123,8 +123,8 @@ const Footer = () => {
 
           {/* Newsletter Column */}
           <div className="col-span-2 md:col-span-4">
-            <h4 className="font-semibold text-xs uppercase tracking-wider mb-5 text-gray-900 dark:text-white">Stay Updated</h4>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-5 leading-relaxed">
+            <h4 className="font-semibold text-xs uppercase tracking-wider mb-5 text-text-input">Stay Updated</h4>
+            <p className="text-sm text-text-muted mb-5 leading-relaxed">
               Subscribe to the newsletter for coding trends, developer insights, and community news.
             </p>
             <form onSubmit={handleSubscribe} className="relative flex items-center">
@@ -151,10 +151,10 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 pt-8 border-t border-border-subtle flex flex-col md:flex-row items-center justify-between text-xs text-gray-500 gap-4">
+        <div className="mt-8 pt-8 border-t border-border-subtle flex flex-col md:flex-row items-center justify-between text-xs text-text-muted gap-4">
           <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3 text-center sm:text-left">
             <p>© 2026 <a href="https://er-swapppy.vercel.app" target="_blank" rel="noopener noreferrer" className="hover:text-brand-purple hover:underline transition-colors font-medium">Swapnil Sutar</a>. All rights reserved.</p>
-            <span className="hidden sm:inline text-gray-600">|</span>
+            <span className="hidden sm:inline text-border-subtle">|</span>
             <p className="flex items-center gap-1">
               Made with <Heart className="w-3.5 h-3.5 text-brand-purple fill-brand-purple inline animate-pulse" /> by <a href="https://er-swapppy.vercel.app" target="_blank" rel="noopener noreferrer" className="text-brand-purple underline transition-colors font-medium">Er-Swappy</a> for developers.
             </p>
