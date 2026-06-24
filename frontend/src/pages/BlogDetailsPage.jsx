@@ -8,6 +8,7 @@ import ArticleContent from '../components/blog/ArticleContent';
 import ShareToolbar from '../components/blog/ShareToolbar';
 import Discussion from '../components/blog/Discussion';
 import GlassCard from '../components/ui/GlassCard';
+import Loader from '../components/ui/Loader';
 import { blogAPI, likeAPI, bookmarkAPI, getErrorMessage } from '../lib/api';
 
 const BlogDetailsPage = () => {
@@ -160,9 +161,8 @@ const BlogDetailsPage = () => {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col items-center justify-center min-h-[60vh] gap-4 pt-24">
-        <div className="w-10 h-10 border-2 border-brand-cyan border-t-transparent rounded-full animate-spin" />
-        <p className="text-gray-500 text-sm">Retrieving article details...</p>
+      <div className="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-center min-h-[60vh] pt-24">
+        <Loader message="Retrieving article details..." size="md" />
       </div>
     );
   }

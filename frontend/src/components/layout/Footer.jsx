@@ -17,7 +17,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="relative border-t border-border-subtle bg-bg-base pt-15 pb-5 mt-28 overflow-hidden">
+    <footer className="relative border-t border-border-subtle bg-bg-base pt-15 pb-5 mt-0 overflow-hidden">
       {/* Background Radial Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-brand-purple/5 rounded-full blur-[80px] pointer-events-none" />
 
