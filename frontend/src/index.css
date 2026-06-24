@@ -31,12 +31,18 @@
   --color-bg-card-sub: rgba(12, 13, 28, 0.4);
   --color-bg-card-sub-light: rgba(12, 13, 28, 0.2);
 }
-
 @layer base {
   :root {
     color-scheme: dark;
     --card-thumbnail-opacity: 0.22;
     --card-thumbnail-filter: grayscale(10%) brightness(0.9);
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      scroll-behavior: auto;
+    }
   }
 
   :root.light-mode {
