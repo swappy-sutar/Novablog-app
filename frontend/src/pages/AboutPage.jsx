@@ -347,7 +347,7 @@ const AboutPage = () => {
 
             {/* Full Card Size Image (Left Side) - Protected against copy/download */}
             <div
-              className="w-full md:w-[220px] h-[260px] md:h-auto md:self-stretch shrink-0 relative overflow-hidden select-none"
+              className="w-full md:w-[220px] h-[320px] md:h-auto md:self-stretch shrink-0 relative overflow-hidden select-none"
               onContextMenu={(e) => e.preventDefault()}
             >
               {/* Overlay acts as a physical click shield on top of the image */}
@@ -356,7 +356,7 @@ const AboutPage = () => {
                 src="/my_pic.jpg"
                 alt="Swapnil Sutar"
                 draggable="false"
-                className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none"
+                className="absolute inset-0 w-full h-full object-cover object-top z-0 pointer-events-none select-none"
                 onContextMenu={(e) => e.preventDefault()}
               />
             </div>
