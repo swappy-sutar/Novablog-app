@@ -114,7 +114,7 @@ const Hero = () => {
   return (
     <section 
       className="relative flex items-center pt-24 pb-16 lg:pt-32 lg:pb-32 overflow-hidden"
-      style={{ minHeight: 'calc(100vh - 5rem)' }}
+      style={{ minHeight: 'calc(100vh - 8rem)' }}
     >
       {/* Dotted Grid Background */}
       <div className="absolute inset-0 bg-dot-grid mask-radial-fade -z-20 opacity-80 pointer-events-none" />
