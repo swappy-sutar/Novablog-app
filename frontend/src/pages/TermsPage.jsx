@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Shield, BookOpen, UserCheck, AlertOctagon, FileWarning, Download, AlertCircle } from "lucide-react";
 import toast from "react-hot-toast";
+import Button from "../components/ui/Button";
 
 const TermsPage = () => {
   const [activeSection, setActiveSection] = useState("introduction");
@@ -150,7 +151,7 @@ const TermsPage = () => {
           <div class="header">
             <div class="logo">NovaBlog</div>
             <div class="title">Terms of Service</div>
-            <div class="meta">Last Updated: June 16, 2024 • Legal Department Document</div>
+            <div class="meta">Last Updated: June 16, 2026 • Legal Department Document</div>
           </div>
           
           <p>Welcome to NovaBlog. These terms outline our agreement with you regarding the use of our platform, governing the relationship between creators, engineers, and our technology.</p>
@@ -236,13 +237,14 @@ const TermsPage = () => {
         {/* PDF Download Summary Widget */}
         <div className="hidden lg:block relative overflow-hidden rounded-2xl border border-border-subtle bg-bg-card/40 p-5">
           <h4 className="text-xs font-bold text-gray-400 mb-3">Need a summary?</h4>
-          <button
+          <Button
+            variant="outline"
             onClick={handleDownloadPDF}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-semibold border border-border-subtle bg-white/[0.01] hover:bg-border-subtle/30 text-gray-300 hover:text-white transition-all cursor-pointer"
+            className="w-full py-3 text-xs flex items-center justify-center gap-2"
           >
             <Download className="w-3.5 h-3.5 text-brand-purple" />
             Download PDF
-          </button>
+          </Button>
         </div>
       </aside>
 
@@ -261,7 +263,7 @@ const TermsPage = () => {
             Welcome to NovaBlog. These terms outline our agreement with you regarding the use of our platform, governing the relationship between creators, engineers, and our technology.
           </p>
           <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
-            Last updated: June 16, 2024
+            Last updated: June 16, 2026
           </div>
         </div>
 
@@ -372,7 +374,7 @@ const TermsPage = () => {
             </div>
 
             <div className="flex items-center gap-3 p-4 rounded-xl border border-border-subtle bg-white/[0.01]">
-              <AlertCircle className="w-4 h-4 text-yellow-500 shrink-0" />
+              <AlertCircle className="w-4 h-4 text-amber-600 dark:text-yellow-500 shrink-0" />
               <span className="text-xs text-gray-400">Impersonating NovaBlog employees or users.</span>
             </div>
           </div>
@@ -397,7 +399,7 @@ const TermsPage = () => {
           </div>
           <div className="glass-panel border border-red-500/20 bg-red-500/5 p-6 sm:p-8 rounded-2xl space-y-4">
             <h4 className="text-xs font-bold text-red-400 uppercase tracking-widest">Important Notice</h4>
-            <p className="text-sm text-red-200/80 leading-relaxed font-medium">
+            <p className="text-sm text-red-800 dark:text-red-200/80 leading-relaxed font-medium">
               In no event shall NovaBlog, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from (i) your access to or use of or inability to access or use the Service; (ii) any conduct or content of any third party on the Service.
             </p>
           </div>
@@ -407,8 +409,8 @@ const TermsPage = () => {
         <div className="relative overflow-hidden rounded-2xl border border-border-subtle bg-bg-card h-44 flex flex-col justify-end p-8 group">
           {/* Subtle grid lines background overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-brand-purple/10 to-transparent opacity-60" />
-          <div className="absolute top-0 right-0 w-36 h-36 opacity-10">
-            <svg viewBox="0 0 100 100" fill="none" className="w-full h-full stroke-white stroke-[1.5]">
+          <div className="absolute top-0 right-0 w-36 h-36 opacity-15">
+            <svg viewBox="0 0 100 100" fill="none" className="w-full h-full stroke-brand-purple/30 dark:stroke-white/20 stroke-[1.5]">
               <path d="M10 10 L90 90 M90 10 L10 90" />
               <circle cx="50" cy="50" r="25" />
             </svg>

@@ -9,7 +9,7 @@ const TerminalMockup = () => {
   const [history, setHistory] = useState([]);
   const [currentInput, setCurrentInput] = useState('');
   const scrollRef = useRef(null);
-  
+
   const script = [
     { type: 'input', text: 'novablog search "react hooks"' },
     { type: 'output', text: '# Searching 50k+ articles...', color: 'text-gray-500' },
@@ -64,7 +64,7 @@ const TerminalMockup = () => {
   }, []);
 
   return (
-    <GlassCard className="relative border border-border-subtle bg-[#090915]/95 shadow-2xl overflow-hidden flex flex-col p-6 h-[360px] font-mono text-xs sm:text-sm text-gray-300">
+    <GlassCard className="relative border border-border-subtle bg-[#090915]/95 shadow-2xl overflow-hidden flex flex-col p-4 sm:p-6 h-[280px] sm:h-[360px] font-mono text-xs sm:text-sm text-gray-300">
       <div className="flex items-center justify-between pb-4 border-b border-white/5 select-none">
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-rose-500" />
@@ -74,7 +74,7 @@ const TerminalMockup = () => {
         </div>
       </div>
 
-      <div ref={scrollRef} className="mt-4 space-y-3 text-left overflow-y-auto leading-relaxed flex-1 scrollbar-hide">
+      <div ref={scrollRef} className="mt-3 sm:mt-4 space-y-2 sm:space-y-3 text-left overflow-y-auto leading-relaxed flex-1 scrollbar-hide">
         {history.map((line, idx) => (
           <motion.div
             key={idx}
@@ -92,7 +92,7 @@ const TerminalMockup = () => {
             )}
           </motion.div>
         ))}
-        
+
         <div className="flex items-center gap-2">
           <span className="text-emerald-400 font-bold">&gt;</span>
           <span className="text-white font-bold">{currentInput}</span>
@@ -112,10 +112,7 @@ const Hero = () => {
   };
 
   return (
-    <section 
-      className="relative flex items-center pt-24 pb-16 lg:pt-32 lg:pb-32 overflow-hidden"
-      style={{ minHeight: 'calc(100vh - 8rem)' }}
-    >
+    <section className="relative pt-16 pb-12 sm:pt-24 sm:pb-16 lg:pt-40 lg:pb-35 overflow-hidden">
       {/* Dotted Grid Background */}
       <div className="absolute inset-0 bg-dot-grid mask-radial-fade -z-20 opacity-80 pointer-events-none" />
 
@@ -131,7 +128,7 @@ const Hero = () => {
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-purple/20 dark:bg-brand-purple/15 rounded-full blur-[120px] -z-10 pointer-events-none"
+        className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-purple/20 dark:bg-brand-purple/15 rounded-full blur-[120px] -z-10 pointer-events-none hero-blob-purple"
       />
       <motion.div
         animate={{
@@ -144,7 +141,7 @@ const Hero = () => {
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="absolute bottom-1/4 right-1/4 translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-brand-cyan/20 dark:bg-brand-cyan/15 rounded-full blur-[100px] -z-10 pointer-events-none"
+        className="absolute bottom-1/4 right-1/4 translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-brand-cyan/20 dark:bg-brand-cyan/15 rounded-full blur-[100px] -z-10 pointer-events-none hero-blob-cyan"
       />
 
       {/* Floating Spatial Accent Particles */}
@@ -160,18 +157,7 @@ const Hero = () => {
         }}
         className="absolute top-[20%] right-[10%] w-16 h-16 rounded-full border border-brand-purple/20 dark:border-brand-purple/10 bg-gradient-to-tr from-brand-purple/5 to-transparent -z-10 blur-[2px] pointer-events-none hidden sm:block"
       />
-      <motion.div
-        animate={{
-          y: [0, 20, 0],
-          x: [0, 10, 0],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        className="absolute bottom-[25%] left-[5%] w-8 h-8 rounded-full bg-brand-cyan/10 dark:bg-brand-cyan/5 -z-10 blur-[1px] pointer-events-none hidden md:block"
-      />
+
       <motion.div
         animate={{
           y: [0, -25, 0],
@@ -185,10 +171,10 @@ const Hero = () => {
         className="absolute top-[60%] left-[45%] w-12 h-12 rounded-full border border-brand-blue/20 dark:border-brand-blue/10 bg-gradient-to-br from-brand-blue/5 to-transparent -z-10 blur-[3px] pointer-events-none hidden lg:block"
       />
 
-      <div className="w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-stretch">
         {/* Left Column: Copy */}
-        <div className="lg:col-span-7 space-y-6 text-left flex flex-col justify-center">
-          <div className="space-y-6">
+        <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-left flex flex-col justify-center">
+          <div className="space-y-4 sm:space-y-6">
             <motion.span
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -198,7 +184,7 @@ const Hero = () => {
               • v2.0 ARCHITECTURE NOW LIVE
             </motion.span>
 
-            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-[1.15]">
+            <h1 className="text-3xl sm:text-6xl font-extrabold tracking-tight text-white leading-[1.15]">
               <motion.span
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -230,7 +216,7 @@ const Hero = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.45 }}
-              className="flex flex-wrap items-center gap-4 pt-2"
+              className="flex flex-wrap items-center gap-3 sm:gap-4 pt-1 sm:pt-2"
             >
               <Link to="/feed">
                 <Button variant="primary" className="py-3 px-6 text-xs font-bold uppercase tracking-wider flex items-center gap-2 group shadow-[0_0_20px_rgba(139,92,246,0.3)]">
@@ -239,7 +225,7 @@ const Hero = () => {
                 </Button>
               </Link>
               <Link to="/explore">
-                <Button variant="outline" className="py-3 px-6 text-xs font-bold uppercase tracking-wider bg-transparent">
+                <Button variant="outline" className="py-3 px-6 text-xs font-bold uppercase tracking-wider">
                   Explore Topics
                 </Button>
               </Link>
@@ -248,7 +234,7 @@ const Hero = () => {
         </div>
 
         {/* Right Column: Premium Glass Status Board */}
-        <div className="hidden lg:flex lg:col-span-5 w-full flex-col">
+        <div className="lg:col-span-5 w-full flex flex-col">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

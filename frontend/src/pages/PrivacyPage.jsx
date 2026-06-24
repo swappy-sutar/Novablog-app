@@ -109,7 +109,7 @@ const PrivacyPage = () => {
             Privacy Policy
           </h1>
           <p className="text-sm sm:text-base text-gray-400 max-w-3xl leading-relaxed">
-            Last updated: May 24, 2024. This policy outlines our commitment to technical precision and user transparency regarding data sovereignty.
+            Last updated: May 24, 2026. This policy outlines our commitment to technical precision and user transparency regarding data sovereignty.
           </p>
         </div>
 
@@ -253,7 +253,7 @@ const PrivacyPage = () => {
               {/* Action 1 */}
               <button 
                 onClick={() => toast.success("Data export initiated. Check your email shortly.")}
-                className="w-full flex items-center justify-between p-4 rounded-xl border border-border-subtle bg-white/[0.01] hover:bg-border-subtle/30 text-left text-sm text-gray-300 hover:text-white transition-all group"
+                className="w-full flex items-center justify-between p-4 rounded-xl border border-border-subtle bg-white/[0.01] hover:bg-border-subtle/30 text-left text-sm text-gray-300 hover:text-gray-900 dark:hover:text-white transition-all group"
               >
                 <div className="flex items-center gap-3">
                   <Download className="w-4 h-4 text-brand-cyan group-hover:scale-110 transition-transform" />
@@ -265,7 +265,7 @@ const PrivacyPage = () => {
               {/* Action 2 */}
               <button 
                 onClick={() => toast("Redirecting to profile configuration settings...")}
-                className="w-full flex items-center justify-between p-4 rounded-xl border border-border-subtle bg-white/[0.01] hover:bg-border-subtle/30 text-left text-sm text-gray-300 hover:text-white transition-all group"
+                className="w-full flex items-center justify-between p-4 rounded-xl border border-border-subtle bg-white/[0.01] hover:bg-border-subtle/30 text-left text-sm text-gray-300 hover:text-gray-900 dark:hover:text-white transition-all group"
               >
                 <div className="flex items-center gap-3">
                   <Edit className="w-4 h-4 text-brand-cyan group-hover:scale-110 transition-transform" />
@@ -281,7 +281,7 @@ const PrivacyPage = () => {
                     toast.error("Account erasure request submitted. A verification link has been sent to your email.");
                   }
                 }}
-                className="w-full flex items-center justify-between p-4 rounded-xl border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 text-left text-sm text-red-400 hover:text-red-300 transition-all group"
+                className="w-full flex items-center justify-between p-4 rounded-xl border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 text-left text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition-all group"
               >
                 <div className="flex items-center gap-3">
                   <Trash2 className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform" />

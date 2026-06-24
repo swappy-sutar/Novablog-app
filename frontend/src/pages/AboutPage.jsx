@@ -110,7 +110,7 @@ const AboutPage = () => {
         <motion.section variants={itemVariants} className="text-center max-w-4xl mx-auto space-y-8 pt-8">
           <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-brand-purple/10 border border-brand-purple/20 shadow-sm">
             <span className="text-[10px] font-bold text-[#c4b5fd] tracking-widest uppercase">
-              Est. 2024
+              Est. 2026
             </span>
           </div>
 

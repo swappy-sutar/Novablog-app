@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Shield, Eye, Mail, RotateCcw, Settings } from "lucide-react";
 import toast from "react-hot-toast";
+import Button from "../components/ui/Button";
 
 const CookiePage = () => {
   const [performanceEnabled, setPerformanceEnabled] = useState(true);
@@ -128,7 +129,7 @@ const CookiePage = () => {
             At NovaBlog, we believe in radical transparency. This policy outlines how we use cookies, web beacons, and similar tracking technologies to provide a high-performance experience for the modern developer.
           </p>
           <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex flex-wrap gap-x-4 gap-y-1">
-            <span>Last Updated: October 24, 2024</span>
+            <span>Last Updated: October 24, 2026</span>
             <span className="hidden sm:inline">•</span>
             <span>Effective Date: Immediate</span>
           </div>
@@ -247,13 +248,14 @@ const CookiePage = () => {
             </ul>
 
             <div className="pt-2">
-              <button
+              <Button
+                variant="outline"
                 onClick={handleClearCookies}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold border border-border-subtle bg-white/[0.01] hover:bg-border-subtle/30 text-gray-300 hover:text-white transition-all cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2.5 text-xs"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 Clear All Cookies
-              </button>
+              </Button>
             </div>
           </div>
         </section>
@@ -276,13 +278,14 @@ const CookiePage = () => {
               Our privacy team is available to help clarify our tracking practices.
             </p>
           </div>
-          <button
+          <Button
+            variant="outline"
             onClick={handleContactTeam}
-            className="shrink-0 flex items-center gap-2 px-5 py-3 rounded-xl text-xs font-semibold border border-brand-purple/20 bg-brand-purple/10 hover:bg-brand-purple/20 text-brand-purple transition-all cursor-pointer"
+            className="shrink-0 flex items-center gap-2 px-5 py-3 text-xs border-brand-purple/20 bg-brand-purple/10 text-brand-purple hover:bg-brand-purple/20 hover:text-brand-purple"
           >
             <Mail className="w-3.5 h-3.5" />
             Contact Privacy Team
-          </button>
+          </Button>
         </div>
       </main>
     </div>

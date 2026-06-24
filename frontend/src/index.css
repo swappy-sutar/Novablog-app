@@ -305,7 +305,7 @@
 }
 
 .light-mode .bg-dot-grid {
-  background-image: radial-gradient(rgba(15, 23, 42, 0.15) 1.2px, transparent 1.2px);
+  background-image: radial-gradient(rgba(15, 23, 42, 0.32) 1.2px, transparent 1.2px);
 }
 
 .mask-radial-fade {
@@ -460,4 +460,10 @@
 .light-mode .light-mode-loader-text {
   background-image: linear-gradient(90deg, #4b5563, #111827, #4b5563) !important;
   background-size: 200% auto;
+}
+
+/* Hide the purple and cyan glow blobs in light mode to remove the background glows from the hero section */
+.light-mode .hero-blob-purple,
+.light-mode .hero-blob-cyan {
+  display: none;
 }
