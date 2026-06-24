@@ -245,7 +245,7 @@ const Hero = () => {
         </div>
 
         {/* Right Column: Premium Glass Status Board */}
-        <div className="lg:col-span-5 w-full flex flex-col">
+        <div className="hidden lg:flex lg:col-span-5 w-full flex-col">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
