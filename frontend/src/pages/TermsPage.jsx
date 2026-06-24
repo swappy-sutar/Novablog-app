@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Shield, BookOpen, UserCheck, AlertOctagon, FileWarning, Download, AlertCircle } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -13,6 +13,36 @@ const TermsPage = () => {
     { id: "termination", num: "05", label: "Termination" },
     { id: "limitation-of-liability", num: "06", label: "Limitation of Liability" }
   ];
+
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: "-20% 0px -60% 0px", // triggers when section is in upper-middle of viewport
+      threshold: 0
+    };
+
+    const observerCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    sections.forEach((sec) => {
+      const el = document.getElementById(sec.id);
+      if (el) observer.observe(el);
+    });
+
+    return () => {
+      sections.forEach((sec) => {
+        const el = document.getElementById(sec.id);
+        if (el) observer.unobserve(el);
+      });
+    };
+  }, []);
 
   const scrollToSection = (id) => {
     setActiveSection(id);
@@ -32,11 +62,145 @@ const TermsPage = () => {
   };
 
   const handleDownloadPDF = () => {
-    toast.success("Generating Terms of Service PDF summary... Download starting.");
-    // Mock download window trigger
-    setTimeout(() => {
-      window.open("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", "_blank");
-    }, 1200);
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      toast.error("Popup blocked! Please allow popups to download the PDF.");
+      return;
+    }
+    
+    toast.success("Generating professional Terms of Service document...");
+    
+    // Construct a beautiful print document with clean formal typography
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>NovaBlog - Terms of Service</title>
+          <style>
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+              color: #1f2937;
+              line-height: 1.6;
+              padding: 40px;
+              max-width: 800px;
+              margin: 0 auto;
+            }
+            .header {
+              border-bottom: 2px solid #e5e7eb;
+              padding-bottom: 20px;
+              margin-bottom: 30px;
+            }
+            .logo {
+              font-size: 24px;
+              font-weight: 800;
+              color: #8b5cf6;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+            }
+            .title {
+              font-size: 28px;
+              font-weight: 800;
+              margin-top: 10px;
+              margin-bottom: 5px;
+              color: #111827;
+            }
+            .meta {
+              font-size: 11px;
+              color: #6b7280;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+            }
+            h2 {
+              font-size: 16px;
+              font-weight: 700;
+              margin-top: 25px;
+              margin-bottom: 10px;
+              color: #111827;
+              border-bottom: 1px solid #f3f4f6;
+              padding-bottom: 5px;
+            }
+            p {
+              font-size: 13px;
+              margin-bottom: 15px;
+              color: #374151;
+            }
+            ul {
+              font-size: 13px;
+              margin-bottom: 15px;
+              padding-left: 20px;
+              color: #374151;
+            }
+            li {
+              margin-bottom: 8px;
+            }
+            .footer {
+              margin-top: 50px;
+              border-top: 1px solid #e5e7eb;
+              padding-top: 15px;
+              font-size: 10px;
+              color: #9ca3af;
+              text-align: center;
+            }
+            @media print {
+              body { padding: 20px; }
+              .no-print { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="logo">NovaBlog</div>
+            <div class="title">Terms of Service</div>
+            <div class="meta">Last Updated: June 16, 2024 • Legal Department Document</div>
+          </div>
+          
+          <p>Welcome to NovaBlog. These terms outline our agreement with you regarding the use of our platform, governing the relationship between creators, engineers, and our technology.</p>
+          
+          <h2>1. Introduction</h2>
+          <p>By accessing or using NovaBlog (the "Service"), you agree to be bound by these Terms of Service. If you disagree with any part of the terms, you may not access the Service. NovaBlog is a platform for engineers, designers, and creators to share knowledge and build communities.</p>
+          <p>These terms constitute a legally binding agreement between you and NovaBlog Corp. regarding your use of the website and any associated software or services provided.</p>
+          
+          <h2>2. Account Responsibilities</h2>
+          <p>When you register an account with us, you accept responsibility for maintaining core security guidelines:</p>
+          <ul>
+            <li><strong>Security:</strong> You are responsible for safeguarding the password that you use to access the Service and for any activities or actions under your password.</li>
+            <li><strong>Accuracy:</strong> You must provide us information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms.</li>
+          </ul>
+          
+          <h2>3. Content Ownership (IP)</h2>
+          <p><strong>Your Content stays Yours:</strong> You retain any and all of your rights to any Content you submit, post or display on or through the Service and you are responsible for protecting those rights. We claim no ownership over the intellectual property of our users.</p>
+          <p><strong>License to NovaBlog:</strong> By posting Content to the Service, you grant us the right and license to use, modify, publicly perform, publicly display, reproduce, and distribute such Content on and through the Service. This license is for the sole purpose of enabling us to provide the Service to you and other users.</p>
+          
+          <h2>4. Acceptable Use</h2>
+          <p>You agree not to engage in any of the following prohibited activities:</p>
+          <ul>
+            <li>Spamming or mass automated messaging.</li>
+            <li>System penetration testing or unauthorized vulnerability scanning.</li>
+            <li>Scraping or harvesting personal data or copyrighted articles.</li>
+            <li>Impersonating other developers or staff members.</li>
+          </ul>
+          
+          <h2>5. Termination</h2>
+          <p>We may terminate or suspend your account and bar access to the Service immediately, without prior notice or liability, under our sole discretion, for any reason whatsoever and without limitation, including but not limited to a breach of the Terms.</p>
+          <p>Upon termination, your right to use the Service will immediately cease. If you wish to terminate your account, you may simply discontinue using the Service or request account deletion through your profile settings.</p>
+          
+          <h2>6. Limitation of Liability</h2>
+          <p>In no event shall NovaBlog, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service.</p>
+          
+          <div class="footer">
+            © 2026 NovaBlog Corp. All rights reserved. • Confidential Legal Document • Generated on ${new Date().toLocaleDateString()}
+          </div>
+          
+          <script>
+            window.onload = function() {
+              window.print();
+              // Close window after printing/saving to keep it clean
+              setTimeout(function() { window.close(); }, 500);
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   };
 
   const navItemClass = (id) =>

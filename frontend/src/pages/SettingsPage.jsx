@@ -19,6 +19,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import Button from '../components/ui/Button';
+import Loader from '../components/ui/Loader';
 import { authAPI, getErrorMessage } from '../lib/api';
 
 const PREFS_KEY = 'novablog_settings_prefs_v1';
@@ -629,9 +630,8 @@ const SettingsPage = () => {
 
   if (loadState.loading && !profile) {
     return (
-      <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col items-center justify-center min-h-[50vh] gap-4">
-        <div className="w-10 h-10 border-2 border-brand-cyan border-t-transparent rounded-full animate-spin" />
-        <p className="text-gray-500 text-sm">Loading settings…</p>
+      <div className="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-center min-h-[50vh]">
+        <Loader message="Loading settings..." size="md" />
       </div>
     );
   }
@@ -1447,9 +1447,8 @@ const SettingsPage = () => {
               </div>
 
               {isGenerating2FA ? (
-                <div className="flex flex-col items-center justify-center py-8 gap-3">
-                  <div className="w-8 h-8 border-2 border-brand-cyan border-t-transparent rounded-full animate-spin" />
-                  <p className="text-xs text-text-muted">Generating secret key...</p>
+                <div className="flex items-center justify-center py-8">
+                  <Loader message="Generating secret key..." size="sm" />
                 </div>
               ) : (
                 <form onSubmit={handleEnable2FASubmit} className="space-y-5">

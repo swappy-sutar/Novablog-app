@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import GlassCard from '../components/ui/GlassCard';
 import Button from '../components/ui/Button';
+import Loader from '../components/ui/Loader';
 import { authAPI } from '../lib/api';
 
 const HEAT_WEEKS = 52;
@@ -196,9 +197,8 @@ const PublicProfilePage = () => {
 
   if (loading && !profile) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[45vh] gap-4">
-        <div className="w-10 h-10 border-2 border-brand-cyan border-t-transparent rounded-full animate-spin" />
-        <p className="text-gray-500 text-sm">Loading profile…</p>
+      <div className="flex items-center justify-center min-h-[45vh]">
+        <Loader message="Loading developer profile..." size="md" />
       </div>
     );
   }

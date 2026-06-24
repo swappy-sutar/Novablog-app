@@ -23,9 +23,195 @@
     <meta property="twitter:title" content="NovaBlog — The Premium Developer Blogging Platform by Swappy" />
     <meta property="twitter:description" content="Share coding insights, publish technical articles, and build your engineering audience." />
     <meta property="twitter:image" content="/svg/novablog-icon-square.svg" />
+    <!-- Script to prevent theme flash before mounting -->
+    <script>
+      (function() {
+        try {
+          const raw = localStorage.getItem('novablog_settings_prefs_v1');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && parsed.theme === 'light') {
+              document.documentElement.classList.add('light-mode');
+            }
+          }
+        } catch (e) { /* ignore */ }
+      })();
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Premium Website Preloader (Overwritten by React once mounted) -->
+      <div class="web-preloader">
+        <style>
+          .web-preloader {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #04040c;
+            z-index: 99999;
+            user-select: none;
+            font-family: system-ui, -apple-system, sans-serif;
+            gap: 24px;
+            transition: opacity 0.3s ease;
+          }
+          
+          @media (prefers-color-scheme: light) {
+            :root:not(.dark-mode) .web-preloader {
+              background-color: #ffffff;
+            }
+            :root:not(.dark-mode) .preloader-text {
+              background-image: linear-gradient(90deg, #4b5563, #111827, #4b5563) !important;
+            }
+          }
+          
+          :root.light-mode .web-preloader {
+            background-color: #ffffff;
+          }
+          :root.light-mode .preloader-text {
+            background-image: linear-gradient(90deg, #4b5563, #111827, #4b5563) !important;
+          }
+
+          .preloader-anim-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 96px;
+            height: 96px;
+          }
+
+          .preloader-glow {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background-color: rgba(139, 92, 246, 0.15);
+            filter: blur(24px);
+            opacity: 0.7;
+            animation: preloader-pulse 3s ease-in-out infinite;
+          }
+
+          .preloader-orbit-ccw {
+            position: absolute;
+            animation: preloader-orbit-ccw-anim 6s linear infinite;
+            width: 96px;
+            height: 96px;
+          }
+
+          .preloader-orbit-cw {
+            position: absolute;
+            animation: preloader-orbit-cw-anim 4s linear infinite;
+            width: 80px;
+            height: 80px;
+          }
+
+          .preloader-logo-container {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            animation: preloader-logo-breath 3s ease-in-out infinite;
+          }
+
+          .preloader-text {
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-align: center;
+            background-image: linear-gradient(90deg, #9ca3af, #ffffff, #9ca3af);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            animation: preloader-shimmer 3s linear infinite;
+            max-width: 240px;
+          }
+
+          @keyframes preloader-orbit-cw-anim {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+
+          @keyframes preloader-orbit-ccw-anim {
+            0% { transform: rotate(360deg); }
+            100% { transform: rotate(0deg); }
+          }
+
+          @keyframes preloader-pulse {
+            0%, 100% { opacity: 0.5; transform: scale(0.95); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+          }
+
+          @keyframes preloader-logo-breath {
+            0%, 100% {
+              transform: scale(0.93);
+              filter: drop-shadow(0 0 8px rgba(155, 93, 229, 0.25));
+            }
+            50% {
+              transform: scale(1.05);
+              filter: drop-shadow(0 0 20px rgba(155, 93, 229, 0.6));
+            }
+          }
+
+          @keyframes preloader-shimmer {
+            0% { background-position: 200% center; }
+            100% { background-position: 0% center; }
+          }
+        </style>
+
+        <div class="preloader-anim-container">
+          <div class="preloader-glow"></div>
+          
+          <!-- Outer Ring (Dashed, CCW) -->
+          <svg class="preloader-orbit-ccw" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="46" fill="transparent" stroke="rgba(139, 92, 246, 0.15)" stroke-width="1" />
+            <circle cx="50" cy="50" r="46" fill="transparent" stroke="rgba(139, 92, 246, 0.4)" stroke-width="1.5" stroke-dasharray="10 30" stroke-linecap="round" />
+          </svg>
+
+          <!-- Inner Ring (Gradient, CW) -->
+          <svg class="preloader-orbit-cw" viewBox="0 0 100 100">
+            <defs>
+              <linearGradient id="preloaderRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#9B5DE5" stop-opacity="0.8" />
+                <stop offset="50%" stop-color="#5B2A9E" stop-opacity="0.3" />
+                <stop offset="100%" stop-color="#D6B8FF" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <circle cx="50" cy="50" r="44" fill="transparent" stroke="url(#preloaderRingGrad)" stroke-width="2.5" stroke-dasharray="100 180" stroke-linecap="round" />
+          </svg>
+
+          <!-- Logo -->
+          <div class="preloader-logo-container">
+            <svg width="100%" height="100%" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="preloaderFlareGrad" x1="10%" y1="0%" x2="90%" y2="100%">
+                  <stop offset="0%" stop-color="#D6B8FF"/>
+                  <stop offset="50%" stop-color="#9B5DE5"/>
+                  <stop offset="100%" stop-color="#5B2A9E"/>
+                </linearGradient>
+                <radialGradient id="preloaderCoreGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#F4ECFF" stop-opacity="0.9"/>
+                  <stop offset="100%" stop-color="#C9A6FF" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+              <g transform="translate(78, 80)">
+                <circle cx="0" cy="0" r="38" fill="url(#preloaderCoreGlow)"/>
+                <path d="M -44 42 C -26 24, -8 8, 3 -4 C 12 -14, 20 -28, 28 -48 L 34 -48 C 27 -22, 16 -4, 5 6 C -8 17, -25 28, -42 46 Z" fill="url(#preloaderFlareGrad)"/>
+                <path d="M -32 -28 C -19 -17, -8 -8, 0 0 C -12 -2, -25 -9, -38 -18 Z" fill="url(#preloaderFlareGrad)"/>
+                <circle cx="1" cy="-1" r="6" fill="#FBF7FF"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+        
+        <div class="preloader-text">Initializing NovaBlog...</div>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

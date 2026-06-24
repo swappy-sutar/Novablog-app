@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Globe, Cpu, ArrowRight, Download, Edit, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 const PrivacyPage = () => {
-  const [activeSection, setActiveSection] = useState("cookies-policy");
+  const [activeSection, setActiveSection] = useState("overview");
 
   const sections = [
     { id: "overview", label: "Overview" },
@@ -12,6 +12,36 @@ const PrivacyPage = () => {
     { id: "cookies-policy", label: "Cookies Policy" },
     { id: "user-rights", label: "User Rights" }
   ];
+
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: "-20% 0px -60% 0px", // triggers when section is in upper-middle of viewport
+      threshold: 0
+    };
+
+    const observerCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    sections.forEach((sec) => {
+      const el = document.getElementById(sec.id);
+      if (el) observer.observe(el);
+    });
+
+    return () => {
+      sections.forEach((sec) => {
+        const el = document.getElementById(sec.id);
+        if (el) observer.unobserve(el);
+      });
+    };
+  }, []);
 
   const scrollToSection = (id) => {
     setActiveSection(id);
