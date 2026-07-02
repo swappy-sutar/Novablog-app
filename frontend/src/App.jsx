@@ -21,6 +21,7 @@ import PrivacyPage from "./pages/PrivacyPage";
 import CookiePage from "./pages/CookiePage";
 import TermsPage from "./pages/TermsPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import AdminPage from "./pages/AdminPage";
 
 function App() {
   useEffect(() => {
@@ -93,6 +94,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <MyBlogsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminPage />
               </ProtectedRoute>
             }
           />

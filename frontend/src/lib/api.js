@@ -243,6 +243,33 @@ export const bookmarkAPI = {
   }
 };
 
+export const adminAPI = {
+  getUsers: async () => {
+    const response = await api.get('/admin/users');
+    return response.data;
+  },
+  toggleUserStatus: async (userId, status) => {
+    const response = await api.patch(`/admin/users/${userId}/status`, { status });
+    return response.data;
+  },
+  changeUserRole: async (userId, role) => {
+    const response = await api.patch(`/admin/users/${userId}/role`, { role });
+    return response.data;
+  },
+  getModerationQueue: async () => {
+    const response = await api.get('/admin/moderation');
+    return response.data;
+  },
+  approvePost: async (id) => {
+    const response = await api.patch(`/admin/moderation/${id}/approve`);
+    return response.data;
+  },
+  rejectPost: async (id) => {
+    const response = await api.delete(`/admin/moderation/${id}/reject`);
+    return response.data;
+  }
+};
+
 let isRefreshing = false;
 let failedQueue = [];
 

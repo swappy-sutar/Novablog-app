@@ -21,9 +21,10 @@ const SignInPage = () => {
   const [isVerifying2FA, setIsVerifying2FA] = useState(false);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [name]: value
     }));
   };
 

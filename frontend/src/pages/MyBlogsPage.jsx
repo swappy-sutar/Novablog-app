@@ -202,26 +202,9 @@ const MyBlogsPage = () => {
   const totalViews = blogs.reduce((sum, b) => sum + (b.views || 0), 0);
   const publishedCount = blogs.filter((b) => b.status === "PUBLISHED").length;
 
-  // Mock Scheduled blog for visual demo matching reference image
+  // Process blogs filter
   const processedBlogs = (() => {
     const list = [...displayBlogs];
-
-    // Add one mock scheduled post to match the visual preview from the mock design
-    if ((filter === "all" || filter === "scheduled") && list.length > 0 && !list.some((b) => b.isMockScheduled)) {
-      list.push({
-        id: "mock-scheduled-id",
-        title: "Web3 Security: Beyond the Smart Contract",
-        excerpt:
-          "Securing the frontend layer and infrastructure of decentralized applications against common attacks...",
-        content: "Draft content...",
-        status: "SCHEDULED", // Virtual status for UI filter
-        views: 0,
-        publishedAt: null,
-        createdAt: "2026-06-26T12:00:00.000Z", // Stable pure ISO string
-        updatedAt: "2026-06-17T12:00:00.000Z",
-        isMockScheduled: true,
-      });
-    }
 
     return list.filter((b) => {
       // Search term

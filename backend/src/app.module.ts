@@ -13,6 +13,7 @@ import { JobsEmailModule } from './jobs/email/email.module';
 import { BullMQModule } from './config/bullmq/bull.module';
 import { ResendModule } from './config/resend/resend.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { AdminModule } from './modules/admin/admin.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
 import { APP_GUARD } from '@nestjs/core';
@@ -52,6 +53,7 @@ import Redis from 'ioredis';
     BullMQModule,
     ResendModule,
     NotificationsModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [
