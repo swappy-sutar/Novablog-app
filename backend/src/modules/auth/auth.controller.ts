@@ -24,6 +24,7 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateEmailDto } from './dto/update-email.dto';
+import { ResendVerificationDto } from './dto/resend-verification.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from './guards/optional-jwt.guard';
 import { CurrentUser } from 'src/common/decorator/current-user.decorator';
@@ -34,35 +35,18 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  async register(
-    @Body() registerDto: RegisterDto,
-    @Res({ passthrough: true }) res: express.Response,
-  ) {
-    const result = await this.authService.register(registerDto);
-    const data = result.data as any;
-    if (data && data.refreshToken) {
-      const { accessToken, refreshToken, user } = data;
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        path: '/',
-      });
-      return {
-        ...result,
-        data: {
-          user,
-          accessToken,
-        },
-      };
-    }
-    return result;
+  async register(@Body() registerDto: RegisterDto) {
+    return this.authService.register(registerDto);
   }
 
   @Get('verify-email')
   async verifyEmail(@Query('token') token: string) {
     return this.authService.verifyEmail(token);
+  }
+
+  @Post('resend-verification')
+  async resendVerification(@Body() dto: ResendVerificationDto) {
+    return this.authService.resendVerification(dto.email);
   }
 
   @Post('login')

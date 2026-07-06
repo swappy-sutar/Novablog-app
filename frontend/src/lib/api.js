@@ -124,6 +124,16 @@ export const authAPI = {
     const response = await api.post('/auth/2fa/verify-login', { userId, code });
     return response.data;
   },
+
+  verifyEmail: async (token) => {
+    const response = await api.get(`/auth/verify-email?token=${token}`);
+    return response.data;
+  },
+
+  resendVerification: async (email) => {
+    const response = await api.post('/auth/resend-verification', { email });
+    return response.data;
+  },
 };
 
 // Blog API endpoints

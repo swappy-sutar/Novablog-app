@@ -67,18 +67,6 @@ export class AuthService {
       password: hashedPassword,
     });
 
-    const tokens = await this.generateTokens(user.id, user.email, user.role);
-
-    const hashedRefreshToken = await hashPassword(tokens.refreshToken);
-
-    await this.usersRepository.update(user.id, {
-      refreshToken: hashedRefreshToken,
-    });
-
-    // Redis Session Storage
-    const sessionKey = `session:${user.id}`;
-    await this.cacheService.set(sessionKey, hashedRefreshToken, 604800); // 7 days TTL
-
     // Redis Email Verification Token
     const verificationToken = uuidv4();
     const verifyTokenKey = `email-verification:${verificationToken}`;
@@ -87,7 +75,6 @@ export class AuthService {
     const { password, refreshToken, ...safeUser } = user;
 
     await this.cacheService.del(REDIS_KEYS.USER(user.id));
-
     await this.cacheService.del(REDIS_KEYS.USER_PROFILE(user.id));
 
     const verifyLink = `${
@@ -95,14 +82,11 @@ export class AuthService {
     }/verify-email?token=${verificationToken}`;
 
     await this.emailService.sendVerifyEmail(user.email, user.firstname, verifyLink);
-    await this.emailService.sendWelcomeEmail(user.email, user.firstname);
 
     return successResponse(
-      'User registered successfully. Please verify your email.',
+      'Registration successful. Please verify your email.',
       {
         user: safeUser,
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
       },
       HttpStatus.CREATED,
     );
@@ -150,6 +134,10 @@ export class AuthService {
         failedAttempts: 0,
         lockedUntil: null,
       });
+    }
+
+    if (!user.isVerified) {
+      throw new UnauthorizedException('Please verify your email address before logging in.');
     }
 
     if (user.isTwoFactorEnabled) {
@@ -697,6 +685,9 @@ export class AuthService {
 
     await this.usersRepository.verifyUser(userId);
 
+    // Send Welcome Email upon successful verification
+    await this.emailService.sendWelcomeEmail(user.email, user.firstname);
+
     // Delete token from Redis
     await this.cacheService.del(verifyTokenKey);
 
@@ -710,6 +701,32 @@ export class AuthService {
     }
 
     return successResponse('Email verified successfully', null);
+  }
+
+  async resendVerification(email: string) {
+    const formattedEmail = email.toLowerCase().trim();
+    const user = await this.usersRepository.findByEmail(formattedEmail);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.isVerified) {
+      throw new BadRequestException('Email is already verified');
+    }
+
+    // Generate new email verification token
+    const verificationToken = uuidv4();
+    const verifyTokenKey = `email-verification:${verificationToken}`;
+    await this.cacheService.set(verifyTokenKey, user.id, 86400); // 24 hours TTL
+
+    const verifyLink = `${
+      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:5173'
+    }/verify-email?token=${verificationToken}`;
+
+    await this.emailService.sendVerifyEmail(user.email, user.firstname, verifyLink);
+
+    return successResponse('Verification email sent successfully', null);
   }
 
   async changePassword(userId: string, dto: ChangePasswordDto) {

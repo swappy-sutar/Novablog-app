@@ -110,7 +110,8 @@ describe('SignUpPage', () => {
     });
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/signin');
+      expect(screen.getByText(/check your email/i)).toBeInTheDocument();
+      expect(screen.getByText(/john@test.com/i)).toBeInTheDocument();
     });
   });
 

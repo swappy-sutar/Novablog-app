@@ -65,34 +65,31 @@ describe('AuthController', () => {
   // ─── REGISTER ──────────────────────────────────────────────────
 
   describe('register', () => {
-    it('should set refresh token cookie and strip it from response', async () => {
-      const res = mockRes();
-      authService.register.mockResolvedValue({
+    it('should call authService.register and return the result', async () => {
+      const mockResult = {
         success: true,
         statusCode: 201,
-        message: 'Registered',
+        message: 'Registration successful. Please verify your email.',
         data: {
           user: { id: 'user-1', firstname: 'John' },
-          accessToken: 'access-token',
-          refreshToken: 'refresh-token',
         },
+      };
+      authService.register.mockResolvedValue(mockResult);
+
+      const result = await controller.register({
+        firstname: 'John',
+        username: 'john',
+        email: 'j@test.com',
+        password: 'pass123',
       });
 
-      const result = await controller.register(
-        { firstname: 'John', username: 'john', email: 'j@test.com', password: 'pass123' },
-        res,
-      );
-
-      expect(res.cookie).toHaveBeenCalledWith('refreshToken', 'refresh-token', {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        path: '/',
+      expect(authService.register).toHaveBeenCalledWith({
+        firstname: 'John',
+        username: 'john',
+        email: 'j@test.com',
+        password: 'pass123',
       });
-      // refreshToken should NOT be in the response data
-      expect(result.data).not.toHaveProperty('refreshToken');
-      expect(result.data).toHaveProperty('accessToken');
+      expect(result).toEqual(mockResult);
     });
   });
 

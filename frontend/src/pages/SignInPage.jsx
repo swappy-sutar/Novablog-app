@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { authAPI, getErrorMessage } from '../lib/api';
 import toast from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import AuthBackground from '../components/auth/AuthBackground';
 import Button from '../components/ui/Button';
 import useDocumentTitle from '../hooks/useDocumentTitle';
@@ -14,6 +14,9 @@ const SignInPage = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showResendOption, setShowResendOption] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -64,9 +67,32 @@ const SignInPage = () => {
         navigate('/');
       }
     } catch (error) {
-      toast.error(getErrorMessage(error, "Invalid credentials. Please try again."));
+      const errMsg = getErrorMessage(error, "Invalid credentials. Please try again.");
+      toast.error(errMsg);
+      if (errMsg.toLowerCase().includes("verify your email")) {
+        setShowResendOption(true);
+      }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    if (!formData.email) {
+      toast.error("Please enter your email address.");
+      return;
+    }
+    setIsResending(true);
+    try {
+      const response = await authAPI.resendVerification(formData.email);
+      if (response.success) {
+        toast.success("Verification link sent! Check your inbox.");
+        setShowResendOption(false);
+      }
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to resend verification email."));
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -205,6 +231,20 @@ const SignInPage = () => {
                 </button>
               </div>
             </div>
+
+            {showResendOption && (
+              <div className="text-xs text-brand-cyan bg-brand-cyan/10 border border-brand-cyan/20 p-3 rounded-xl flex items-center justify-between">
+                <span>Email not verified yet?</span>
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={isResending}
+                  className="font-bold underline hover:text-brand-blue transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                >
+                  {isResending ? <Loader2 size={12} className="animate-spin" /> : "Resend Link"}
+                </button>
+              </div>
+            )}
 
             <Button 
               type="submit" 

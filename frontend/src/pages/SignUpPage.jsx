@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { authAPI, getErrorMessage } from '../lib/api';
 import toast from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Mail, Loader2 } from 'lucide-react';
 import AuthBackground from '../components/auth/AuthBackground';
 import Button from '../components/ui/Button';
 import useDocumentTitle from '../hooks/useDocumentTitle';
@@ -14,6 +14,9 @@ const SignUpPage = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  
   const [formData, setFormData] = useState({
     firstname: '',
     lastname: '',
@@ -22,6 +25,20 @@ const SignUpPage = () => {
     password: '',
     agreed: false
   });
+
+  const handleResend = async () => {
+    setIsResending(true);
+    try {
+      const response = await authAPI.resendVerification(formData.email);
+      if (response.success) {
+        toast.success("Verification link resent to your email!");
+      }
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to resend verification email."));
+    } finally {
+      setIsResending(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -53,8 +70,7 @@ const SignUpPage = () => {
       
       if (response.success) {
         toast.success("Account created successfully!");
-        // Auto login or redirect to signin
-        navigate('/signin');
+        setIsRegistered(true);
       }
     } catch (error) {
       toast.error(getErrorMessage(error, "Registration failed. Please try again."));
@@ -76,22 +92,65 @@ const SignUpPage = () => {
           transition={{ duration: 0.5 }}
           className="w-full glass-panel p-6 sm:p-8"
         >
-          <div className="text-center mb-6">
-          <div className="flex justify-center mb-5">
-            <Link to="/">
-              <img src="/svg/novablog-lockup-dark.svg" alt="NovaBlog" className="h-11 logo-lockup-dark" />
-              <img src="/svg/novablog-lockup-light.svg" alt="NovaBlog" className="h-11 logo-lockup-light" />
-            </Link>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1.5 tracking-tight">
-            Create an account
-          </h1>
-          <p className="text-gray-400 text-xs sm:text-sm px-2">
-            Join the playground for digital storytellers and developers.
-          </p>
-        </div>
+          {isRegistered ? (
+            <div className="flex flex-col items-center space-y-6">
+              <div className="relative">
+                <div className="w-16 h-16 rounded-full bg-brand-purple/10 flex items-center justify-center border border-brand-purple/20">
+                  <Mail className="w-8 h-8 text-brand-purple" />
+                </div>
+                <div className="absolute inset-0 rounded-full bg-brand-purple/20 blur-xl animate-pulse" />
+              </div>
+              
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Check your email</h2>
+                <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                  We've sent a verification link to <span className="text-brand-cyan font-medium">{formData.email}</span>. Please click the link to activate your account.
+                </p>
+                <p className="text-gray-400 text-xs">
+                  Didn't receive the email? Check your spam folder or try requesting another one.
+                </p>
+              </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="w-full space-y-3 pt-2">
+                <Button 
+                  onClick={handleResend}
+                  disabled={isResending}
+                  variant="secondary"
+                  className="w-full !rounded-xl py-2.5 text-xs font-semibold bg-white/[0.06] border border-border-subtle hover:bg-white/[0.1] text-white"
+                >
+                  {isResending ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                      Resending Link...
+                    </>
+                  ) : "Resend Verification Link"}
+                </Button>
+                
+                <Link to="/signin" className="block w-full">
+                  <Button variant="primary" className="w-full !rounded-xl py-3 text-sm font-semibold">
+                    Go to Sign In
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="text-center mb-6">
+              <div className="flex justify-center mb-5">
+                <Link to="/">
+                  <img src="/svg/novablog-lockup-dark.svg" alt="NovaBlog" className="h-11 logo-lockup-dark" />
+                  <img src="/svg/novablog-lockup-light.svg" alt="NovaBlog" className="h-11 logo-lockup-light" />
+                </Link>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1.5 tracking-tight">
+                Create an account
+              </h1>
+              <p className="text-gray-400 text-xs sm:text-sm px-2">
+                Join the playground for digital storytellers and developers.
+              </p>
+            </div>
+    
+            <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex gap-4">
             <div className="flex-1">
               <label className={labelClass}>First Name</label>
@@ -190,11 +249,13 @@ const SignUpPage = () => {
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : "Create Account"}
           </Button>
-        </form>
-        
-        <p className="mt-5 text-center text-sm text-gray-400">
-          Already have an account? <Link to="/signin" className="text-brand-cyan hover:text-brand-blue transition-colors font-medium">Log in</Link>
-        </p>
+            </form>
+            
+            <p className="mt-5 text-center text-sm text-gray-400">
+              Already have an account? <Link to="/signin" className="text-brand-cyan hover:text-brand-blue transition-colors font-medium">Log in</Link>
+            </p>
+          </>
+        )}
       </motion.div>
     </div>
     </>

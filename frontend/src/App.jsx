@@ -22,6 +22,7 @@ import CookiePage from "./pages/CookiePage";
 import TermsPage from "./pages/TermsPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AdminPage from "./pages/AdminPage";
+import VerifyEmailPage from "./pages/VerifyEmailPage";
 
 function App() {
   useEffect(() => {
@@ -68,6 +69,7 @@ function App() {
           <Route path="/signin" element={<SignInPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
 
           {/* Main Routes */}
           <Route path="/" element={<HomePage />} />

@@ -61,7 +61,7 @@ describe('AuthService', () => {
     githubUrl: null,
     techStack: [],
     role: 'USER',
-    isVerified: false,
+    isVerified: true,
     isActive: true,
     refreshToken: 'hashed-refresh-token',
     twoFactorSecret: null,
@@ -182,19 +182,18 @@ describe('AuthService', () => {
       password: 'password123',
     };
 
-    it('should register a new user and return tokens', async () => {
+    it('should register a new user', async () => {
       usersRepository.findByEmail.mockResolvedValue(null);
       usersRepository.findByUsername.mockResolvedValue(null);
       usersRepository.create.mockResolvedValue(mockUser);
-      usersRepository.update.mockResolvedValue(mockUser);
 
       const result = await service.register(registerDto);
 
       expect(result.success).toBe(true);
       expect(result.statusCode).toBe(HttpStatus.CREATED);
-      expect(result.data).toHaveProperty('accessToken');
-      expect(result.data).toHaveProperty('refreshToken');
       expect(result.data).toHaveProperty('user');
+      expect(result.data).not.toHaveProperty('accessToken');
+      expect(result.data).not.toHaveProperty('refreshToken');
       // Should not include sensitive fields
       expect(result.data.user).not.toHaveProperty('password');
       expect(result.data.user).not.toHaveProperty('refreshToken');
@@ -204,7 +203,6 @@ describe('AuthService', () => {
       usersRepository.findByEmail.mockResolvedValue(null);
       usersRepository.findByUsername.mockResolvedValue(null);
       usersRepository.create.mockResolvedValue(mockUser);
-      usersRepository.update.mockResolvedValue(mockUser);
 
       await service.register(registerDto);
 
@@ -229,32 +227,10 @@ describe('AuthService', () => {
       await expect(service.register(registerDto)).rejects.toThrow('Username already exists');
     });
 
-    it('should store hashed refresh token in DB and Redis session', async () => {
+    it('should send verification email and not welcome email immediately', async () => {
       usersRepository.findByEmail.mockResolvedValue(null);
       usersRepository.findByUsername.mockResolvedValue(null);
       usersRepository.create.mockResolvedValue(mockUser);
-      usersRepository.update.mockResolvedValue(mockUser);
-
-      await service.register(registerDto);
-
-      // DB update with hashed refresh token
-      expect(usersRepository.update).toHaveBeenCalledWith(
-        mockUser.id,
-        expect.objectContaining({ refreshToken: 'hashed-password' }),
-      );
-      // Redis session storage with 7 day TTL
-      expect(cacheService.set).toHaveBeenCalledWith(
-        `session:${mockUser.id}`,
-        'hashed-password',
-        604800,
-      );
-    });
-
-    it('should send verification and welcome emails', async () => {
-      usersRepository.findByEmail.mockResolvedValue(null);
-      usersRepository.findByUsername.mockResolvedValue(null);
-      usersRepository.create.mockResolvedValue(mockUser);
-      usersRepository.update.mockResolvedValue(mockUser);
 
       await service.register(registerDto);
 
@@ -263,17 +239,13 @@ describe('AuthService', () => {
         mockUser.firstname,
         expect.stringContaining('verify-email?token='),
       );
-      expect(emailService.sendWelcomeEmail).toHaveBeenCalledWith(
-        mockUser.email,
-        mockUser.firstname,
-      );
+      expect(emailService.sendWelcomeEmail).not.toHaveBeenCalled();
     });
 
     it('should create email verification token in Redis', async () => {
       usersRepository.findByEmail.mockResolvedValue(null);
       usersRepository.findByUsername.mockResolvedValue(null);
       usersRepository.create.mockResolvedValue(mockUser);
-      usersRepository.update.mockResolvedValue(mockUser);
 
       await service.register(registerDto);
 
@@ -399,6 +371,13 @@ describe('AuthService', () => {
         'hashed-password',
         604800,
       );
+    });
+
+    it('should reject login if email is not verified', async () => {
+      usersRepository.findByEmail.mockResolvedValue({ ...mockUser, isVerified: false });
+
+      await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.login(loginDto)).rejects.toThrow('Please verify your email address before logging in.');
     });
   });
 
