@@ -44,8 +44,8 @@ VITE_SOCKET_URL="http://localhost:3000"
 
 ### Production (Vercel)
 When deploying to Vercel, configure these key-value pairs in the **Environment Variables** panel in the Vercel project dashboard:
-* **`VITE_API_URL`**: `https://novablog-backend-vrgz.onrender.com/api/v1`
-* **`VITE_SOCKET_URL`**: `https://novablog-backend-vrgz.onrender.com`
+* **`VITE_API_URL`**: `https://your-backend-api.onrender.com/api/v1`
+* **`VITE_SOCKET_URL`**: `https://your-backend-api.onrender.com`
 
 ---
 

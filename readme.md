@@ -4,8 +4,6 @@ NovaBlog is a modern, high-performance blogging platform built with a decoupled 
 
 ## Production Live Links
 * **Frontend Site**: [https://novablog.space](https://novablog.space) (Hosted on Vercel)
-* **Backend API**: [https://novablog-backend-vrgz.onrender.com](https://novablog-backend-vrgz.onrender.com) (Hosted on Render)
-* **API Health Check**: [https://novablog-backend-vrgz.onrender.com/health](https://novablog-backend-vrgz.onrender.com/health)
 
 ---
 
@@ -152,8 +150,8 @@ EMAIL_FROM=Blog App <hello@novablog.space>
 1. Set the build environment as **Vite** / **React**.
 2. Link your custom domain `novablog.space` in the settings tab.
 3. Define the environment variables in Vercel:
-   * `VITE_API_URL`: `https://novablog-backend-vrgz.onrender.com/api/v1`
-   * `VITE_SOCKET_URL`: `https://novablog-backend-vrgz.onrender.com`
+   * `VITE_API_URL`: `https://your-backend-api.onrender.com/api/v1`
+   * `VITE_SOCKET_URL`: `https://your-backend-api.onrender.com`
 
 ---
 
