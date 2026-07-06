@@ -616,13 +616,13 @@ export class AuthService {
       { userId: user.id },
       {
         secret: this.configService.get<string>('JWT_ACCESS_SECRET')!,
-        expiresIn: '1h',
+        expiresIn: '15m',
       },
     );
 
-    // Save token in Redis with user ID as value and 1 hour TTL
+    // Save token in Redis with user ID as value and 15 minutes TTL
     const resetTokenKey = `password-reset:${resetToken}`;
-    await this.cacheService.set(resetTokenKey, user.id, 3600); // 1 hour TTL
+    await this.cacheService.set(resetTokenKey, user.id, 900); // 15 minutes TTL
 
     const resetLink = `${
       this.configService.get<string>('FRONTEND_URL') || 'http://localhost:5173'

@@ -520,7 +520,7 @@ describe('AuthService', () => {
       expect(cacheService.set).toHaveBeenCalledWith(
         expect.stringContaining('password-reset:'),
         mockUser.id,
-        3600,
+        900,
       );
       expect(emailService.sendForgotPasswordEmail).toHaveBeenCalledWith(
         mockUser.email,
