@@ -3,12 +3,14 @@ import { motion } from 'framer-motion';
 import { authAPI, getErrorMessage } from '../lib/api';
 import toast from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 import AuthBackground from '../components/auth/AuthBackground';
 import Button from '../components/ui/Button';
 
 const SignInPage = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -181,16 +183,23 @@ const SignInPage = () => {
                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Password</label>
                 <Link to="/forgot-password" className="text-xs text-brand-cyan hover:underline">Forgot password?</Link>
               </div>
-              <div className="relative">
+              <div className="relative flex items-center">
                 <input 
-                  type="password" 
+                  type={showPassword ? "text" : "password"} 
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••" 
-                  className={inputClass}
+                  className={`${inputClass} pr-12`}
                   required 
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 text-gray-400 hover:text-white transition-colors cursor-pointer flex items-center justify-center"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
 

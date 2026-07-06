@@ -16,7 +16,9 @@ import {
   ChevronRight, 
   Download,
   AlertTriangle,
-  ArrowLeft
+  ArrowLeft,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Loader from '../components/ui/Loader';
@@ -135,6 +137,9 @@ const SettingsPage = () => {
   // API settings modals states
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [emailForm, setEmailForm] = useState({ newEmail: '' });
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -1219,33 +1224,60 @@ const SettingsPage = () => {
               <form onSubmit={handleChangePasswordSubmit} className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-text-muted mb-2">Current Password</label>
-                  <input
-                    type="password"
-                    required
-                    className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-3 text-sm text-text-input focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
-                    value={passwordForm.oldPassword}
-                    onChange={(e) => setPasswordForm((f) => ({ ...f, oldPassword: e.target.value }))}
-                  />
+                  <div className="relative flex items-center">
+                    <input
+                      type={showOldPassword ? "text" : "password"}
+                      required
+                      className="w-full bg-bg-input border border-border-subtle rounded-xl pl-4 pr-12 py-3 text-sm text-text-input focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
+                      value={passwordForm.oldPassword}
+                      onChange={(e) => setPasswordForm((f) => ({ ...f, oldPassword: e.target.value }))}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowOldPassword(!showOldPassword)}
+                      className="absolute right-3 text-gray-400 hover:text-white transition-colors cursor-pointer flex items-center justify-center"
+                    >
+                      {showOldPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-text-muted mb-2">New Password</label>
-                  <input
-                    type="password"
-                    required
-                    className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-3 text-sm text-text-input focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
-                    value={passwordForm.newPassword}
-                    onChange={(e) => setPasswordForm((f) => ({ ...f, newPassword: e.target.value }))}
-                  />
+                  <div className="relative flex items-center">
+                    <input
+                      type={showNewPassword ? "text" : "password"}
+                      required
+                      className="w-full bg-bg-input border border-border-subtle rounded-xl pl-4 pr-12 py-3 text-sm text-text-input focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
+                      value={passwordForm.newPassword}
+                      onChange={(e) => setPasswordForm((f) => ({ ...f, newPassword: e.target.value }))}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="absolute right-3 text-gray-400 hover:text-white transition-colors cursor-pointer flex items-center justify-center"
+                    >
+                      {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-text-muted mb-2">Confirm New Password</label>
-                  <input
-                    type="password"
-                    required
-                    className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-3 text-sm text-text-input focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
-                    value={passwordForm.confirmPassword}
-                    onChange={(e) => setPasswordForm((f) => ({ ...f, confirmPassword: e.target.value }))}
-                  />
+                  <div className="relative flex items-center">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      required
+                      className="w-full bg-bg-input border border-border-subtle rounded-xl pl-4 pr-12 py-3 text-sm text-text-input focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
+                      value={passwordForm.confirmPassword}
+                      onChange={(e) => setPasswordForm((f) => ({ ...f, confirmPassword: e.target.value }))}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 text-gray-400 hover:text-white transition-colors cursor-pointer flex items-center justify-center"
+                    >
+                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
                 <div className="flex gap-4 justify-end pt-4 border-t border-border-subtle">
                   <Button

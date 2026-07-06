@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { authAPI, getErrorMessage } from '../lib/api';
 import toast from 'react-hot-toast';
+import { Eye, EyeOff } from 'lucide-react';
 import AuthBackground from '../components/auth/AuthBackground';
 import Button from '../components/ui/Button';
 
@@ -16,6 +17,8 @@ const ResetPasswordPage = () => {
     confirmPassword: ''
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData(prev => ({
@@ -111,28 +114,46 @@ const ResetPasswordPage = () => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className={labelClass}>New Password</label>
-                  <input 
-                    type="password" 
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="••••••••" 
-                    className={inputClass}
-                    required 
-                  />
+                  <div className="relative flex items-center">
+                    <input 
+                      type={showPassword ? "text" : "password"} 
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder="••••••••" 
+                      className={`${inputClass} pr-12`}
+                      required 
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 text-gray-400 hover:text-white transition-colors cursor-pointer flex items-center justify-center"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
 
                 <div>
                   <label className={labelClass}>Confirm Password</label>
-                  <input 
-                    type="password" 
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    placeholder="••••••••" 
-                    className={inputClass}
-                    required 
-                  />
+                  <div className="relative flex items-center">
+                    <input 
+                      type={showConfirmPassword ? "text" : "password"} 
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      placeholder="••••••••" 
+                      className={`${inputClass} pr-12`}
+                      required 
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 text-gray-400 hover:text-white transition-colors cursor-pointer flex items-center justify-center"
+                    >
+                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
 
                 <Button 
