@@ -69,7 +69,7 @@ const SignUpPage = () => {
       const response = await authAPI.register(payload);
       
       if (response.success) {
-        toast.success("Account created successfully!");
+        toast.success("Account created successfully! Please verify your email.");
         setIsRegistered(true);
       }
     } catch (error) {
