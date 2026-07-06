@@ -35,10 +35,17 @@ import Redis from 'ioredis';
           },
         ],
         storage: new ThrottlerStorageRedisService(
-          new Redis({
-            host: config.get<string>('REDIS_HOST') || 'localhost',
-            port: Number(config.get<string>('REDIS_PORT')) || 6379,
-          }),
+          config.get<string>('REDIS_URL')
+            ? new Redis(config.get<string>('REDIS_URL'), {
+                tls: config.get<string>('REDIS_URL').startsWith('rediss://')
+                  ? { rejectUnauthorized: false }
+                  : undefined,
+              })
+            : new Redis({
+                host: config.get<string>('REDIS_HOST') || 'localhost',
+                port: Number(config.get<string>('REDIS_PORT')) || 6379,
+                password: config.get<string>('REDIS_PASSWORD') || undefined,
+              }),
         ),
       }),
     }),
