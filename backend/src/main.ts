@@ -32,7 +32,9 @@ async function bootstrap() {
         !origin ||
         /^http:\/\/localhost(:\d+)?$/.test(origin) ||
         /^http:\/\/127\.0\.0\.1(:\d+)?$/.test(origin) ||
-        origin === 'https://novablog-by-swappy.vercel.app'
+        origin === 'https://novablog-by-swappy.vercel.app' ||
+        origin === 'https://novablog.space' ||
+        origin === 'https://www.novablog.space'
       ) {
         callback(null, true);
       } else {

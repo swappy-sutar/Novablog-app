@@ -1,0 +1,92 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: blog-app-db
+    restart: "no"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: blog-app-redis
+    restart: "no"
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    volumes:
+      - redisdata:/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: blog-app-backend
+    restart: "no"
+    ports:
+      - '${PORT:-3000}:3000'
+    environment:
+      - PORT=${PORT}
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_URL=${REDIS_URL}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - ACCESS_TOKEN_EXPIRES_IN=${ACCESS_TOKEN_EXPIRES_IN}
+      - REFRESH_TOKEN_EXPIRES_IN=${REFRESH_TOKEN_EXPIRES_IN}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - FRONTEND_URL=${FRONTEND_URL}
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: sh -c "npx prisma db push && npm run start:dev"
+
+  # Production Frontend (Nginx) - Port 80
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
+      args:
+        - VITE_API_URL=http://localhost:${PORT:-3000}/api/v1
+    container_name: blog-app-frontend-prod
+    restart: "no"
+    ports:
+      - '80:80'
+    depends_on:
+      - backend
+
+  # Development Frontend (Vite Dev Server) - Port 5173 (Optional, disabled by default. Uncomment/use if desired)
+  # frontend-dev:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #     target: development
+  #   container_name: blog-app-frontend-dev
+  #   ports:
+  #     - '5173:5173'
+  #   volumes:
+  #     - ./frontend:/app
+  #     - /app/node_modules
+  #   environment:
+  #     - VITE_API_URL=http://localhost:3000/api/v1
+  #   depends_on:
+  #     - backend
+
+volumes:
+  pgdata:
+  redisdata:
