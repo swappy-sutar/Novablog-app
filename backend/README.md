@@ -1,5 +1,7 @@
 # 🦁 NovaBlog Backend (NestJS API)
 
+> **Share Ideas. Inspire World.** 🌎✨
+
 This is the progressive NestJS backend API powering the NovaBlog platform. It includes JWT authentication, PostgreSQL persistence via Prisma ORM, Redis-backed caching and rate limiting, BullMQ background job queues, and AWS S3 file upload integration.
 
 ---

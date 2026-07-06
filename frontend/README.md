@@ -1,5 +1,7 @@
 # ⚛️ NovaBlog Frontend (React & Vite Client)
 
+> **Share Ideas. Inspire World.** 🌎✨
+
 This is the responsive, high-performance user interface for the NovaBlog platform. Built as a Single Page Application (SPA) using React 19, Vite, and Tailwind CSS, it offers a smooth, responsive blogging experience complete with rich-text markdown writing, comments, likes, notifications, and follower integrations.
 
 ## 🔗 Live Site Details

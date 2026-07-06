@@ -1,5 +1,7 @@
 # 🚀 NovaBlog — Full-Stack Blogging Platform
 
+> **Share Ideas. Inspire World.** 🌎✨
+
 NovaBlog is a modern, high-performance blogging platform built with a decoupled architecture. It features a React/Vite frontend and a NestJS backend utilizing Prisma ORM with PostgreSQL, Redis for caching/rate-limiting, and BullMQ for background email queues.
 
 ## 🔗 Production Live Links
