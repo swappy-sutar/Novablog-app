@@ -1,43 +1,46 @@
-# NovaBlog — Full-Stack Blogging Platform
+# 🚀 NovaBlog — Full-Stack Blogging Platform
 
 NovaBlog is a modern, high-performance blogging platform built with a decoupled architecture. It features a React/Vite frontend and a NestJS backend utilizing Prisma ORM with PostgreSQL, Redis for caching/rate-limiting, and BullMQ for background email queues.
 
-## Production Live Links
+## 🔗 Production Live Links
 * **Frontend Site**: [https://novablog.space](https://novablog.space) (Hosted on Vercel)
----
-
-## Tech Stack
-
-### Frontend
-- React 19 & Vite
-- React Router & Axios
-- Tailwind CSS & Framer Motion
-- TipTap Editor (Rich text markdown editor)
-- Ant Design icons & React Hot Toast
-
-### Backend
-- NestJS (TypeScript)
-- Prisma ORM & PostgreSQL (Neon Serverless Postgres)
-- Redis Cache & BullMQ (Upstash Serverless Redis)
-- JWT Authentication (Access + Refresh tokens)
-- Multer & AWS S3 (for image uploads)
-- Resend Email Service
+* **Backend API**: `https://your-backend-api.onrender.com/api/v1` (Hosted on Render)
+* **API Health Check**: `https://your-backend-api.onrender.com/health` (Hosted on Render)
 
 ---
 
-## Features
+## 🛠️ Tech Stack
 
-- **User Authentication**: Secure JWT login/registration with access & refresh tokens, password hashing, and cookie parsing.
-- **Rich Text Editor**: Distraction-free writing experience using TipTap.
-- **Blog Management**: CRUD operations supporting `DRAFT`, `PUBLISHED`, and `ARCHIVED` statuses, category tagging, and search pagination.
-- **Social Interactivity**: Threaded comment section, likes, like counts, and follower tracking.
-- **Personal Bookmarks**: Save posts for later reading.
-- **Rate-Limiting (Throttler)**: Redis-backed API rate limiting to prevent spam and brute-force attacks.
-- **Background Tasks**: Offloading email jobs to BullMQ workers for maximum performance.
+### 💻 Frontend
+- ⚛️ React 19 & Vite
+- 🚦 React Router & Axios
+- 🎨 Tailwind CSS & Framer Motion
+- ✍️ TipTap Editor (Rich text markdown editor)
+- 🔠 Ant Design icons & React Hot Toast
+
+### ⚙️ Backend
+- 🦁 NestJS (TypeScript)
+- 💾 Prisma ORM & PostgreSQL (Neon Serverless Postgres)
+- ⚡ Redis Cache & BullMQ (Upstash Serverless Redis)
+- 🔑 JWT Authentication (Access + Refresh tokens)
+- 📁 Multer & AWS S3 (for image uploads)
+- 📧 Resend Email Service
 
 ---
 
-## Project Structure
+## ✨ Features
+
+- **🔑 User Authentication**: Secure JWT login/registration with access & refresh tokens, password hashing, and cookie parsing.
+- **✍️ Rich Text Editor**: Distraction-free writing experience using TipTap.
+- **📝 Blog Management**: CRUD operations supporting `DRAFT`, `PUBLISHED`, and `ARCHIVED` statuses, category tagging, and search pagination.
+- **💬 Social Interactivity**: Threaded comment section, likes, like counts, and follower tracking.
+- **🔖 Personal Bookmarks**: Save posts for later reading.
+- **🛡️ Rate-Limiting (Throttler)**: Redis-backed API rate limiting to prevent spam and brute-force attacks.
+- **⏳ Background Tasks**: Offloading email jobs to BullMQ workers for maximum performance.
+
+---
+
+## 📁 Project Structure
 
 ```text
 Blog-App/
@@ -60,7 +63,7 @@ Blog-App/
 
 ---
 
-## Environment Variables Configuration
+## 🔑 Environment Variables Configuration
 
 Create a `.env` file in the **root** folder:
 
@@ -101,7 +104,7 @@ EMAIL_FROM=Blog App <hello@novablog.space>
 
 ---
 
-## Installation & Running Locally
+## 🚀 Installation & Running Locally
 
 1. **Install Dependencies**:
    ```bash
@@ -136,7 +139,7 @@ EMAIL_FROM=Blog App <hello@novablog.space>
 
 ---
 
-## Production Deployment Guide
+## ☁️ Production Deployment Guide
 
 ### Backend (Render & Neon/Upstash)
 1. Set the **Root Directory** on Render to `backend`.
@@ -154,7 +157,7 @@ EMAIL_FROM=Blog App <hello@novablog.space>
 
 ---
 
-## API Overview
+## 🔌 API Overview
 
 ### System Status
 * `GET /health` — Check server status (Bypasses global prefix).
@@ -190,5 +193,5 @@ EMAIL_FROM=Blog App <hello@novablog.space>
 
 ---
 
-## License
+## 📄 License
 This project is licensed under the terms of the `UNLICENSED` license.
