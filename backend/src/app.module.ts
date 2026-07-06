@@ -34,10 +34,11 @@ import Redis from 'ioredis';
             limit: 100,
           },
         ],
-        storage: new ThrottlerStorageRedisService(
-          config.get<string>('REDIS_URL')
-            ? new Redis(config.get<string>('REDIS_URL'), {
-                tls: config.get<string>('REDIS_URL').startsWith('rediss://')
+        storage: (() => {
+          const redisUrl = config.get<string>('REDIS_URL');
+          const redisClient = redisUrl
+            ? new Redis(redisUrl, {
+                tls: redisUrl.startsWith('rediss://')
                   ? { rejectUnauthorized: false }
                   : undefined,
               })
@@ -45,8 +46,9 @@ import Redis from 'ioredis';
                 host: config.get<string>('REDIS_HOST') || 'localhost',
                 port: Number(config.get<string>('REDIS_PORT')) || 6379,
                 password: config.get<string>('REDIS_PASSWORD') || undefined,
-              }),
-        ),
+              });
+          return new ThrottlerStorageRedisService(redisClient);
+        })(),
       }),
     }),
     AuthModule,
