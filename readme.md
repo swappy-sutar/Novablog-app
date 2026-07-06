@@ -4,7 +4,6 @@ NovaBlog is a modern, high-performance blogging platform built with a decoupled 
 
 ## Production Live Links
 * **Frontend Site**: [https://novablog.space](https://novablog.space) (Hosted on Vercel)
-
 ---
 
 ## Tech Stack
