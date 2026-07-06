@@ -1,36 +1,36 @@
-# NovaBlog Backend (NestJS API)
+# 🦁 NovaBlog Backend (NestJS API)
 
 This is the progressive NestJS backend API powering the NovaBlog platform. It includes JWT authentication, PostgreSQL persistence via Prisma ORM, Redis-backed caching and rate limiting, BullMQ background job queues, and AWS S3 file upload integration.
 
 ---
 
-## Tech Stack
-* **Framework**: NestJS (v11.x)
-* **Language**: TypeScript
-* **Database & ORM**: PostgreSQL with Prisma ORM
-* **Cache & Message Broker**: Redis (`ioredis`) & BullMQ
-* **File Uploads**: Multer with AWS S3 SDK integration
-* **Mailing**: Resend SDK
-* **Security & Guards**: Helmet, cookie-parser, class-validator, and rate limiting (NestJS Throttler with Redis Storage)
+## 🛠️ Tech Stack
+* **🦁 Framework**: NestJS (v11.x)
+* **💻 Language**: TypeScript
+* **💾 Database & ORM**: PostgreSQL with Prisma ORM
+* **⚡ Cache & Message Broker**: Redis (`ioredis`) & BullMQ
+* **📁 File Uploads**: Multer with AWS S3 SDK integration
+* **📧 Mailing**: Resend SDK
+* **🛡️ Security & Guards**: Helmet, cookie-parser, class-validator, and rate limiting (NestJS Throttler with Redis Storage)
 
 ---
 
-## Folder Structure
+## 📁 Folder Structure
 ```text
 backend/
   prisma/                 Database models, migrations, and seeds
   src/
-    common/               Interceptors, filters, custom decorators, and pipeline guards
+    common/               Shared decorators, filters, helpers, interceptors, and utils
     config/               Prisma client, Redis client, S3, Resend, and BullMQ module declarations
-    jobs/                 BullMQ job queues (e.g. background email senders)
-    modules/              Business modules (Auth, Blog, Bookmark, Comments, Like, Admin, Notifications)
-    providers/            External provider integrations (Resend, AWS S3)
+    jobs/                 Background job processors and services
+    modules/              Feature modules (Auth, Blog, Bookmark, Comments, Like, Admin, Notifications)
+    providers/            Mail and S3 integration providers
     templates/            Email templates
 ```
 
 ---
 
-## Installation & Environment Variables
+## 🔑 Installation & Environment Variables
 
 ### 1. Install dependencies
 ```bash
@@ -75,7 +75,7 @@ EMAIL_FROM="Blog App <hello@novablog.space>"
 
 ---
 
-## Prisma Commands
+## 🗃️ Prisma Commands
 
 Generate the Prisma client (must run after schema changes):
 ```bash
@@ -94,7 +94,7 @@ npx prisma migrate dev --name init
 
 ---
 
-## Running the API
+## 🚀 Running the API
 
 ### Running locally
 Make sure your PostgreSQL and Redis instances are running, then start the server:
@@ -115,7 +115,7 @@ The Docker setup exposes the NestJS API at `http://localhost:3000`.
 
 ---
 
-## Production Deployment to Render
+## ☁️ Production Deployment to Render
 To deploy your backend Docker container on Render:
 1. Create a **Web Service** pointing to your Github repo.
 2. Select runtime: **Docker**.

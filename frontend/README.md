@@ -1,25 +1,25 @@
-# NovaBlog Frontend (React & Vite Client)
+# ⚛️ NovaBlog Frontend (React & Vite Client)
 
 This is the responsive, high-performance user interface for the NovaBlog platform. Built as a Single Page Application (SPA) using React 19, Vite, and Tailwind CSS, it offers a smooth, responsive blogging experience complete with rich-text markdown writing, comments, likes, notifications, and follower integrations.
 
-## Live Site Details
+## 🔗 Live Site Details
 * **Custom Domain**: [https://novablog.space](https://novablog.space) (Hosted on Vercel)
 * **Vercel Deployment URL**: `https://novablog-by-swappy.vercel.app`
 
 ---
 
-## Tech Stack
-* **Framework**: React 19 (Vite compilation)
-* **Styling**: Tailwind CSS & Vanilla CSS
-* **Animations**: Framer Motion
-* **Routing**: React Router
-* **Rich Text Editor**: TipTap Editor SDK (supports markdown, blocks, headings, code blocks, alignment, and inline links)
-* **API Client**: Axios (configured with intercepts for token refresh handshaking)
-* **Alert Notifications**: React Hot Toast & Ant Design icons
+## 🛠️ Tech Stack
+* **⚛️ Framework**: React 19 (Vite compilation)
+* **🎨 Styling**: Tailwind CSS & Vanilla CSS
+* **🎬 Animations**: Framer Motion
+* **🚦 Routing**: React Router
+* **✍️ Rich Text Editor**: TipTap Editor SDK (supports markdown, blocks, headings, code blocks, alignment, and inline links)
+* **🌐 API Client**: Axios (configured with intercepts for token refresh handshaking)
+* **🔔 Alert Notifications**: React Hot Toast & Ant Design icons
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 ```text
 frontend/
   public/                 Static public assets (logos, placeholders)
@@ -32,7 +32,7 @@ frontend/
 
 ---
 
-## Environment Variables
+## 🔑 Environment Variables
 
 ### Local Development
 Create a `.env` file in the `frontend` folder:
@@ -49,7 +49,7 @@ When deploying to Vercel, configure these key-value pairs in the **Environment V
 
 ---
 
-## Running the Application Locally
+## 🚀 Running the Application Locally
 
 ### 1. Install dependencies
 ```bash
@@ -65,7 +65,7 @@ The application will be accessible at: `http://localhost:5173`
 
 ---
 
-## Build Commands
+## 📦 Build Commands
 
 Build the production-ready static assets:
 ```bash
@@ -79,7 +79,7 @@ npm run preview
 
 ---
 
-## Deployment to Vercel
+## ☁️ Deployment to Vercel
 1. Link your Github repository containing the `Blog-App` project.
 2. In the setup wizard, select the **Vite / React** framework preset.
 3. Configure the environment variables (`VITE_API_URL` and `VITE_SOCKET_URL`).
