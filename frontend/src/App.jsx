@@ -23,6 +23,7 @@ import TermsPage from "./pages/TermsPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AdminPage from "./pages/AdminPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   useEffect(() => {
@@ -121,6 +122,8 @@ function App() {
           >
             <Route index element={<PublicProfilePage />} />
           </Route>
+
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
 
         {/* Protected Routes with custom layout (e.g. Write page) */}
