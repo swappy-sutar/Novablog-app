@@ -23,6 +23,7 @@ import {
 import Button from '../components/ui/Button';
 import Loader from '../components/ui/Loader';
 import { authAPI, getErrorMessage } from '../lib/api';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 const PREFS_KEY = 'novablog_settings_prefs_v1';
 
@@ -119,6 +120,8 @@ function Toggle({ on, onChange, disabled }) {
 }
 
 const SettingsPage = () => {
+  useDocumentTitle("Settings");
+
   const navigate = useNavigate();
   const [active, setActive] = useState('profile');
   const [profile, setProfile] = useState(null);

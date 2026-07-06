@@ -5,8 +5,11 @@ import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import AuthBackground from '../components/auth/AuthBackground';
 import Button from '../components/ui/Button';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 const ForgotPasswordPage = () => {
+  useDocumentTitle("Forgot Password");
+
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);

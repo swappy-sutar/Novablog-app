@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import GlassCard from "../components/ui/GlassCard";
 import Button from "../components/ui/Button";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -93,6 +94,8 @@ const techStack = [
 ];
 
 const AboutPage = () => {
+  useDocumentTitle("About Us");
+
   return (
     <div className="relative min-h-screen bg-bg-base overflow-hidden bg-dot-grid">
       {/* Background Ambient Glows */}

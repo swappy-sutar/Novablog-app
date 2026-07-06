@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import EditorToolbar from "../components/editor/EditorToolbar";
 import { blogAPI } from "../lib/api";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 
 const AUTOSAVE_DEBOUNCE_MS = 1500;
 
@@ -40,6 +41,8 @@ const WritePage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const editId = searchParams.get("edit");
+
+  useDocumentTitle(editId ? "Edit Post" : "Write Post");
 
   const editorRef = useRef(null);
   const [isPublishing, setIsPublishing] = useState(false);

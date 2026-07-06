@@ -25,6 +25,7 @@ import { blogAPI, bookmarkAPI } from "../lib/api";
 import Button from "../components/ui/Button";
 import GlassCard from "../components/ui/GlassCard";
 import { ExploreInsightSkeleton as SkeletonCard } from "../components/ui/Skeleton";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 
 const stripHtml = (html) => {
   if (!html) return "";
@@ -41,6 +42,8 @@ const stripHtml = (html) => {
 };
 
 const MyBlogsPage = () => {
+  useDocumentTitle("Dashboard");
+
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
   const [displayBlogs, setDisplayBlogs] = useState([]);

@@ -2,8 +2,11 @@ import { useState, useEffect } from "react";
 import { Shield, Eye, Mail, RotateCcw, Settings } from "lucide-react";
 import toast from "react-hot-toast";
 import Button from "../components/ui/Button";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 
 const CookiePage = () => {
+  useDocumentTitle("Cookie Policy");
+
   const [performanceEnabled, setPerformanceEnabled] = useState(true);
   const [personalizationEnabled, setPersonalizationEnabled] = useState(false);
   const [activeSection, setActiveSection] = useState("overview");

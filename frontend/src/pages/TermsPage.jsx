@@ -2,8 +2,11 @@ import { useState, useEffect } from "react";
 import { Shield, BookOpen, UserCheck, AlertOctagon, FileWarning, Download, AlertCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import Button from "../components/ui/Button";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 
 const TermsPage = () => {
+  useDocumentTitle("Terms of Service");
+
   const [activeSection, setActiveSection] = useState("introduction");
 
   const sections = [

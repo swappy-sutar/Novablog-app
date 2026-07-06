@@ -4,8 +4,11 @@ import PostCard from "../components/feed/PostCard";
 import Button from "../components/ui/Button";
 import { blogAPI } from "../lib/api";
 import { FeaturedPostSkeleton, PostCardSkeleton } from "../components/ui/Skeleton";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 
 const FeedPage = () => {
+  useDocumentTitle("Your Feed");
+
   const [activeTab, setActiveTab] = useState("Latest");
   const [selectedTag, setSelectedTag] = useState("All");
   const [posts, setPosts] = useState([]);

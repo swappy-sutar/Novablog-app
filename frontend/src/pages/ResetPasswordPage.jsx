@@ -6,8 +6,11 @@ import toast from 'react-hot-toast';
 import { Eye, EyeOff } from 'lucide-react';
 import AuthBackground from '../components/auth/AuthBackground';
 import Button from '../components/ui/Button';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 const ResetPasswordPage = () => {
+  useDocumentTitle("Reset Password");
+
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
   const navigate = useNavigate();

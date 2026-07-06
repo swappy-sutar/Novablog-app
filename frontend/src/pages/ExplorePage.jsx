@@ -6,6 +6,7 @@ import { blogAPI } from "../lib/api";
 import GlassCard from "../components/ui/GlassCard";
 import Button from "../components/ui/Button";
 import { ExploreFeaturedSkeleton, ExplorePopularSkeleton, ExploreInsightSkeleton } from "../components/ui/Skeleton";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 
 const stripHtml = (html) => {
   if (!html) return "";
@@ -42,6 +43,8 @@ const ExplorePage = () => {
   const [featuredBlog, setFeaturedBlog] = useState(null);
   const [popularBlogs, setPopularBlogs] = useState([]);
   const [loadingExplore, setLoadingExplore] = useState(true);
+
+  useDocumentTitle("Explore Articles");
 
   // Fetch all blogs on mount for the general feed
   useEffect(() => {

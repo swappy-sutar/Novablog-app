@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { Globe, Cpu, ArrowRight, Download, Edit, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 
 const PrivacyPage = () => {
+  useDocumentTitle("Privacy Policy");
+
   const [activeSection, setActiveSection] = useState("overview");
 
   const sections = [

@@ -10,6 +10,7 @@ import Discussion from '../components/blog/Discussion';
 import GlassCard from '../components/ui/GlassCard';
 import Loader from '../components/ui/Loader';
 import { blogAPI, likeAPI, bookmarkAPI, getErrorMessage } from '../lib/api';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 const BlogDetailsPage = () => {
   const { id } = useParams();
@@ -22,6 +23,8 @@ const BlogDetailsPage = () => {
 
   const [relatedBlogs, setRelatedBlogs] = useState([]);
   const [loadingRelated, setLoadingRelated] = useState(true);
+
+  useDocumentTitle(blog ? blog.title : "Loading Post");
 
   const loadBlogData = useCallback(async () => {
     setLoading(true);
