@@ -1,264 +1,129 @@
-# Blog App Backend
+# NovaBlog Backend (NestJS API)
 
-NestJS backend API for a blog platform with authentication, blog posts, comments, likes, bookmarks, Redis-backed services, email jobs, S3 image uploads, and Prisma/PostgreSQL persistence.
+This is the progressive NestJS backend API powering the NovaBlog platform. It includes JWT authentication, PostgreSQL persistence via Prisma ORM, Redis-backed caching and rate limiting, BullMQ background job queues, and AWS S3 file upload integration.
+
+## Live Service Details
+* **Base Endpoint**: `https://novablog-backend-vrgz.onrender.com/api/v1`
+* **Health Check**: `https://novablog-backend-vrgz.onrender.com/health` (bypasses CORS & prefixes)
+
+---
 
 ## Tech Stack
+* **Framework**: NestJS (v11.x)
+* **Language**: TypeScript
+* **Database & ORM**: PostgreSQL with Prisma ORM
+* **Cache & Message Broker**: Redis (`ioredis`) & BullMQ
+* **File Uploads**: Multer with AWS S3 SDK integration
+* **Mailing**: Resend SDK
+* **Security & Guards**: Helmet, cookie-parser, class-validator, and rate limiting (NestJS Throttler with Redis Storage)
 
-- **Runtime:** Node.js
-- **Framework:** NestJS
-- **Database:** PostgreSQL with Prisma ORM
-- **Cache / queues:** Redis, BullMQ
-- **Authentication:** JWT access and refresh tokens
-- **File uploads:** Multer + AWS S3
-- **Email:** Resend
-- **Validation:** class-validator, class-transformer, Joi
-- **Testing:** Jest
+---
 
-## Project Structure
-
+## Folder Structure
 ```text
 backend/
-  docker/                 Dockerfile and Docker ignore rules
-  prisma/                 Prisma schema and database models
+  prisma/                 Database models, migrations, and seeds
   src/
-    common/               Shared decorators, filters, helpers, interceptors, utils
-    config/               Prisma, Redis, BullMQ, S3, Resend, and upload config
-    jobs/                 Background job processors and services
-    modules/
-      auth/               Register, login, JWT profile, refresh token, logout
-      blog/               Create, read, update, delete blog posts
-      bookmark/           Toggle and list user bookmarks
-      comments/           Create, list, update, delete comments
-      like/               Toggle likes and get like counts
-    providers/            Provider integrations
+    common/               Interceptors, filters, custom decorators, and pipeline guards
+    config/               Prisma client, Redis client, S3, Resend, and BullMQ module declarations
+    jobs/                 BullMQ job queues (e.g. background email senders)
+    modules/              Business modules (Auth, Blog, Bookmark, Comments, Like, Admin, Notifications)
+    providers/            External provider integrations (Resend, AWS S3)
     templates/            Email templates
 ```
 
-## Prerequisites
+---
 
-- Node.js 20+
-- npm
-- PostgreSQL database
-- Redis server
-- AWS S3 bucket credentials for image uploads
-- Resend API key for email support
+## Installation & Environment Variables
 
-## Environment Variables
-
-Create a `.env` file in the `backend` directory.
-
-```env
-PORT=8000
-
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
-
-JWT_ACCESS_SECRET="your-access-token-secret"
-JWT_REFRESH_SECRET="your-refresh-token-secret"
-ACCESS_TOKEN_EXPIRES_IN="15m"
-REFRESH_TOKEN_EXPIRES_IN="7d"
-
-REDIS_HOST="localhost"
-REDIS_PORT=6379
-
-AWS_REGION="ap-south-1"
-AWS_ACCESS_KEY_ID="your-aws-access-key"
-AWS_SECRET_ACCESS_KEY="your-aws-secret-key"
-AWS_BUCKET_NAME="your-s3-bucket"
-
-RESEND_API_KEY="your-resend-api-key"
-```
-
-The app validates the core runtime variables on startup using Joi.
-
-## Installation
-
+### 1. Install dependencies
 ```bash
 npm install
 ```
 
-Generate the Prisma client:
+### 2. Configure Environment variables
+Create a `.env` file inside the `backend` folder:
+```env
+PORT=3000
 
+# PostgreSQL URL (e.g. Neon serverless DB or local docker DB)
+DATABASE_URL="postgresql://postgres:postgrespassword@localhost:5432/blog_app?schema=public"
+
+# Redis Config
+# For local: leave REDIS_URL empty and use REDIS_HOST=localhost
+# For Upstash/Production: set REDIS_URL to your secure rediss:// connection string
+# REDIS_URL="rediss://default:your_upstash_token@your-endpoint.upstash.io:6379"
+REDIS_HOST="localhost"
+REDIS_PORT=6379
+REDIS_PASSWORD=
+
+# JWT Secrets
+JWT_ACCESS_SECRET="access_secret"
+JWT_REFRESH_SECRET="refresh_secret"
+ACCESS_TOKEN_EXPIRES_IN="15m"
+REFRESH_TOKEN_EXPIRES_IN="7d"
+
+# Production Domain link (frontend redirect origin)
+FRONTEND_URL="https://novablog.space"
+
+# AWS S3 Storage Config
+AWS_REGION="ap-south-1"
+AWS_ACCESS_KEY_ID="your_aws_access_key"
+AWS_SECRET_ACCESS_KEY="your_aws_secret"
+AWS_BUCKET_NAME="your_s3_bucket"
+
+# Resend Mail credentials
+RESEND_API_KEY="your_resend_api_key"
+EMAIL_FROM="Blog App <hello@novablog.space>"
+```
+
+---
+
+## Prisma Commands
+
+Generate the Prisma client (must run after schema changes):
 ```bash
 npx prisma generate
 ```
 
-Apply database migrations or push the schema:
-
-```bash
-npx prisma migrate dev
-```
-
-or:
-
+Push schema updates directly to the database (for prototyping):
 ```bash
 npx prisma db push
 ```
 
-## Running Locally
-
-Start the development server:
-
+Run database migrations:
 ```bash
+npx prisma migrate dev --name init
+```
+
+---
+
+## Running the API
+
+### Running locally
+Make sure your PostgreSQL and Redis instances are running, then start the server:
+```bash
+# Start in watch mode (ideal for development)
 npm run start:dev
+
+# Start in production mode (runs compiled JS)
+npm run start:prod
 ```
 
-The API uses the global prefix:
-
-```text
-http://localhost:8000/api/v1
-```
-
-If `PORT` is set in `.env`, use that port instead.
-
-## Running With Docker
-
-The Docker Compose setup starts the backend and Redis.
-
+### Running with Docker Compose
+Starts the database, cache, and NestJS server together:
 ```bash
 docker compose up --build
 ```
+The Docker setup exposes the NestJS API at `http://localhost:3000`.
 
-By default, the compose file maps:
+---
 
-```text
-http://localhost:3000
-```
-
-Make sure your `.env` is available in the `backend` directory before starting the containers.
-
-## Available Scripts
-
-```bash
-npm run build        # Build the NestJS app
-npm run start        # Start the app
-npm run start:dev    # Start in watch mode
-npm run start:debug  # Start in debug watch mode
-npm run start:prod   # Run compiled dist output
-npm run lint         # Run ESLint with auto-fix
-npm run format       # Format source and test files
-npm run test         # Run unit tests
-npm run test:watch   # Run tests in watch mode
-npm run test:cov     # Run tests with coverage
-npm run test:e2e     # Run end-to-end tests
-```
-
-## API Overview
-
-All routes are prefixed with `/api/v1`.
-
-### Auth
-
-| Method | Endpoint | Auth | Description |
-| --- | --- | --- | --- |
-| POST | `/auth/register` | No | Register a new user |
-| POST | `/auth/login` | No | Login and receive tokens |
-| GET | `/auth/profile` | Yes | Get current user profile |
-| POST | `/auth/upload-profile` | Yes | Upload profile image |
-| POST | `/auth/refresh-token` | No | Refresh access token |
-| POST | `/auth/logout` | Yes | Logout current user |
-
-### Blog
-
-| Method | Endpoint | Auth | Description |
-| --- | --- | --- | --- |
-| POST | `/blog/create-blog` | Yes | Create a blog post with optional thumbnail |
-| GET | `/blog/get-all-blogs` | No | List blogs with pagination and search |
-| GET | `/blog/get-blog/:id` | No | Get a blog by ID |
-| PATCH | `/blog/update-blog/:id` | Yes | Update own blog post |
-| DELETE | `/blog/delete-blog/:id` | Yes | Delete own blog post |
-
-### Comments
-
-| Method | Endpoint | Auth | Description |
-| --- | --- | --- | --- |
-| POST | `/comments/create-comment/:blogId` | Yes | Add a comment to a blog |
-| GET | `/comments/get-comment/:blogId` | Yes | List comments for a blog |
-| PATCH | `/comments/update-comment/:commentId` | Yes | Update own comment |
-| DELETE | `/comments/delete-comment/:commentId` | Yes | Delete own comment |
-
-### Likes
-
-| Method | Endpoint | Auth | Description |
-| --- | --- | --- | --- |
-| POST | `/likes/toggle/:blogId` | Yes | Like or unlike a blog |
-| GET | `/likes/get-count/:blogId` | No | Get like count for a blog |
-
-### Bookmarks
-
-| Method | Endpoint | Auth | Description |
-| --- | --- | --- | --- |
-| POST | `/bookmarks/toggle/:blogId` | Yes | Bookmark or remove bookmark |
-| GET | `/bookmarks/my-bookmarks` | Yes | List current user's bookmarks |
-
-## Common Request Examples
-
-Register:
-
-```bash
-curl -X POST http://localhost:8000/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "firstname": "Jane",
-    "lastname": "Doe",
-    "username": "janedoe",
-    "email": "jane@example.com",
-    "password": "password123"
-  }'
-```
-
-Login:
-
-```bash
-curl -X POST http://localhost:8000/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "jane@example.com",
-    "password": "password123"
-  }'
-```
-
-Create a blog:
-
-```bash
-curl -X POST http://localhost:8000/api/v1/blog/create-blog \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-  -F "title=My First Blog" \
-  -F "content=This is the blog content." \
-  -F "status=PUBLISHED" \
-  -F "thumbnail=@/path/to/image.png"
-```
-
-## Database Models
-
-The Prisma schema includes:
-
-- `User`
-- `Blog`
-- `Comment`
-- `Like`
-- `Bookmark`
-- `Category`
-- `Tag`
-- `BlogTag`
-- `Follow`
-- `Notification`
-- `BlogAnalytics`
-
-Main enums:
-
-- `Role`: `USER`, `ADMIN`
-- `BlogStatus`: `DRAFT`, `PUBLISHED`, `ARCHIVED`
-- `NotificationType`: `LIKE`, `COMMENT`, `FOLLOW`, `BLOG_PUBLISHED`
-
-## Development Notes
-
-- Global API prefix is configured in `src/main.ts` as `/api/v1`.
-- Responses are wrapped by a global response interceptor.
-- HTTP exceptions are handled by a global exception filter.
-- Request bodies are validated globally with whitelist and transform enabled.
-- Protected routes use `JwtAuthGuard`.
-- Blog thumbnails and profile images are uploaded through S3.
-
-## License
-
-This project is currently marked as `UNLICENSED`.
+## Production Deployment to Render
+To deploy your backend Docker container on Render:
+1. Create a **Web Service** pointing to your Github repo.
+2. Select runtime: **Docker**.
+3. Set **Root Directory** to `backend`.
+4. Set **Docker Build Context Directory** to `.` and **Dockerfile Path** to `Dockerfile`.
+5. Configure the **Health Check Path** to `/health`.
+6. Define your variables (like `REDIS_URL`, `DATABASE_URL`, and keys) under **Environment Variables** in Render's dashboard.

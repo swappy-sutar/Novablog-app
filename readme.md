@@ -1,361 +1,197 @@
-# Blog App
+# NovaBlog — Full-Stack Blogging Platform
 
-A full-stack blogging platform with a React/Vite frontend and a NestJS backend. The project includes authentication, profile management, blog publishing, comments, likes, bookmarks, image uploads, Redis-backed services, email jobs, and PostgreSQL persistence through Prisma.
+NovaBlog is a modern, high-performance blogging platform built with a decoupled architecture. It features a React/Vite frontend and a NestJS backend utilizing Prisma ORM with PostgreSQL, Redis for caching/rate-limiting, and BullMQ for background email queues.
+
+## Production Live Links
+* **Frontend Site**: [https://novablog.space](https://novablog.space) (Hosted on Vercel)
+* **Backend API**: [https://novablog-backend-vrgz.onrender.com](https://novablog-backend-vrgz.onrender.com) (Hosted on Render)
+* **API Health Check**: [https://novablog-backend-vrgz.onrender.com/health](https://novablog-backend-vrgz.onrender.com/health)
+
+---
 
 ## Tech Stack
 
 ### Frontend
-
-- React 19
-- Vite
-- React Router
-- Axios
-- Tailwind CSS
-- Ant Design icons
-- TipTap editor
-- Framer Motion
-- React Hot Toast
+- React 19 & Vite
+- React Router & Axios
+- Tailwind CSS & Framer Motion
+- TipTap Editor (Rich text markdown editor)
+- Ant Design icons & React Hot Toast
 
 ### Backend
+- NestJS (TypeScript)
+- Prisma ORM & PostgreSQL (Neon Serverless Postgres)
+- Redis Cache & BullMQ (Upstash Serverless Redis)
+- JWT Authentication (Access + Refresh tokens)
+- Multer & AWS S3 (for image uploads)
+- Resend Email Service
 
-- NestJS
-- TypeScript
-- Prisma ORM
-- PostgreSQL
-- Redis
-- BullMQ
-- JWT authentication
-- Multer
-- AWS S3
-- Resend
-- Jest
+---
 
 ## Features
 
-- User registration and login
-- JWT access and refresh token flow
-- Protected routes
-- Profile viewing, editing, and avatar upload
-- Blog creation with rich text editing
-- Blog thumbnail upload
-- Draft, published, and archived blog states
-- Blog listing, search, pagination, and detail pages
-- Current-user blog management
-- Comments on blog posts
-- Blog likes and like counts
-- User bookmarks
-- Redis caching support
-- Background email job support
-- Centralized response and exception handling
+- **User Authentication**: Secure JWT login/registration with access & refresh tokens, password hashing, and cookie parsing.
+- **Rich Text Editor**: Distraction-free writing experience using TipTap.
+- **Blog Management**: CRUD operations supporting `DRAFT`, `PUBLISHED`, and `ARCHIVED` statuses, category tagging, and search pagination.
+- **Social Interactivity**: Threaded comment section, likes, like counts, and follower tracking.
+- **Personal Bookmarks**: Save posts for later reading.
+- **Rate-Limiting (Throttler)**: Redis-backed API rate limiting to prevent spam and brute-force attacks.
+- **Background Tasks**: Offloading email jobs to BullMQ workers for maximum performance.
+
+---
 
 ## Project Structure
 
 ```text
 Blog-App/
   backend/
-    prisma/                 Prisma schema and database models
+    prisma/                 Prisma schema and database migrations
     src/
-      common/               Shared decorators, filters, helpers, interceptors, utils
-      config/               Prisma, Redis, BullMQ, S3, Resend, upload config
-      jobs/                 Background email jobs
-      modules/
-        auth/               Register, login, profile, refresh token, logout
-        blog/               Blog CRUD and queries
-        bookmark/           Bookmark toggle and listing
-        comments/           Comment CRUD
-        like/               Like toggle and counts
-      providers/            Provider integrations
-      templates/            Email templates
+      common/               Shared decorators, filters, interceptors, and helpers
+      config/               Module configurations (Prisma, Redis, S3, Resend, BullMQ)
+      jobs/                 Background BullMQ email processors
+      modules/              Feature modules (Auth, Blog, Bookmark, Comments, Like, Admin, Notifications)
+      providers/            Mail and S3 integration providers
+      templates/            HTML Email templates
   frontend/
-    public/                 Static assets
     src/
-      components/           UI, layout, auth, home, blog, and editor components
-      layouts/              Page layouts
-      lib/                  API client
-      pages/                App pages
+      components/           Shared UI, Auth, and Rich-Text Editor components
+      layouts/              Page wrappers
+      lib/                  Axios HTTP Client
+      pages/                Application routes
 ```
 
-## Prerequisites
+---
 
-- Node.js 20+
-- npm
-- PostgreSQL database
-- Redis server
-- AWS S3 bucket credentials if using image uploads
-- Resend API key if using email features
+## Environment Variables Configuration
 
-## Environment Variables
-
-Create `backend/.env`:
+Create a `.env` file in the **root** folder:
 
 ```env
-PORT=8000
+# Database Configuration
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgrespassword
+POSTGRES_DB=blog_app
+POSTGRES_PORT=5432
 
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
-
-JWT_ACCESS_SECRET="your-access-token-secret"
-JWT_REFRESH_SECRET="your-refresh-token-secret"
-ACCESS_TOKEN_EXPIRES_IN="15m"
-REFRESH_TOKEN_EXPIRES_IN="7d"
-
-REDIS_HOST="localhost"
+# Redis Configuration (Local vs Upstash)
+# Local: Leave REDIS_URL commented out.
+# Production: Set REDIS_URL to your secure Upstash URI
+# REDIS_URL=rediss://default:password@endpoint.upstash.io:6379
+REDIS_HOST=redis
 REDIS_PORT=6379
+REDIS_PASSWORD=
 
-AWS_REGION="ap-south-1"
-AWS_ACCESS_KEY_ID="your-aws-access-key"
-AWS_SECRET_ACCESS_KEY="your-aws-secret-key"
-AWS_BUCKET_NAME="your-s3-bucket"
+# Backend Configuration
+PORT=3000
+DATABASE_URL=postgresql://postgres:postgrespassword@db:5432/blog_app?schema=public
+JWT_ACCESS_SECRET=your_jwt_access_secret
+JWT_REFRESH_SECRET=your_jwt_refresh_secret
+ACCESS_TOKEN_EXPIRES_IN=15m
+REFRESH_TOKEN_EXPIRES_IN=7d
+FRONTEND_URL=https://novablog.space
 
-RESEND_API_KEY="your-resend-api-key"
+# AWS Configuration (Image uploads)
+AWS_REGION=ap-south-1
+AWS_ACCESS_KEY_ID=your_aws_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret
+AWS_BUCKET_NAME=your_s3_bucket_name
+
+# Resend Email Configuration
+RESEND_API_KEY=your_resend_api_key
+EMAIL_FROM=Blog App <hello@novablog.space>
 ```
 
-Create `frontend/.env`:
+---
 
-```env
-VITE_API_URL="http://localhost:8000/api/v1"
-```
+## Installation & Running Locally
 
-The frontend API client falls back to `http://localhost:3000/api/v1` when `VITE_API_URL` is not set. If you run the backend locally with `npm run start:dev`, use port `8000` unless you changed `PORT`.
+1. **Install Dependencies**:
+   ```bash
+   # Install backend dependencies
+   cd backend
+   npm install
 
-## Installation
+   # Install frontend dependencies
+   cd ../frontend
+   npm install
+   ```
 
-Install backend dependencies:
+2. **Generate Database Schema**:
+   In the `backend` folder:
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
 
-```bash
-cd backend
-npm install
-```
+3. **Start Local Docker Environment**:
+   ```bash
+   # In the root directory, starts backend, postgres db, and redis
+   docker compose up -d
+   ```
 
-Install frontend dependencies:
+4. **Start local Frontend dev server**:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+   *Frontend live locally at:* `http://localhost:5173`
 
-```bash
-cd ../frontend
-npm install
-```
+---
 
-## Database Setup
+## Production Deployment Guide
 
-From the `backend` directory, generate the Prisma client:
+### Backend (Render & Neon/Upstash)
+1. Set the **Root Directory** on Render to `backend`.
+2. Choose the **Docker** runtime environment.
+3. Configure the **Docker Build Context Directory** as `.` and the **Dockerfile Path** as `Dockerfile`.
+4. Configure the **Health Check Path** to `/health`.
+5. Under **Environment Variables**, define your secrets (such as `REDIS_URL`, `DATABASE_URL` pointing to Neon, `RESEND_API_KEY`, etc.).
 
-```bash
-npx prisma generate
-```
+### Frontend (Vercel)
+1. Set the build environment as **Vite** / **React**.
+2. Link your custom domain `novablog.space` in the settings tab.
+3. Define the environment variables in Vercel:
+   * `VITE_API_URL`: `https://novablog-backend-vrgz.onrender.com/api/v1`
+   * `VITE_SOCKET_URL`: `https://novablog-backend-vrgz.onrender.com`
 
-Apply migrations:
-
-```bash
-npx prisma migrate dev
-```
-
-If you are prototyping without migrations, you can push the schema:
-
-```bash
-npx prisma db push
-```
-
-## Running Locally
-
-Start Redis. You can use the Docker Compose file in the backend directory:
-
-```bash
-cd backend
-docker compose up -d redis
-```
-
-Start the backend:
-
-```bash
-cd backend
-npm run start:dev
-```
-
-The API is available at:
-
-```text
-http://localhost:8000/api/v1
-```
-
-Start the frontend:
-
-```bash
-cd frontend
-npm run dev
-```
-
-The Vite app is usually available at:
-
-```text
-http://localhost:5173
-```
-
-## Docker
-
-The backend Docker Compose setup includes the NestJS app and Redis:
-
-```bash
-cd backend
-docker compose up --build
-```
-
-The compose file maps the backend container to:
-
-```text
-http://localhost:3000
-```
-
-Set `VITE_API_URL=http://localhost:3000/api/v1` in `frontend/.env` when using the Docker backend mapping.
-
-## Available Scripts
-
-Backend scripts:
-
-```bash
-npm run build        # Build the NestJS app
-npm run start        # Start the app
-npm run start:dev    # Start in watch mode
-npm run start:debug  # Start in debug watch mode
-npm run start:prod   # Run compiled dist output
-npm run lint         # Run ESLint with auto-fix
-npm run format       # Format source and test files
-npm run test         # Run unit tests
-npm run test:watch   # Run tests in watch mode
-npm run test:cov     # Run tests with coverage
-npm run test:e2e     # Run end-to-end tests
-```
-
-Frontend scripts:
-
-```bash
-npm run dev      # Start Vite dev server
-npm run build    # Build production assets
-npm run lint     # Run ESLint
-npm run preview  # Preview production build
-```
+---
 
 ## API Overview
 
-All backend routes are prefixed with `/api/v1`.
+### System Status
+* `GET /health` — Check server status (Bypasses global prefix).
 
-### Auth
+### Auth (`/api/v1/auth`)
+* `POST /auth/register` — Create new user
+* `POST /auth/login` — Sign in and receive JWT tokens
+* `GET /auth/profile` — Get profile info
+* `PATCH /auth/profile` — Update profile info
+* `POST /auth/upload-profile` — Upload avatar (sends to AWS S3)
+* `POST /auth/refresh-token` — Regenerate access token
+* `POST /auth/logout` — Logout
 
-| Method | Endpoint | Auth | Description |
-| --- | --- | --- | --- |
-| POST | `/auth/register` | No | Register a new user |
-| POST | `/auth/login` | No | Login and receive tokens |
-| GET | `/auth/profile` | Yes | Get current user profile |
-| PATCH | `/auth/profile` | Yes | Update current user profile |
-| POST | `/auth/upload-profile` | Yes | Upload profile image |
-| POST | `/auth/refresh-token` | No | Refresh access token |
-| POST | `/auth/logout` | Yes | Logout current user |
+### Blog (`/api/v1/blog`)
+* `POST /blog/create-blog` — Create blog post
+* `GET /blog/get-all-blogs` — List blogs (with pagination and filters)
+* `GET /blog/my-blogs` — Current user's blogs
+* `GET /blog/get-blog/:id` — Details of a specific blog
+* `PATCH /blog/update-blog/:id` — Edit a blog post
+* `DELETE /blog/delete-blog/:id` — Delete a blog post
 
-### Blog
+### Comments (`/api/v1/comments`)
+* `POST /comments/create-comment/:blogId` — Add comment
+* `GET /comments/get-comment/:blogId` — List blog comments
+* `PATCH /comments/update-comment/:commentId` — Edit comment
+* `DELETE /comments/delete-comment/:commentId` — Delete comment
 
-| Method | Endpoint | Auth | Description |
-| --- | --- | --- | --- |
-| POST | `/blog/create-blog` | Yes | Create a blog post with optional thumbnail |
-| GET | `/blog/get-all-blogs` | No | List blogs with pagination and filters |
-| GET | `/blog/my-blogs` | Yes | List the current user's blogs |
-| GET | `/blog/get-blog/:id` | No | Get a blog by ID |
-| PATCH | `/blog/update-blog/:id` | Yes | Update own blog post |
-| DELETE | `/blog/delete-blog/:id` | Yes | Delete own blog post |
+### Likes & Bookmarks
+* `POST /likes/toggle/:blogId` — Like/Unlike blog post
+* `GET /likes/get-count/:blogId` — Like count
+* `POST /bookmarks/toggle/:blogId` — Add/Remove bookmark
+* `GET /bookmarks/my-bookmarks` — List bookmarks
 
-### Comments
-
-| Method | Endpoint | Auth | Description |
-| --- | --- | --- | --- |
-| POST | `/comments/create-comment/:blogId` | Yes | Add a comment to a blog |
-| GET | `/comments/get-comment/:blogId` | Yes | List comments for a blog |
-| PATCH | `/comments/update-comment/:commentId` | Yes | Update own comment |
-| DELETE | `/comments/delete-comment/:commentId` | Yes | Delete own comment |
-
-### Likes
-
-| Method | Endpoint | Auth | Description |
-| --- | --- | --- | --- |
-| POST | `/likes/toggle/:blogId` | Yes | Like or unlike a blog |
-| GET | `/likes/get-count/:blogId` | No | Get like count for a blog |
-
-### Bookmarks
-
-| Method | Endpoint | Auth | Description |
-| --- | --- | --- | --- |
-| POST | `/bookmarks/toggle/:blogId` | Yes | Bookmark or remove bookmark |
-| GET | `/bookmarks/my-bookmarks` | Yes | List current user's bookmarks |
-
-## Authentication
-
-Protected routes require a bearer token:
-
-```text
-Authorization: Bearer YOUR_ACCESS_TOKEN
-```
-
-The frontend stores the access token and refresh token in `localStorage`, attaches the access token to requests, and attempts token refresh after authenticated requests return `401`.
-
-## Example Requests
-
-Register:
-
-```bash
-curl -X POST http://localhost:8000/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "firstname": "Jane",
-    "lastname": "Doe",
-    "username": "janedoe",
-    "email": "jane@example.com",
-    "password": "password123"
-  }'
-```
-
-Login:
-
-```bash
-curl -X POST http://localhost:8000/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "jane@example.com",
-    "password": "password123"
-  }'
-```
-
-Create a blog with a thumbnail:
-
-```bash
-curl -X POST http://localhost:8000/api/v1/blog/create-blog \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-  -F "title=My First Blog" \
-  -F "content=This is the blog content." \
-  -F "status=PUBLISHED" \
-  -F "thumbnail=@/path/to/image.png"
-```
-
-## Database Models
-
-The Prisma schema includes:
-
-- `User`
-- `Blog`
-- `Comment`
-- `Like`
-- `Bookmark`
-- `Category`
-- `Tag`
-- `BlogTag`
-- `Follow`
-- `Notification`
-- `BlogAnalytics`
-
-## Development Notes
-
-- The backend global API prefix is configured in `backend/src/main.ts` as `/api/v1`.
-- Request validation uses NestJS `ValidationPipe` with whitelist and transform enabled.
-- Responses are wrapped by a global response interceptor.
-- HTTP exceptions are handled by a global exception filter.
-- Protected routes use `JwtAuthGuard`.
-- Multipart uploads are handled with the `ImageUpload` decorator and sent to S3.
-- The frontend removes the default JSON content type for `FormData` requests so multipart boundaries are set correctly.
+---
 
 ## License
-
-This project is currently marked as `UNLICENSED`.
+This project is licensed under the terms of the `UNLICENSED` license.
