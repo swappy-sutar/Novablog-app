@@ -12,6 +12,14 @@ const SignInPage = () => {
   useDocumentTitle("Sign In");
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser && storedUser !== "undefined") {
+      navigate("/");
+    }
+  }, [navigate]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showResendOption, setShowResendOption] = useState(false);

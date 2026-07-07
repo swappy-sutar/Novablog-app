@@ -12,6 +12,14 @@ const SignUpPage = () => {
   useDocumentTitle("Sign Up");
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser && storedUser !== "undefined") {
+      navigate("/");
+    }
+  }, [navigate]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
