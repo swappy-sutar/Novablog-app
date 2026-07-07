@@ -514,36 +514,36 @@ const Navbar = () => {
                        <AnimatePresence>
                          {showProfileDropdown && (
                            <motion.div
-                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                             animate={{ opacity: 1, y: 0, scale: 1 }}
-                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                             transition={{ duration: 0.15 }}
-                             className="absolute right-0 mt-3 w-40 p-1.5 shadow-2xl z-50 bg-bg-dropdown border border-border-subtle/80 rounded-2xl flex flex-col gap-0.5 text-left"
-                           >
-                             <Link
-                               to="/profile"
-                               onClick={() => setShowProfileDropdown(false)}
-                               className="flex items-center gap-2 px-2.5 py-2 text-xs font-semibold text-text-muted hover:text-text-input hover:bg-border-subtle rounded-xl transition-colors text-left block"
-                             >
-                               <User className="w-3.5 h-3.5 opacity-80" />
-                               <span>My Profile</span>
-                             </Link>
-                             <Link
-                               to="/profile/settings"
-                               onClick={() => setShowProfileDropdown(false)}
-                               className="flex items-center gap-2 px-2.5 py-2 text-xs font-semibold text-text-muted hover:text-text-input hover:bg-border-subtle rounded-xl transition-colors text-left block"
-                             >
-                               <Settings className="w-3.5 h-3.5 opacity-80" />
-                               <span>Settings</span>
-                             </Link>
-                             <button
-                               onClick={handleLogout}
-                               className="flex items-center gap-2 px-2.5 py-2 text-xs font-semibold text-red-500 hover:text-red-400 hover:bg-red-500/5 rounded-xl transition-colors text-left w-full cursor-pointer mt-0.5 pt-2 border-t border-border-subtle/20"
-                             >
-                               <LogOut className="w-3.5 h-3.5 opacity-80" />
-                               <span>Logout</span>
-                             </button>
-                           </motion.div>
+                              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                              transition={{ duration: 0.15 }}
+                              className="absolute right-0 mt-1.5 w-36 p-1 shadow-xl z-50 bg-bg-dropdown border border-border-subtle/80 rounded-xl flex flex-col gap-0.5 text-left"
+                            >
+                              <Link
+                                to="/profile"
+                                onClick={() => setShowProfileDropdown(false)}
+                                className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-semibold text-text-muted hover:text-text-input hover:bg-border-subtle transition-colors text-left block"
+                              >
+                                <User className="w-3.5 h-3.5 opacity-80" />
+                                <span>My Profile</span>
+                              </Link>
+                              <Link
+                                to="/profile/settings"
+                                onClick={() => setShowProfileDropdown(false)}
+                                className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-semibold text-text-muted hover:text-text-input hover:bg-border-subtle transition-colors text-left block"
+                              >
+                                <Settings className="w-3.5 h-3.5 opacity-80" />
+                                <span>Settings</span>
+                              </Link>
+                              <button
+                                onClick={handleLogout}
+                                className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-semibold text-red-500 hover:text-red-400 hover:bg-red-500/5 transition-colors text-left w-full cursor-pointer mt-0.5 pt-1.5 border-t border-border-subtle/20"
+                              >
+                                <LogOut className="w-3.5 h-3.5 opacity-80" />
+                                <span>Logout</span>
+                              </button>
+                            </motion.div>
                          )}
                        </AnimatePresence>
                      </div>
