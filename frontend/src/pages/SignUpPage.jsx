@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { authAPI, getErrorMessage } from '../lib/api';
 import toast from 'react-hot-toast';
