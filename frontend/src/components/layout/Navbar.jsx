@@ -523,24 +523,24 @@ const Navbar = () => {
                               <Link
                                 to="/profile"
                                 onClick={() => setShowProfileDropdown(false)}
-                                className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-semibold text-text-muted hover:text-text-input hover:bg-border-subtle transition-colors text-left block"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-text-muted hover:text-text-input hover:bg-border-subtle transition-colors text-left block"
                               >
-                                <User className="w-3.5 h-3.5 opacity-80" />
+                                <User className="w-3 h-3 opacity-80" />
                                 <span>My Profile</span>
                               </Link>
                               <Link
                                 to="/profile/settings"
                                 onClick={() => setShowProfileDropdown(false)}
-                                className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-semibold text-text-muted hover:text-text-input hover:bg-border-subtle transition-colors text-left block"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-text-muted hover:text-text-input hover:bg-border-subtle transition-colors text-left block"
                               >
-                                <Settings className="w-3.5 h-3.5 opacity-80" />
+                                <Settings className="w-3 h-3 opacity-80" />
                                 <span>Settings</span>
                               </Link>
                               <button
                                 onClick={handleLogout}
-                                className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-semibold text-red-500 hover:text-red-400 hover:bg-red-500/5 transition-colors text-left w-full cursor-pointer mt-0.5 pt-1.5 border-t border-border-subtle/20"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-red-500 hover:text-red-400 hover:bg-red-500/5 transition-colors text-left w-full cursor-pointer mt-0.5 pt-1.5 border-t border-border-subtle/20"
                               >
-                                <LogOut className="w-3.5 h-3.5 opacity-80" />
+                                <LogOut className="w-3 h-3 opacity-80" />
                                 <span>Logout</span>
                               </button>
                             </motion.div>
