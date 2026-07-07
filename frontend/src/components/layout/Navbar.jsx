@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "../ui/Button";
 import { notificationsAPI, authAPI } from "../../lib/api";
-import { Bell } from "lucide-react";
+import { Bell, User, Settings, LogOut } from "lucide-react";
 import { connectSocket, disconnectSocket } from "../../lib/socket";
 import toast from "react-hot-toast";
 
@@ -518,31 +518,30 @@ const Navbar = () => {
                              animate={{ opacity: 1, y: 0, scale: 1 }}
                              exit={{ opacity: 0, y: 10, scale: 0.95 }}
                              transition={{ duration: 0.15 }}
-                             className="absolute right-0 mt-3 w-48 p-2 shadow-2xl z-50 bg-bg-dropdown border border-border-subtle/80 rounded-2xl flex flex-col gap-1 text-left"
+                             className="absolute right-0 mt-3 w-40 p-1.5 shadow-2xl z-50 bg-bg-dropdown border border-border-subtle/80 rounded-2xl flex flex-col gap-0.5 text-left"
                            >
-                             <div className="px-3 py-2 border-b border-border-subtle/40 mb-1">
-                               <p className="text-[10px] text-gray-500 font-medium">Signed in as</p>
-                               <p className="text-xs font-bold text-white truncate">{user.email}</p>
-                             </div>
                              <Link
                                to="/profile"
                                onClick={() => setShowProfileDropdown(false)}
-                               className="px-3 py-2 text-xs font-medium text-gray-300 hover:text-white hover:bg-white/[0.04] rounded-lg transition-colors text-left block"
+                               className="flex items-center gap-2 px-2.5 py-2 text-xs font-semibold text-text-muted hover:text-text-input hover:bg-border-subtle rounded-xl transition-colors text-left block"
                              >
-                               My Profile
+                               <User className="w-3.5 h-3.5 opacity-80" />
+                               <span>My Profile</span>
                              </Link>
                              <Link
                                to="/profile/settings"
                                onClick={() => setShowProfileDropdown(false)}
-                               className="px-3 py-2 text-xs font-medium text-gray-300 hover:text-white hover:bg-white/[0.04] rounded-lg transition-colors text-left block"
+                               className="flex items-center gap-2 px-2.5 py-2 text-xs font-semibold text-text-muted hover:text-text-input hover:bg-border-subtle rounded-xl transition-colors text-left block"
                              >
-                               Account Settings
+                               <Settings className="w-3.5 h-3.5 opacity-80" />
+                               <span>Settings</span>
                              </Link>
                              <button
                                onClick={handleLogout}
-                               className="px-3 py-2 text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-500/5 rounded-lg transition-colors text-left w-full cursor-pointer border-t border-border-subtle/30 mt-1 pt-2"
+                               className="flex items-center gap-2 px-2.5 py-2 text-xs font-semibold text-red-500 hover:text-red-400 hover:bg-red-500/5 rounded-xl transition-colors text-left w-full cursor-pointer mt-0.5 pt-2 border-t border-border-subtle/20"
                              >
-                               Logout
+                               <LogOut className="w-3.5 h-3.5 opacity-80" />
+                               <span>Logout</span>
                              </button>
                            </motion.div>
                          )}
