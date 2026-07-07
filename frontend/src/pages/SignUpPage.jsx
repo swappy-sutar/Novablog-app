@@ -16,6 +16,19 @@ const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+
+  useEffect(() => {
+    let interval = null;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
   
   const [formData, setFormData] = useState({
     firstname: '',
@@ -32,6 +45,7 @@ const SignUpPage = () => {
       const response = await authAPI.resendVerification(formData.email);
       if (response.success) {
         toast.success("Verification link resent to your email!");
+        setResendTimer(60);
       }
     } catch (err) {
       toast.error(getErrorMessage(err, "Failed to resend verification email."));
@@ -114,16 +128,20 @@ const SignUpPage = () => {
               <div className="w-full space-y-3 pt-2">
                 <Button 
                   onClick={handleResend}
-                  disabled={isResending}
+                  disabled={isResending || resendTimer > 0}
                   variant="secondary"
-                  className="w-full !rounded-xl py-2.5 text-xs font-semibold bg-white/[0.06] border border-border-subtle hover:bg-white/[0.1] text-white"
+                  className="w-full !rounded-xl py-2.5 text-xs font-semibold bg-white/[0.06] border border-border-subtle hover:bg-white/[0.1] text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isResending ? (
                     <>
                       <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
                       Resending Link...
                     </>
-                  ) : "Resend Verification Link"}
+                  ) : resendTimer > 0 ? (
+                    `Resend in ${resendTimer}s`
+                  ) : (
+                    "Resend Verification Link"
+                  )}
                 </Button>
                 
                 <Link to="/signin" className="block w-full">

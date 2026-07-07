@@ -16,6 +16,19 @@ const SignInPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showResendOption, setShowResendOption] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+
+  useEffect(() => {
+    let interval = null;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
   
   const [formData, setFormData] = useState({
     email: '',
@@ -87,7 +100,7 @@ const SignInPage = () => {
       const response = await authAPI.resendVerification(formData.email);
       if (response.success) {
         toast.success("Verification link sent! Check your inbox.");
-        setShowResendOption(false);
+        setResendTimer(60);
       }
     } catch (err) {
       toast.error(getErrorMessage(err, "Failed to resend verification email."));
@@ -238,10 +251,16 @@ const SignInPage = () => {
                 <button
                   type="button"
                   onClick={handleResend}
-                  disabled={isResending}
-                  className="font-bold underline hover:text-brand-blue transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                  disabled={isResending || resendTimer > 0}
+                  className="font-bold underline hover:text-brand-blue transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isResending ? <Loader2 size={12} className="animate-spin" /> : "Resend Link"}
+                  {isResending ? (
+                    <Loader2 size={12} className="animate-spin" />
+                  ) : resendTimer > 0 ? (
+                    `Resend in ${resendTimer}s`
+                  ) : (
+                    "Resend Link"
+                  )}
                 </button>
               </div>
             )}

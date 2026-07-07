@@ -21,6 +21,19 @@ const VerifyEmailPage = () => {
   const [email, setEmail] = useState("");
   const [isResending, setIsResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+
+  useEffect(() => {
+    let interval = null;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
 
   useEffect(() => {
     if (!token) {
@@ -62,6 +75,7 @@ const VerifyEmailPage = () => {
       if (response.success) {
         setResendSuccess(true);
         toast.success("Verification link sent to your email!");
+        setResendTimer(60);
       }
     } catch (err) {
       toast.error(getErrorMessage(err, "Failed to resend verification link. Please check the email and try again."));
@@ -180,14 +194,16 @@ const VerifyEmailPage = () => {
                 <Button
                   type="submit"
                   variant="secondary"
-                  disabled={isResending}
-                  className="w-full !rounded-xl py-2.5 text-xs font-semibold bg-white/[0.06] border border-border-subtle hover:bg-white/[0.1] text-white"
+                  disabled={isResending || resendTimer > 0}
+                  className="w-full !rounded-xl py-2.5 text-xs font-semibold bg-white/[0.06] border border-border-subtle hover:bg-white/[0.1] text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isResending ? (
                     <>
                       <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
                       Resending Link...
                     </>
+                  ) : resendTimer > 0 ? (
+                    `Resend in ${resendTimer}s`
                   ) : (
                     "Request New Link"
                   )}
