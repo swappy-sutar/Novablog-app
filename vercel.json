@@ -10,7 +10,6 @@
       "routePrefix": "/_/backend"
     }
   },
-  "cleanUrls": true,
   "rewrites": [
     {
       "source": "/((?!_/backend|assets/|svg/|favicon.ico|robots.txt|sitemap.xml|novablog-linkedin-thumbnail.png).*)",
