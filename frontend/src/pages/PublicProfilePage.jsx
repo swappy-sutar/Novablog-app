@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import GlassCard from '../components/ui/GlassCard';
 import Button from '../components/ui/Button';
 import Loader from '../components/ui/Loader';
+import { ProfileSkeleton } from '../components/ui/Skeleton';
 import { authAPI } from '../lib/api';
 
 const HEAT_WEEKS = 52;
@@ -206,7 +207,7 @@ const PublicProfilePage = () => {
   const roleLabel = profile?.role ? profile.role.replace(/_/g, ' ') : 'Member';
 
   if (loading && !profile) {
-    return null;
+    return <ProfileSkeleton />;
   }
 
   if (error && !profile) {

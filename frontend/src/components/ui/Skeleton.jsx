@@ -143,3 +143,86 @@ export const ExploreInsightSkeleton = () => {
     </div>
   );
 };
+
+// Profile page skeleton loader
+export const ProfileSkeleton = () => {
+  return (
+    <div className="max-w-6xl mx-auto px-4 md:px-6 pt-6 pb-12 space-y-8">
+      {/* Profile Header GlassCard Skeleton */}
+      <div className="p-6 md:p-8 rounded-2xl border border-white/5 bg-bg-card relative overflow-hidden flex flex-col md:flex-row items-start gap-6">
+        {/* Avatar skeleton */}
+        <div className="w-24 h-24 md:w-28 md:h-28 rounded-full bg-white/5 shrink-0" />
+        
+        {/* Bio details skeleton */}
+        <div className="flex-1 space-y-4 w-full">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-2">
+              <SkeletonBlock className="h-6 w-48 rounded-lg" />
+              <SkeletonBlock className="h-4 w-32 rounded" />
+            </div>
+            <SkeletonBlock className="h-9 w-24 rounded-xl" />
+          </div>
+
+          <div className="space-y-2 pt-2">
+            <SkeletonBlock className="h-4 w-full rounded" />
+            <SkeletonBlock className="h-4 w-5/6 rounded" />
+          </div>
+
+          <div className="flex flex-wrap gap-4 pt-2">
+            <SkeletonBlock className="h-4.5 w-24 rounded" />
+            <SkeletonBlock className="h-4.5 w-24 rounded" />
+            <SkeletonBlock className="h-4.5 w-28 rounded" />
+          </div>
+        </div>
+      </div>
+
+      {/* Profile Details Grid Skeleton */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* About column */}
+        <div className="md:col-span-1 space-y-6">
+          {/* Tech stack card skeleton */}
+          <div className="p-6 rounded-2xl border border-white/5 bg-bg-card space-y-4">
+            <SkeletonBlock className="h-5 w-24 rounded" />
+            <div className="flex flex-wrap gap-2">
+              <SkeletonBlock className="h-7 w-16 rounded-lg" />
+              <SkeletonBlock className="h-7 w-20 rounded-lg" />
+              <SkeletonBlock className="h-7 w-14 rounded-lg" />
+              <SkeletonBlock className="h-7 w-24 rounded-lg" />
+            </div>
+          </div>
+
+          {/* Activity card skeleton */}
+          <div className="p-6 rounded-2xl border border-white/5 bg-bg-card space-y-4">
+            <SkeletonBlock className="h-5 w-32 rounded" />
+            <SkeletonBlock className="h-28 w-full rounded-lg" />
+          </div>
+        </div>
+
+        {/* Blogs column */}
+        <div className="md:col-span-2 space-y-6">
+          <SkeletonBlock className="h-6 w-32 rounded-lg" />
+          <div className="space-y-4">
+            <div className="p-6 rounded-2xl border border-white/5 bg-bg-card space-y-3">
+              <SkeletonBlock className="h-4.5 w-1/4 rounded" />
+              <SkeletonBlock className="h-6 w-11/12 rounded-lg" />
+              <SkeletonBlock className="h-4 w-5/6 rounded" />
+              <div className="flex gap-4 pt-2">
+                <SkeletonBlock className="h-4 w-12 rounded" />
+                <SkeletonBlock className="h-4 w-16 rounded" />
+              </div>
+            </div>
+            <div className="p-6 rounded-2xl border border-white/5 bg-bg-card space-y-3">
+              <SkeletonBlock className="h-4.5 w-1/4 rounded" />
+              <SkeletonBlock className="h-6 w-11/12 rounded-lg" />
+              <SkeletonBlock className="h-4 w-5/6 rounded" />
+              <div className="flex gap-4 pt-2">
+                <SkeletonBlock className="h-4 w-12 rounded" />
+                <SkeletonBlock className="h-4 w-16 rounded" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
