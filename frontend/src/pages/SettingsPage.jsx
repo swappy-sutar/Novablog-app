@@ -627,11 +627,7 @@ const SettingsPage = () => {
     '?';
 
   if (loadState.loading && !profile) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-center min-h-[50vh]">
-        <Loader message="Loading settings..." size="md" />
-      </div>
-    );
+    return null;
   }
 
   if (loadState.error && !profile) {

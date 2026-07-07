@@ -206,11 +206,7 @@ const PublicProfilePage = () => {
   const roleLabel = profile?.role ? profile.role.replace(/_/g, ' ') : 'Member';
 
   if (loading && !profile) {
-    return (
-      <div className="flex items-center justify-center min-h-[45vh]">
-        <Loader message="Loading developer profile..." size="md" />
-      </div>
-    );
+    return null;
   }
 
   if (error && !profile) {
