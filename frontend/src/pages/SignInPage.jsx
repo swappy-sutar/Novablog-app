@@ -8,6 +8,26 @@ import AuthBackground from '../components/auth/AuthBackground';
 import Button from '../components/ui/Button';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
+const saveUserToLocalStorage = (data) => {
+  if (!data) return;
+  localStorage.setItem(
+    'user',
+    JSON.stringify({
+      id: data.id,
+      firstname: data.firstname,
+      lastname: data.lastname,
+      username: data.username,
+      email: data.email,
+      avatar: data.avatar,
+      bio: data.bio,
+      websiteUrl: data.websiteUrl,
+      githubUrl: data.githubUrl,
+      techStack: data.techStack,
+      role: data.role,
+    })
+  );
+};
+
 const SignInPage = () => {
   useDocumentTitle("Sign In");
 
@@ -79,7 +99,7 @@ const SignInPage = () => {
         if (response.data.refreshToken) {
           localStorage.setItem('refreshToken', response.data.refreshToken);
         }
-        localStorage.setItem('user', JSON.stringify(response.data.user)); 
+        saveUserToLocalStorage(response.data.user); 
         
         // Notify Navbar of auth change
         window.dispatchEvent(new Event('auth-change'));
@@ -135,7 +155,7 @@ const SignInPage = () => {
         if (response.data.refreshToken) {
           localStorage.setItem('refreshToken', response.data.refreshToken);
         }
-        localStorage.setItem('user', JSON.stringify(response.data.user)); 
+        saveUserToLocalStorage(response.data.user); 
         
         window.dispatchEvent(new Event('auth-change'));
         navigate('/');
