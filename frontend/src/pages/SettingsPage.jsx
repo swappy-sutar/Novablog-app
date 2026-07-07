@@ -123,17 +123,35 @@ const SettingsPage = () => {
   useDocumentTitle("Settings");
 
   const navigate = useNavigate();
+  
+  const storedUser = (() => {
+    try {
+      const stored = localStorage.getItem('user');
+      if (stored && stored !== 'undefined') {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.id) return parsed;
+      }
+    } catch {}
+    return null;
+  })();
+
   const [active, setActive] = useState('profile');
-  const [profile, setProfile] = useState(null);
-  const [loadState, setLoadState] = useState({ loading: true, error: null });
+  const [profile, setProfile] = useState(storedUser);
+  const [loadState, setLoadState] = useState(() => {
+    if (storedUser) return { loading: false, error: null };
+    return { loading: true, error: null };
+  });
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({
-    displayName: '',
-    bio: '',
-    websiteUrl: '',
-    githubUrl: '',
-    techStack: [],
+  const [form, setForm] = useState(() => {
+    const dn = formatDisplayName(storedUser);
+    return {
+      displayName: dn || storedUser?.username || '',
+      bio: storedUser?.bio ?? '',
+      websiteUrl: storedUser?.websiteUrl ?? '',
+      githubUrl: storedUser?.githubUrl ?? '',
+      techStack: storedUser?.techStack ?? [],
+    };
   });
   const [newTechInput, setNewTechInput] = useState('');
 
@@ -151,7 +169,7 @@ const SettingsPage = () => {
   const [isExportingData, setIsExportingData] = useState(false);
 
   // 2FA States
-  const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+  const [is2FAEnabled, setIs2FAEnabled] = useState(storedUser?.isTwoFactorEnabled || false);
   const [is2FAModalOpen, setIs2FAModalOpen] = useState(false);
   const [isGenerating2FA, setIsGenerating2FA] = useState(false);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState('');

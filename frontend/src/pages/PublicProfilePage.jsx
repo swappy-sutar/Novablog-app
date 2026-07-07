@@ -89,8 +89,34 @@ const getWriterLevel = (reads) => {
 
 const PublicProfilePage = () => {
   const { username } = useParams();
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
+
+  const currentUser = useMemo(() => {
+    try {
+      const stored = localStorage.getItem('user');
+      if (stored && stored !== 'undefined') {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.id) return parsed;
+      }
+    } catch {}
+    return null;
+  }, []);
+
+  const isOwnProfile = !username || (currentUser && currentUser.username === username);
+
+  const [profile, setProfile] = useState(() => {
+    if (isOwnProfile && currentUser) {
+      return currentUser;
+    }
+    return null;
+  });
+
+  const [loading, setLoading] = useState(() => {
+    if (isOwnProfile && currentUser) {
+      return false;
+    }
+    return true;
+  });
+
   const [error, setError] = useState(null);
   const fileRef = useRef(null);
   const [uploading, setUploading] = useState(false);
@@ -140,9 +166,6 @@ const PublicProfilePage = () => {
     }
   };
 
-  const storedUser = localStorage.getItem('user');
-  const currentUser = storedUser && storedUser !== "undefined" ? JSON.parse(storedUser) : null;
-  const isOwnProfile = !username || (currentUser && currentUser.username === username);
 
   const handleFollowToggle = async () => {
     if (!currentUser) {
