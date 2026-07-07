@@ -143,13 +143,10 @@ const SettingsPage = () => {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
-  const [emailForm, setEmailForm] = useState({ newEmail: '' });
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [isExportingData, setIsExportingData] = useState(false);
 
@@ -551,31 +548,6 @@ const SettingsPage = () => {
     }
   };
 
-  const handleUpdateEmailSubmit = async (e) => {
-    e.preventDefault();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailForm.newEmail || !emailRegex.test(emailForm.newEmail)) {
-      toast.error('Please enter a valid email address');
-      return;
-    }
-    setIsUpdatingEmail(true);
-    try {
-      const res = await authAPI.updateEmail({
-        newEmail: emailForm.newEmail,
-      });
-      if (res.success && res.data) {
-        setProfile(res.data);
-        persistUserFromProfile(res.data);
-        toast.success('Email updated successfully');
-        setIsEmailModalOpen(false);
-        setEmailForm({ newEmail: '' });
-      }
-    } catch (err) {
-      toast.error(getErrorMessage(err, 'Failed to update email'));
-    } finally {
-      setIsUpdatingEmail(false);
-    }
-  };
 
   const handleDeleteAccountSubmit = async (e) => {
     e.preventDefault();
@@ -916,13 +888,6 @@ const SettingsPage = () => {
                 <p className="text-sm font-semibold text-gray-200 mt-0.5">{profile?.email}</p>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setIsEmailModalOpen(true)}
-              className="text-xs font-semibold text-brand-purple hover:bg-brand-purple/10 py-1.5 px-4 rounded-lg bg-brand-purple/5 border border-brand-purple/20 transition-all text-center cursor-pointer"
-            >
-              Update
-            </button>
           </div>
 
           <div className="rounded-xl border border-border-subtle bg-bg-card-sub p-5 flex items-start sm:items-center justify-between gap-4">
@@ -1306,75 +1271,6 @@ const SettingsPage = () => {
         )}
       </AnimatePresence>
 
-      {/* EMAIL UPDATE MODAL */}
-      <AnimatePresence>
-        {isEmailModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsEmailModalOpen(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-md bg-bg-dropdown border border-border-subtle rounded-2xl p-6 shadow-2xl backdrop-blur-xl z-10"
-            >
-              <div className="flex items-center justify-between border-b border-border-subtle pb-4 mb-5">
-                <h3 className="text-lg font-bold text-text-input flex items-center gap-2">
-                  <Mail className="w-5 h-5 text-brand-cyan" />
-                  Update Email Address
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setIsEmailModalOpen(false)}
-                  className="text-text-muted hover:text-text-input text-sm cursor-pointer"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <form onSubmit={handleUpdateEmailSubmit} className="space-y-4">
-                <div>
-                  <p className="text-xs text-text-muted mb-4 leading-relaxed">
-                    Note: Your email address is used to log in and receive registered account notifications.
-                  </p>
-                  <label className="block text-xs font-semibold text-text-muted mb-2">New Email Address</label>
-                  <input
-                    type="email"
-                    required
-                    placeholder="you@example.com"
-                    className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-3 text-sm text-text-input focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all"
-                    value={emailForm.newEmail}
-                    onChange={(e) => setEmailForm((f) => ({ ...f, newEmail: e.target.value }))}
-                  />
-                </div>
-                <div className="flex gap-4 justify-end pt-4 border-t border-border-subtle">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="!rounded-xl"
-                    onClick={() => setIsEmailModalOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    className="!rounded-xl"
-                    disabled={isUpdatingEmail}
-                  >
-                    {isUpdatingEmail ? 'Updating...' : 'Update Email'}
-                  </Button>
-                </div>
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
       {/* DELETE ACCOUNT MODAL */}
       <AnimatePresence>
