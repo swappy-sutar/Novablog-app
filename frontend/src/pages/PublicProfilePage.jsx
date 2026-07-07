@@ -9,19 +9,6 @@ import { authAPI } from '../lib/api';
 
 const HEAT_WEEKS = 52;
 const HEAT_DAYS = 7;
-const DEFAULT_TECH = [
-  'TypeScript',
-  'Rust',
-  'Docker',
-  'Kubernetes',
-  'Next.js',
-  'PostgreSQL',
-  'GraphQL',
-  'Wasm',
-  'Go',
-  'Redis',
-  'Terraform',
-];
 
 function heatLevel(seed) {
   const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
@@ -488,21 +475,27 @@ const PublicProfilePage = () => {
               )}
             </div>
             <div className="flex flex-wrap gap-2">
-              {(profile?.techStack && profile.techStack.length > 0 ? profile.techStack : DEFAULT_TECH).map((t) => (
-                <span
-                  key={t}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium border border-border-subtle bg-white/[0.04] text-gray-300"
-                >
-                  {t}
+              {profile?.techStack && profile.techStack.length > 0 ? (
+                profile.techStack.map((t) => (
+                  <span
+                    key={t}
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium border border-border-subtle bg-white/[0.04] text-gray-300"
+                  >
+                    {t}
+                  </span>
+                ))
+              ) : (
+                <span className="text-xs text-gray-500 italic py-1">
+                  No tech stack tags added yet.
                 </span>
-              ))}
+              )}
             </div>
           </div>
-          <p className="text-xs text-gray-600 mt-4 pt-2 border-t border-border-subtle/30">
-            {profile?.techStack && profile.techStack.length > 0
-              ? "Customized tech stack tags"
-              : "Showcase tags are static for now; connect a skills API when ready."}
-          </p>
+          {profile?.techStack && profile.techStack.length > 0 && (
+            <p className="text-xs text-gray-600 mt-4 pt-2 border-t border-border-subtle/30">
+              Customized tech stack tags
+            </p>
+          )}
         </GlassCard>
 
         <GlassCard hoverEffect={false} className="!rounded-xl p-6 h-full flex flex-col">
