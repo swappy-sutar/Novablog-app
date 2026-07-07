@@ -105,6 +105,16 @@ export const authAPI = {
     return response.data;
   },
 
+  getPreferences: async () => {
+    const response = await api.get('/auth/preferences');
+    return response.data;
+  },
+
+  updatePreferences: async (prefs) => {
+    const response = await api.patch('/auth/preferences', prefs);
+    return response.data;
+  },
+
   generate2FA: async () => {
     const response = await api.post('/auth/2fa/generate');
     return response.data;

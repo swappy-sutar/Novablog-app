@@ -211,6 +211,8 @@ const SettingsPage = () => {
       const next = { ...p, [key]: value };
       savePrefs(next);
       prefsBaseline.current = JSON.parse(JSON.stringify(next));
+      // Auto-sync theme/fontScale to database preferences in background
+      authAPI.updatePreferences(next).catch(() => {});
       return next;
     });
   };
@@ -239,7 +241,10 @@ const SettingsPage = () => {
   const loadProfile = useCallback(async () => {
     setLoadState({ loading: true, error: null });
     try {
-      const res = await authAPI.getProfile();
+      const [res, prefsRes] = await Promise.all([
+        authAPI.getProfile(),
+        authAPI.getPreferences().catch(() => null)
+      ]);
       if (res.success && res.data) {
         setProfile(res.data);
         setIs2FAEnabled(res.data.isTwoFactorEnabled || false);
@@ -252,6 +257,11 @@ const SettingsPage = () => {
           githubUrl: res.data.githubUrl ?? '',
           techStack: res.data.techStack ?? [],
         });
+        if (prefsRes && prefsRes.success && prefsRes.data) {
+          setPrefs(prefsRes.data);
+          savePrefs(prefsRes.data);
+          prefsBaseline.current = JSON.parse(JSON.stringify(prefsRes.data));
+        }
         setLoadState({ loading: false, error: null });
       } else {
         setLoadState({ loading: false, error: 'Unexpected response' });
@@ -517,12 +527,25 @@ const SettingsPage = () => {
   const handleSaveAll = async () => {
     const profileResult = await saveProfileApi();
     if (profileResult === 'invalid') return;
-    savePrefs(prefs);
-    prefsBaseline.current = JSON.parse(JSON.stringify(prefs));
-    if (profileResult === true) {
-      toast.success('Settings saved successfully');
-    } else {
-      toast.success('Preferences saved locally');
+    
+    setSaving(true);
+    try {
+      const prefsRes = await authAPI.updatePreferences(prefs);
+      if (prefsRes.success && prefsRes.data) {
+        savePrefs(prefsRes.data);
+        prefsBaseline.current = JSON.parse(JSON.stringify(prefsRes.data));
+        toast.success('Settings and preferences saved successfully');
+      } else {
+        savePrefs(prefs);
+        prefsBaseline.current = JSON.parse(JSON.stringify(prefs));
+        toast.success('Profile saved, preferences updated locally');
+      }
+    } catch (err) {
+      savePrefs(prefs);
+      prefsBaseline.current = JSON.parse(JSON.stringify(prefs));
+      toast.success('Profile saved, preferences updated locally');
+    } finally {
+      setSaving(false);
     }
   };
 

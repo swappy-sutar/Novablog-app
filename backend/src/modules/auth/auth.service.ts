@@ -476,6 +476,85 @@ export class AuthService {
     );
   }
 
+  async getPreferences(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        preferences: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const defaultPrefs = {
+      theme: 'dark',
+      fontScale: 100,
+      notify: {
+        followers: { push: true, email: false },
+        engagement: { push: true, email: true },
+        newsletter: { push: false, email: true },
+      },
+      publicProfile: true,
+    };
+
+    return successResponse(
+      'Preferences fetched successfully',
+      user.preferences || defaultPrefs,
+      HttpStatus.OK,
+    );
+  }
+
+  async updatePreferences(userId: string, preferences: any) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const currentPrefs = (user.preferences as any) || {
+      theme: 'dark',
+      fontScale: 100,
+      notify: {
+        followers: { push: true, email: false },
+        engagement: { push: true, email: true },
+        newsletter: { push: false, email: true },
+      },
+      publicProfile: true,
+    };
+
+    const mergedPrefs = {
+      ...currentPrefs,
+      ...preferences,
+      notify: preferences.notify ? {
+        ...currentPrefs.notify,
+        ...preferences.notify,
+      } : currentPrefs.notify,
+    };
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        preferences: mergedPrefs as any,
+      },
+    });
+
+    await this.cacheService.del(REDIS_KEYS.USER(userId));
+    await this.cacheService.del(REDIS_KEYS.USER_PROFILE(userId));
+    if (user.username) {
+      await this.cacheService.del(REDIS_KEYS.USER_PROFILE_BY_USERNAME(user.username));
+    }
+
+    return successResponse(
+      'Preferences updated successfully',
+      updatedUser.preferences,
+      HttpStatus.OK,
+    );
+  }
+
   async refreshToken(refreshToken: string) {
     try {
       const payload = await this.jwtService.verifyAsync(refreshToken, {

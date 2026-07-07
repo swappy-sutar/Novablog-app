@@ -47,6 +47,7 @@ model User {
   lockedUntil        DateTime?
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
+  preferences   Json?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   blogs         Blog[]

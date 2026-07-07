@@ -111,6 +111,21 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('preferences')
+  async getPreferences(@CurrentUser() user: any) {
+    return this.authService.getPreferences(user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('preferences')
+  async updatePreferences(
+    @CurrentUser() user: any,
+    @Body() preferences: any,
+  ) {
+    return this.authService.updatePreferences(user.id, preferences);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('upload-profile')
   @ImageUpload('image')
   async uploadProfilePic(
