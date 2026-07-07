@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "../ui/Button";
-import { notificationsAPI } from "../../lib/api";
+import { notificationsAPI, authAPI } from "../../lib/api";
 import { Bell } from "lucide-react";
 import { connectSocket, disconnectSocket } from "../../lib/socket";
 import toast from "react-hot-toast";
@@ -128,6 +128,29 @@ const Navbar = () => {
   const notificationsRef = useRef(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
+
+  const profileDropdownRef = useRef(null);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(e.target)) {
+        setShowProfileDropdown(false);
+      }
+    };
+    if (showProfileDropdown) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [showProfileDropdown]);
+
+  const handleLogout = () => {
+    authAPI.logout();
+    setShowProfileDropdown(false);
+    navigate("/signin");
+  };
 
   // Load and subscribe to notifications
   useEffect(() => {
@@ -479,14 +502,52 @@ const Navbar = () => {
                       </Button>
                     </Link>
 
-                     <Link
-                       to="/profile"
-                       className="w-8 h-8 rounded-full bg-brand-purple/20 border border-brand-purple flex items-center justify-center text-brand-purple font-bold text-xs hover:bg-brand-purple/40 transition-colors"
-                       title="Profile"
-                       aria-label="View profile"
-                     >
-                      {user.firstname?.[0]?.toUpperCase() || "U"}
-                    </Link>
+                     <div className="relative" ref={profileDropdownRef}>
+                       <button
+                         onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                         className="w-8 h-8 rounded-full bg-brand-purple/20 border border-brand-purple flex items-center justify-center text-brand-purple font-bold text-xs hover:bg-brand-purple/40 transition-colors cursor-pointer focus:outline-none"
+                         aria-label="Toggle profile dropdown"
+                       >
+                         {user.firstname?.[0]?.toUpperCase() || "U"}
+                       </button>
+
+                       <AnimatePresence>
+                         {showProfileDropdown && (
+                           <motion.div
+                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                             animate={{ opacity: 1, y: 0, scale: 1 }}
+                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                             transition={{ duration: 0.15 }}
+                             className="absolute right-0 mt-3 w-48 p-2 shadow-2xl z-50 bg-bg-dropdown border border-border-subtle/80 rounded-2xl flex flex-col gap-1 text-left"
+                           >
+                             <div className="px-3 py-2 border-b border-border-subtle/40 mb-1">
+                               <p className="text-[10px] text-gray-500 font-medium">Signed in as</p>
+                               <p className="text-xs font-bold text-white truncate">{user.email}</p>
+                             </div>
+                             <Link
+                               to="/profile"
+                               onClick={() => setShowProfileDropdown(false)}
+                               className="px-3 py-2 text-xs font-medium text-gray-300 hover:text-white hover:bg-white/[0.04] rounded-lg transition-colors text-left block"
+                             >
+                               My Profile
+                             </Link>
+                             <Link
+                               to="/profile/settings"
+                               onClick={() => setShowProfileDropdown(false)}
+                               className="px-3 py-2 text-xs font-medium text-gray-300 hover:text-white hover:bg-white/[0.04] rounded-lg transition-colors text-left block"
+                             >
+                               Account Settings
+                             </Link>
+                             <button
+                               onClick={handleLogout}
+                               className="px-3 py-2 text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-500/5 rounded-lg transition-colors text-left w-full cursor-pointer border-t border-border-subtle/30 mt-1 pt-2"
+                             >
+                               Logout
+                             </button>
+                           </motion.div>
+                         )}
+                       </AnimatePresence>
+                     </div>
                   </motion.div>
                 ) : (
                   <motion.div
