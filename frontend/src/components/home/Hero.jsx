@@ -35,6 +35,14 @@ const TerminalMockup = () => {
 
     const runScript = () => {
       if (scriptIdx >= script.length) {
+        // Reset script after 5 seconds to loop continuously
+        timer = setTimeout(() => {
+          setHistory([]);
+          setCurrentInput('');
+          scriptIdx = 0;
+          charIdx = 0;
+          runScript();
+        }, 5000);
         return;
       }
 
@@ -55,7 +63,7 @@ const TerminalMockup = () => {
       } else if (step.type === 'output') {
         setHistory(prev => [...prev, { type: 'output', text: step.text, color: step.color }]);
         scriptIdx++;
-        timer = setTimeout(runScript, 300);
+        timer = setTimeout(runScript, 400);
       }
     };
 
@@ -63,13 +71,60 @@ const TerminalMockup = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const renderHighlightedInput = (text) => {
+    const parts = text.split(' ');
+    return (
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <span className="text-emerald-400 font-bold">&gt;</span>
+        {parts.map((word, idx) => {
+          let color = 'text-white font-semibold';
+          if (word === 'novablog') color = 'text-brand-cyan font-bold';
+          else if (['search', 'publish', 'analytics'].includes(word)) color = 'text-brand-purple';
+          else if (word.startsWith('--') || word.startsWith('"') || word.endsWith('"')) color = 'text-orange-400 font-mono';
+          return <span key={idx} className={color}>{word}</span>;
+        })}
+      </div>
+    );
+  };
+
+  const renderHighlightedOutput = (line, idx) => {
+    if (line.text.startsWith('✓')) {
+      const parts = line.text.split('·');
+      return (
+        <p key={idx} className="mt-0.5 text-emerald-400/90 font-medium">
+          {parts.map((part, pIdx) => {
+            if (pIdx > 0) {
+              const subParts = part.split(':');
+              return (
+                <span key={pIdx}>
+                  <span className="text-gray-500 font-mono"> ·</span>
+                  <span className="text-gray-400"> {subParts[0]}</span>
+                  {subParts[1] && <span className="text-brand-cyan font-semibold">:{subParts[1]}</span>}
+                </span>
+              );
+            }
+            return <span key={pIdx}>{part}</span>;
+          })}
+        </p>
+      );
+    }
+    if (line.text.startsWith('#')) {
+      return (
+        <p key={idx} className="mt-0.5 text-gray-500 font-mono italic">
+          {line.text}
+        </p>
+      );
+    }
+    return <p key={idx} className={`mt-0.5 ${line.color || 'text-gray-300'}`}>{line.text}</p>;
+  };
+
   return (
     <GlassCard className="relative border border-border-subtle bg-[#090915]/95 shadow-2xl overflow-hidden flex flex-col p-4 sm:p-6 h-[280px] sm:h-[360px] font-mono text-xs sm:text-sm text-gray-300">
       <div className="flex items-center justify-between pb-4 border-b border-white/5 select-none">
         <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-rose-500" />
-          <span className="w-3 h-3 rounded-full bg-amber-500" />
-          <span className="w-3 h-3 rounded-full bg-emerald-500" />
+          <span className="w-3 h-3 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+          <span className="w-3 h-3 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+          <span className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
           <span className="text-[10px] text-gray-500 ml-2 font-mono">novablog ~ terminal</span>
         </div>
       </div>
@@ -82,21 +137,14 @@ const TerminalMockup = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
           >
-            {line.type === 'input' ? (
-              <div className="flex items-center gap-2">
-                <span className="text-emerald-400 font-bold">&gt;</span>
-                <span className="text-white font-bold">{line.text}</span>
-              </div>
-            ) : (
-              <p className={`mt-0.5 ${line.color || 'text-gray-300'}`}>{line.text}</p>
-            )}
+            {line.type === 'input' ? renderHighlightedInput(line.text) : renderHighlightedOutput(line, idx)}
           </motion.div>
         ))}
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <span className="text-emerald-400 font-bold">&gt;</span>
-          <span className="text-white font-bold">{currentInput}</span>
-          <span className="w-2 h-4 bg-gray-400 animate-pulse inline-block" />
+          {currentInput && renderHighlightedInput(currentInput).props.children[1]}
+          <span className="w-1.5 h-3.5 bg-brand-cyan animate-pulse inline-block" />
         </div>
       </div>
     </GlassCard>
@@ -104,6 +152,33 @@ const TerminalMockup = () => {
 };
 
 const Hero = () => {
+  const containerRef = useRef(null);
+  const cardRef = useRef(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    setMousePosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  };
+
+  const handleCardMouseMove = (e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
+    const y = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
+    setTilt({ x: x * 10, y: -y * 10 }); // Tilt up to 10 degrees
+  };
+
+  const handleCardMouseLeave = () => {
+    setTilt({ x: 0, y: 0 });
+  };
+
   const handleScrollClick = () => {
     window.scrollTo({
       top: window.innerHeight - 80,
@@ -112,63 +187,80 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative pt-16 pb-12 sm:pt-24 sm:pb-16 lg:pt-40 lg:pb-35 overflow-hidden">
+    <section 
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="relative pt-16 pb-12 sm:pt-24 sm:pb-16 lg:pt-40 lg:pb-35 overflow-hidden"
+    >
       {/* Dotted Grid Background */}
       <div className="absolute inset-0 bg-dot-grid mask-radial-fade -z-20 opacity-80 pointer-events-none" />
+
+      {/* Cinematic Mouse Spotlight Glow */}
+      <div 
+        className="absolute inset-0 pointer-events-none -z-20 transition-opacity duration-700"
+        style={{
+          opacity: isHovered ? 1 : 0,
+          background: `
+            radial-gradient(650px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(139, 92, 246, 0.09), transparent 45%),
+            radial-gradient(350px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(6, 182, 212, 0.05), transparent 45%)
+          `
+        }}
+      />
+
+      {/* Twinkling Star/Cross Particles */}
+      {[
+        { top: '15%', left: '12%', delay: 0 },
+        { top: '30%', left: '78%', delay: 1.5 },
+        { top: '80%', left: '8%', delay: 3 },
+        { top: '70%', left: '88%', delay: 4.5 },
+      ].map((pos, idx) => (
+        <motion.div
+          key={idx}
+          animate={{
+            opacity: [0.15, 0.7, 0.15],
+            scale: [0.75, 1.25, 0.75],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            delay: pos.delay,
+            ease: "easeInOut"
+          }}
+          className="absolute -z-10 text-brand-cyan/30 pointer-events-none hidden sm:block font-sans text-xs select-none"
+          style={{ top: pos.top, left: pos.left }}
+        >
+          ✦
+        </motion.div>
+      ))}
 
       {/* Animated Glow Blobs */}
       <motion.div
         animate={{
-          x: [0, 40, -20, 0],
-          y: [0, -50, 30, 0],
-          scale: [1, 1.15, 0.9, 1],
+          x: [0, 30, -15, 0],
+          y: [0, -40, 25, 0],
+          scale: [1, 1.1, 0.95, 1],
         }}
         transition={{
           duration: 15,
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-purple/20 dark:bg-brand-purple/15 rounded-full blur-[120px] -z-10 pointer-events-none hero-blob-purple"
+        className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-purple/20 dark:bg-brand-purple/12 rounded-full blur-[125px] -z-10 pointer-events-none hero-blob-purple"
       />
       <motion.div
         animate={{
-          x: [0, -30, 45, 0],
-          y: [0, 40, -40, 0],
-          scale: [1, 0.9, 1.1, 1],
+          x: [0, -25, 35, 0],
+          y: [0, 30, -30, 0],
+          scale: [1, 0.95, 1.05, 1],
         }}
         transition={{
           duration: 18,
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="absolute bottom-1/4 right-1/4 translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-brand-cyan/20 dark:bg-brand-cyan/15 rounded-full blur-[100px] -z-10 pointer-events-none hero-blob-cyan"
-      />
-
-      {/* Floating Spatial Accent Particles */}
-      <motion.div
-        animate={{
-          y: [0, -15, 0],
-          rotate: [0, 360],
-        }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-        className="absolute top-[20%] right-[10%] w-16 h-16 rounded-full border border-brand-purple/20 dark:border-brand-purple/10 bg-gradient-to-tr from-brand-purple/5 to-transparent -z-10 blur-[2px] pointer-events-none hidden sm:block"
-      />
-
-      <motion.div
-        animate={{
-          y: [0, -25, 0],
-          scale: [1, 1.15, 1],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        className="absolute top-[60%] left-[45%] w-12 h-12 rounded-full border border-brand-blue/20 dark:border-brand-blue/10 bg-gradient-to-br from-brand-blue/5 to-transparent -z-10 blur-[3px] pointer-events-none hidden lg:block"
+        className="absolute bottom-1/4 right-1/4 translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-brand-cyan/18 dark:bg-brand-cyan/12 rounded-full blur-[105px] -z-10 pointer-events-none hero-blob-cyan"
       />
 
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-stretch">
@@ -219,13 +311,13 @@ const Hero = () => {
               className="flex flex-wrap items-center gap-3 sm:gap-4 pt-1 sm:pt-2"
             >
               <Link to="/feed">
-                <Button variant="primary" className="py-3 px-6 text-xs font-bold uppercase tracking-wider flex items-center gap-2 group shadow-[0_0_20px_rgba(139,92,246,0.3)]">
+                <Button variant="primary" className="py-3 px-6 text-xs font-bold uppercase tracking-wider flex items-center gap-2 group bg-gradient-to-r from-brand-purple via-brand-blue to-brand-cyan border-0 shadow-[0_0_20px_rgba(139,92,246,0.35)] hover:shadow-[0_0_35px_rgba(6,182,212,0.55)] transition-all duration-300">
                   Start Reading
                   <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
                 </Button>
               </Link>
               <Link to="/explore">
-                <Button variant="outline" className="py-3 px-6 text-xs font-bold uppercase tracking-wider">
+                <Button variant="outline" className="py-3 px-6 text-xs font-bold uppercase tracking-wider hover:border-brand-cyan/60 hover:text-brand-cyan transition-colors duration-300">
                   Explore Topics
                 </Button>
               </Link>
@@ -233,25 +325,23 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Right Column: Premium Glass Status Board */}
-        <div className="lg:col-span-5 w-full flex flex-col">
+        {/* Right Column: Premium 3D Glass Status Board */}
+        <div 
+          ref={cardRef}
+          onMouseMove={handleCardMouseMove}
+          onMouseLeave={handleCardMouseLeave}
+          className="lg:col-span-5 w-full flex flex-col transition-transform duration-200 ease-out"
+          style={{
+            transform: `perspective(1000px) rotateX(${tilt.y}deg) rotateY(${tilt.x}deg)`
+          }}
+        >
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex-grow flex flex-col"
           >
-            <motion.div
-              animate={{ y: [0, -6, 0] }}
-              transition={{
-                duration: 6,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="flex-grow flex flex-col"
-            >
-              <TerminalMockup />
-            </motion.div>
+            <TerminalMockup />
           </motion.div>
         </div>
       </div>
