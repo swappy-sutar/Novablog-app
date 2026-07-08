@@ -8,7 +8,7 @@ const LEVELS_DATA = [
     title: 'SEEDLING',
     id: 'seedling',
     icon: Sprout,
-    accentColor: '#06b6d4', // Cyan glow
+    accentColor: '#06b6d4', // Cyan
     summary: 'Unlocked by reading your first technical articles.',
     description: 'Read 1-10 technical articles across any category and follow at least 1 author profile on the platform.',
     tooltipAlign: 'left-0 translate-x-0',
@@ -19,7 +19,7 @@ const LEVELS_DATA = [
     title: 'CONTRIBUTOR',
     id: 'contributor',
     icon: FileText,
-    accentColor: '#10b981', // Green glow
+    accentColor: '#10b981', // Green
     summary: 'Unlocked by engaging with the community.',
     description: 'Read 10-50 technical articles and initiate 1 active technical discussion thread.',
     tooltipAlign: 'left-1/2 -translate-x-1/2',
@@ -30,7 +30,7 @@ const LEVELS_DATA = [
     title: 'INFLUENCER',
     id: 'influencer',
     icon: Flame,
-    accentColor: '#f97316', // Orange glow
+    accentColor: '#f97316', // Orange
     summary: 'Unlocked by sharing and curation.',
     description: 'Read 50-100 technical articles and share 3 blog reference links.',
     tooltipAlign: 'left-1/2 -translate-x-1/2',
@@ -41,7 +41,7 @@ const LEVELS_DATA = [
     title: 'RISING WRITER',
     id: 'rising_writer',
     icon: Pencil,
-    accentColor: '#a855f7', // Purple glow
+    accentColor: '#a855f7', // Purple
     summary: 'Unlocked by publishing high-quality drafts.',
     description: 'Publish 3+ technical drafts or articles and earn 100-500 views.',
     tooltipAlign: 'left-1/2 -translate-x-1/2',
@@ -52,7 +52,7 @@ const LEVELS_DATA = [
     title: 'LEGEND',
     id: 'legend',
     icon: Crown,
-    accentColor: '#3b82f6', // Blue glow
+    accentColor: '#3b82f6', // Blue
     summary: 'Unlocked by maintaining an active streak.',
     description: 'Read 500+ technical articles and keep a 90% weekly reading streak.',
     tooltipAlign: 'left-1/2 -translate-x-1/2',
@@ -63,7 +63,7 @@ const LEVELS_DATA = [
     title: 'ESTABLISHED',
     id: 'established',
     icon: Award,
-    accentColor: '#eab308', // Gold glow
+    accentColor: '#eab308', // Gold
     summary: 'The ultimate editorial achievement.',
     description: 'Accumulate 10+ published articles on Nova and secure peer recommendations.',
     tooltipAlign: 'right-0 left-auto translate-x-0',
@@ -73,6 +73,14 @@ const LEVELS_DATA = [
 
 const TechProgressionMap = () => {
   const [hoveredLevel, setHoveredLevel] = useState(null);
+  const [expandedLevel, setExpandedLevel] = useState(null);
+
+  const handleCardClick = (id) => {
+    // Toggle expanded state on mobile viewports (< 640px)
+    if (window.innerWidth < 640) {
+      setExpandedLevel(expandedLevel === id ? null : id);
+    }
+  };
 
   return (
     <section className="max-w-7xl mx-auto px-6 mb-24 overflow-visible relative">
@@ -81,13 +89,16 @@ const TechProgressionMap = () => {
         .cinematic-chevron-border {
           clip-path: polygon(0 24px, 50% 0, 100% 24px, 100% 100%, 0 100%);
           transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+          will-change: transform;
         }
         .cinematic-chevron-inner {
           clip-path: polygon(0 23px, 50% 0, 100% 23px, 100% 100%, 0 100%);
         }
-        .cinematic-group:hover .cinematic-chevron-border {
-          transform: translateY(-8px);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        @media (min-width: 640px) {
+          .cinematic-group:hover .cinematic-chevron-border {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+          }
         }
       `}} />
 
@@ -106,23 +117,25 @@ const TechProgressionMap = () => {
         {LEVELS_DATA.map((lvl) => {
           const IconComponent = lvl.icon;
           const isHovered = hoveredLevel === lvl.id;
+          const isExpanded = expandedLevel === lvl.id;
           return (
             <div 
               key={lvl.level} 
-              className="relative flex flex-col cinematic-group"
+              className="relative flex flex-col cinematic-group cursor-pointer sm:cursor-default"
               onMouseEnter={() => setHoveredLevel(lvl.id)}
               onMouseLeave={() => setHoveredLevel(null)}
+              onClick={() => handleCardClick(lvl.id)}
             >
               
               {/* Backlight Ambient Glow behind the card */}
               <div 
-                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl pointer-events-none z-0"
+                className="absolute inset-0 rounded-2xl opacity-0 sm:group-hover:opacity-100 transition-opacity duration-500 blur-2xl pointer-events-none z-0"
                 style={{
                   backgroundImage: `radial-gradient(circle, ${lvl.accentColor}20 0%, transparent 70%)`
                 }}
               />
 
-              {/* CINEMATIC TOOLTIP POPOVER */}
+              {/* CINEMATIC TOOLTIP POPOVER (Hidden on Mobile, Displayed on Desktop hover) */}
               <AnimatePresence>
                 {isHovered && (
                   <motion.div
@@ -130,7 +143,7 @@ const TechProgressionMap = () => {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
                     transition={{ duration: 0.2 }}
-                    className={`absolute bottom-full mb-5 w-64 p-4 rounded-2xl bg-[#070814] border shadow-2xl backdrop-blur-xl pointer-events-none z-50 text-left font-sans ${lvl.tooltipAlign}`}
+                    className={`hidden sm:block absolute bottom-full mb-5 w-64 p-4 rounded-2xl bg-[#070814] border shadow-2xl backdrop-blur-xl pointer-events-none z-50 text-left font-sans ${lvl.tooltipAlign}`}
                     style={{ 
                       borderColor: `${lvl.accentColor}50`, 
                       boxShadow: `0 0 25px ${lvl.accentColor}20, 0 10px 30px rgba(0,0,0,0.6)`
@@ -165,13 +178,9 @@ const TechProgressionMap = () => {
               <div 
                 className="flex-grow p-[1px] rounded-b-2xl bg-white/10 cinematic-chevron-border z-10 shadow-2xl"
                 style={{
-                  background: `linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(255,255,255,0.02))`
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = `linear-gradient(to bottom, ${lvl.accentColor}, ${lvl.accentColor}10)`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = `linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(255,255,255,0.02))`;
+                  background: (isHovered || isExpanded)
+                    ? `linear-gradient(to bottom, ${lvl.accentColor}, ${lvl.accentColor}10)`
+                    : `linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(255,255,255,0.02))`
                 }}
               >
                 
@@ -180,52 +189,80 @@ const TechProgressionMap = () => {
                   className="w-full h-full pt-12 pb-6 px-4.5 flex flex-col items-center text-center bg-[#070814]/90 backdrop-blur-2xl rounded-b-2xl cinematic-chevron-inner"
                 >
                   
-                  {/* Glowing Icon Shield Wrapper */}
+                  {/* Glowing Icon Shield Wrapper (Colored border & background on rest) */}
                   <div 
-                    className="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white mb-5.5 transition-all duration-500 group-hover:scale-105 group-hover:-rotate-3"
+                    className="p-3.5 rounded-2xl flex items-center justify-center mb-5.5 transition-all duration-500 group-hover:scale-105 group-hover:-rotate-3 border"
                     style={{
-                      borderColor: 'rgba(255,255,255,0.05)',
-                      boxShadow: `inset 0 0 10px rgba(255,255,255,0.02)`
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = `${lvl.accentColor}40`;
-                      e.currentTarget.style.boxShadow = `0 0 20px ${lvl.accentColor}25, inset 0 0 10px ${lvl.accentColor}15`;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
-                      e.currentTarget.style.boxShadow = `inset 0 0 10px rgba(255,255,255,0.02)`;
+                      borderColor: (isHovered || isExpanded) ? `${lvl.accentColor}60` : `${lvl.accentColor}25`,
+                      backgroundColor: (isHovered || isExpanded) ? `${lvl.accentColor}15` : `${lvl.accentColor}06`,
+                      boxShadow: (isHovered || isExpanded)
+                        ? `0 0 20px ${lvl.accentColor}25, inset 0 0 10px ${lvl.accentColor}15` 
+                        : `inset 0 0 8px ${lvl.accentColor}05`
                     }}
                   >
-                    <IconComponent className="w-5.5 h-5.5 text-white/90" />
+                    <IconComponent 
+                      className="w-5.5 h-5.5 transition-colors duration-300" 
+                      style={{ color: lvl.accentColor }} 
+                    />
                   </div>
 
                   {/* Level Name */}
                   <h3 
-                    className="text-xs font-black tracking-widest mb-6 transition-colors duration-300"
+                    className="text-xs font-black tracking-widest mb-4 transition-colors duration-300"
                     style={{ color: '#ffffff' }}
                   >
                     {lvl.title}
                   </h3>
 
                   {/* Simple Card Subtitle Description */}
-                  <p className="text-[10px] text-gray-400 leading-relaxed font-sans font-medium px-1 flex-grow mb-8">
+                  <p className="text-[10px] text-gray-400 leading-relaxed font-sans font-medium px-1 flex-grow mb-6">
                     {lvl.summary}
                   </p>
 
-                  {/* Step Level Identifier Badge */}
+                  {/* MOBILE EXPANDABLE DETAILS: Slide open inline details when tapped on touch screen */}
+                  <div className="w-full sm:hidden overflow-hidden block">
+                    <AnimatePresence initial={false}>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0, marginBottom: 0 }}
+                          animate={{ height: 'auto', opacity: 1, marginBottom: 18 }}
+                          exit={{ height: 0, opacity: 0, marginBottom: 0 }}
+                          transition={{ duration: 0.3, ease: 'easeInOut' }}
+                          className="text-left pt-3 border-t border-white/5 w-full"
+                        >
+                          <span className="text-[7.5px] font-bold text-gray-500 uppercase tracking-wider block mb-1">How to Unlock</span>
+                          <p className="text-[10px] text-gray-300 leading-relaxed font-sans font-medium">
+                            {lvl.description}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Step Level Identifier Badge (Vibrant theme-colored pills) */}
                   <div 
-                    className="mt-auto py-1.5 px-4 rounded-full border border-white/5 bg-white/5 transition-all duration-300"
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = `${lvl.accentColor}40`;
-                      e.currentTarget.style.backgroundColor = `${lvl.accentColor}10`;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
-                      e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                    className="mt-auto py-1.5 px-4 rounded-full border transition-all duration-300 flex items-center gap-1.5"
+                    style={{
+                      borderColor: (isHovered || isExpanded) ? `${lvl.accentColor}70` : `${lvl.accentColor}30`,
+                      backgroundColor: (isHovered || isExpanded) ? `${lvl.accentColor}20` : `${lvl.accentColor}10`,
                     }}
                   >
-                    <span className="text-[9px] font-black text-white/90 tracking-widest font-mono uppercase">
+                    <span 
+                      className="text-[9px] font-black tracking-widest font-mono uppercase transition-colors duration-300"
+                      style={{ color: (isHovered || isExpanded) ? '#ffffff' : lvl.accentColor }}
+                    >
                       {lvl.level}
+                    </span>
+                    
+                    {/* Expand arrow indicator for mobile users */}
+                    <span 
+                      className="text-[7px] opacity-60 sm:hidden block transition-transform duration-300"
+                      style={{ 
+                        color: lvl.accentColor,
+                        transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)'
+                      }}
+                    >
+                      ▼
                     </span>
                   </div>
 

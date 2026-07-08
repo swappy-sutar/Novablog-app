@@ -128,6 +128,7 @@ const Hero = () => {
           repeat: Infinity,
           ease: "easeInOut",
         }}
+        style={{ willChange: 'transform' }}
         className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-purple/20 dark:bg-brand-purple/15 rounded-full blur-[120px] -z-10 pointer-events-none hero-blob-purple"
       />
       <motion.div
@@ -141,6 +142,7 @@ const Hero = () => {
           repeat: Infinity,
           ease: "easeInOut",
         }}
+        style={{ willChange: 'transform' }}
         className="absolute bottom-1/4 right-1/4 translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-brand-cyan/20 dark:bg-brand-cyan/15 rounded-full blur-[100px] -z-10 pointer-events-none hero-blob-cyan"
       />
 
@@ -155,6 +157,7 @@ const Hero = () => {
           repeat: Infinity,
           ease: "linear",
         }}
+        style={{ willChange: 'transform' }}
         className="absolute top-[20%] right-[10%] w-16 h-16 rounded-full border border-brand-purple/20 dark:border-brand-purple/10 bg-gradient-to-tr from-brand-purple/5 to-transparent -z-10 blur-[2px] pointer-events-none hidden sm:block"
       />
 
@@ -168,6 +171,7 @@ const Hero = () => {
           repeat: Infinity,
           ease: "easeInOut",
         }}
+        style={{ willChange: 'transform' }}
         className="absolute top-[60%] left-[45%] w-12 h-12 rounded-full border border-brand-blue/20 dark:border-brand-blue/10 bg-gradient-to-br from-brand-blue/5 to-transparent -z-10 blur-[3px] pointer-events-none hidden lg:block"
       />
 
