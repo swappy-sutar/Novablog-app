@@ -179,6 +179,14 @@ const Navbar = () => {
     if (socketInstance) {
       const handleIncomingNotification = (newNotification) => {
         setNotifications((prev) => [newNotification, ...prev]);
+
+        // Dispatch custom event for page components to react in real-time
+        try {
+          window.dispatchEvent(new CustomEvent("new-notification", { detail: newNotification }));
+        } catch (e) {
+          console.warn("Failed to dispatch custom new-notification event:", e);
+        }
+
         toast.success(newNotification.message, {
           icon: "🔔",
           duration: 4000,

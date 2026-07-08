@@ -38,6 +38,26 @@ const BlogDetailsPage = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Listen for real-time notifications to update counters dynamically
+  useEffect(() => {
+    const handleNewNotification = (event) => {
+      const notification = event.detail;
+      if (
+        notification &&
+        notification.type === 'LIKE' &&
+        blog?.title &&
+        notification.message?.includes(blog.title)
+      ) {
+        setLikeCount((prev) => prev + 1);
+      }
+    };
+
+    window.addEventListener("new-notification", handleNewNotification);
+    return () => {
+      window.removeEventListener("new-notification", handleNewNotification);
+    };
+  }, [blog]);
+
   useDocumentTitle(blog ? blog.title : "Loading Post");
 
   const loadBlogData = useCallback(async () => {
