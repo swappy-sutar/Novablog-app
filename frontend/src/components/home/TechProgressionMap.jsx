@@ -18,20 +18,6 @@ const TIER_DETAILS = {
     ],
     placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
   },
-  influencer: {
-    title: 'INFLUENCER',
-    color: '#f97316',
-    requirements: [
-      "Read 50-100 technical articles",
-      "Share at least 3 custom blog reference links"
-    ],
-    privileges: [
-      "Receive real-time push follower notifications",
-      "Customize profile header backgrounds",
-      "Access early beta layout layouts & features"
-    ],
-    placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
-  },
   contributor: {
     title: 'CONTRIBUTOR',
     color: '#10b981',
@@ -43,6 +29,34 @@ const TIER_DETAILS = {
       "Edit comment content within 1 hour",
       "Submit article drafts for review",
       "Exclusive Contributor profile badge"
+    ],
+    placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
+  },
+  influencer: {
+    title: 'INFLUENCER',
+    color: '#f97316',
+    requirements: [
+      "Read 50-100 technical articles",
+      "Share at least 3 custom blog reference links"
+    ],
+    privileges: [
+      "Receive real-time push follower notifications",
+      "Customize profile header backgrounds",
+      "Access early beta layouts & features"
+    ],
+    placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
+  },
+  rising_writer: {
+    title: 'RISING WRITER',
+    color: '#a855f7',
+    requirements: [
+      "Publish 3+ technical drafts or articles",
+      "Earn 100-500 total views from readers"
+    ],
+    privileges: [
+      "Creator Hub statistics dashboard access",
+      "Configure custom footer signature blocks",
+      "Receive reader tips and support donations"
     ],
     placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
   },
@@ -74,19 +88,19 @@ const TIER_DETAILS = {
     ],
     placement: "bottom-full right-0 mb-5 translate-x-[15%]"
   },
-  rising_writer: {
-    title: 'RISING WRITER',
+  master: {
+    title: 'ULTIMATE MASTER',
     color: '#06b6d4',
     requirements: [
-      "Publish 3+ technical drafts or articles",
-      "Earn 100-500 total views from readers"
+      "Unlock all 6 lower path progression badges",
+      "Maintain active contribution status for 6 months"
     ],
     privileges: [
-      "Creator Hub statistics dashboard access",
-      "Configure custom footer signature blocks",
-      "Receive reader tips and support donations"
+      "Nova Platform Master public avatar seal",
+      "Founder Direct Slack coordination channel access",
+      "Host custom blog events on platform home page"
     ],
-    placement: "bottom-full left-1/2 -translate-x-1/2 mb-8"
+    placement: "bottom-full right-0 mb-5 translate-x-[10%]"
   }
 };
 
@@ -94,79 +108,172 @@ const NODES = [
   {
     id: 'seedling',
     title: 'SEEDLING',
-    subtitle: '1-10 READS',
-    desc: 'Begin your technical exploration.',
+    subtitle: 'LVL 1 - READS',
     icon: Sprout,
     color: '#06b6d4', // cyan
-    glowClass: 'shadow-[0_0_20px_rgba(6,182,212,0.3)] border-brand-cyan/40',
-    hoverGlowClass: 'group-hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] group-hover:border-brand-cyan/80',
+    wingStyle: 'silver',
     top: '25%',
-    left: '22%',
-    x: 220,
-    y: 100,
-    flowClass: 'text-brand-cyan'
+    left: '22%'
   },
   {
-    id: 'influencer',
-    title: 'INFLUENCER',
-    subtitle: '50-100 READS',
-    desc: 'Command attention with your views.',
-    icon: Flame,
-    color: '#f97316', // orange
-    glowClass: 'shadow-[0_0_20px_rgba(249,115,22,0.3)] border-orange-500/40',
-    hoverGlowClass: 'group-hover:shadow-[0_0_30px_rgba(249,115,22,0.6)] group-hover:border-orange-500/80',
-    top: '75%',
-    left: '28%',
-    x: 280,
-    y: 300,
-    flowClass: 'text-orange-500'
+    id: 'rising_writer',
+    title: 'RISING WRITER',
+    subtitle: 'LVL 10 - WRITER',
+    icon: Pencil,
+    color: '#a855f7', // purple
+    wingStyle: 'cyan',
+    top: '50%',
+    left: '36%'
   },
   {
     id: 'contributor',
     title: 'CONTRIBUTOR',
-    subtitle: '10-50 READS',
-    desc: 'Share verified insights.',
+    subtitle: 'LVL 20 - DISCUSS',
     icon: FileText,
     color: '#10b981', // green
-    glowClass: 'shadow-[0_0_20px_rgba(16,185,129,0.3)] border-emerald-500/40',
-    hoverGlowClass: 'group-hover:shadow-[0_0_30px_rgba(16,185,129,0.6)] group-hover:border-emerald-500/80',
+    wingStyle: 'cyan',
     top: '25%',
-    left: '72%',
-    x: 720,
-    y: 100,
-    flowClass: 'text-emerald-500'
+    left: '50%'
+  },
+  {
+    id: 'influencer',
+    title: 'INFLUENCER',
+    subtitle: 'LVL 50 - CURATE',
+    icon: Flame,
+    color: '#f97316', // orange
+    wingStyle: 'pink',
+    top: '75%',
+    left: '50%'
+  },
+  {
+    id: 'established',
+    title: 'ESTABLISHED',
+    subtitle: 'LVL 80 - CREATOR',
+    icon: Award,
+    color: '#94a3b8', // slate
+    wingStyle: 'pink',
+    top: '50%',
+    left: '64%'
   },
   {
     id: 'legend',
     title: 'LEGEND',
-    subtitle: '500+ READS',
-    desc: 'Master the developer narrative.',
+    subtitle: 'LVL 100 - ELITE',
     icon: Crown,
     color: '#eab308', // gold
-    glowClass: 'shadow-[0_0_20px_rgba(234,179,8,0.3)] border-yellow-500/40',
-    hoverGlowClass: 'group-hover:shadow-[0_0_30px_rgba(234,179,8,0.6)] group-hover:border-yellow-500/80',
-    top: '75%',
-    left: '78%',
-    x: 780,
-    y: 300,
-    flowClass: 'text-yellow-500'
-  },
-  {
-    id: 'established',
-    title: 'ESTABLISHED VOICE',
-    subtitle: 'VERIFIED SYSTEM BADGE',
-    desc: 'Ultimate platform authority badge.',
-    icon: Award,
-    color: '#94a3b8', // slate/silver
-    glowClass: 'shadow-[0_0_20px_rgba(148,163,184,0.3)] border-slate-500/40',
-    hoverGlowClass: 'group-hover:shadow-[0_0_30px_rgba(148,163,184,0.6)] group-hover:border-slate-500/80',
-    top: '50%',
-    left: '92%',
-    x: 920,
-    y: 200,
-    flowClass: 'text-slate-400'
+    wingStyle: 'gold',
+    top: '25%',
+    left: '78%'
   }
 ];
+
+// Helper Component to Draw Hexagonal Badges with Wings based on Level/Color
+const ProgressionHexBadge = ({ color, wingStyle, isHovered, IconComponent }) => {
+  return (
+    <div className="relative w-20 h-[74px] flex items-center justify-center">
+      <svg className="absolute w-full h-full overflow-visible" viewBox="0 0 80 70" fill="none">
+        <defs>
+          <filter id="badge-glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3.5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          {/* Gradients for wings */}
+          <linearGradient id="silver-wing" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#e2e8f0" />
+            <stop offset="100%" stopColor="#475569" />
+          </linearGradient>
+          <linearGradient id="cyan-wing" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#38bdf8" />
+            <stop offset="100%" stopColor="#0369a1" />
+          </linearGradient>
+          <linearGradient id="pink-wing" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#f472b6" />
+            <stop offset="100%" stopColor="#db2777" />
+          </linearGradient>
+          <linearGradient id="gold-wing" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fbbf24" />
+            <stop offset="100%" stopColor="#b45309" />
+          </linearGradient>
+        </defs>
+
+        {/* WING STRUCTURES */}
+        {wingStyle === 'silver' && (
+          <g>
+            <path d="M 20 22 L 4 18 L 4 48 L 20 44 Z" fill="url(#silver-wing)" opacity="0.85" />
+            <path d="M 60 22 L 76 18 L 76 48 L 60 44 Z" fill="url(#silver-wing)" opacity="0.85" />
+          </g>
+        )}
+
+        {wingStyle === 'cyan' && (
+          <g>
+            <path d="M 20 20 L 2 14 L 2 48 L 20 42 Z" fill="url(#cyan-wing)" opacity="0.9" />
+            <path d="M 60 20 L 78 14 L 78 48 L 60 42 Z" fill="url(#cyan-wing)" opacity="0.9" />
+            <path d="M 20 28 L -4 24 L -4 42 L 20 36 Z" fill="url(#cyan-wing)" opacity="0.6" />
+            <path d="M 60 28 L 84 24 L 84 42 L 60 36 Z" fill="url(#cyan-wing)" opacity="0.6" />
+          </g>
+        )}
+
+        {wingStyle === 'pink' && (
+          <g>
+            <path d="M 20 18 L 0 10 L 0 50 L 20 40 Z" fill="url(#pink-wing)" />
+            <path d="M 60 18 L 80 10 L 80 50 L 60 40 Z" fill="url(#pink-wing)" />
+            <path d="M 20 26 L -6 20 L -6 44 L 20 36 Z" fill="url(#pink-wing)" opacity="0.75" />
+            <path d="M 60 26 L 86 20 L 86 44 L 60 36 Z" fill="url(#pink-wing)" opacity="0.75" />
+            <path d="M 20 34 L -10 30 L -10 38 L 20 32 Z" fill="url(#pink-wing)" opacity="0.45" />
+            <path d="M 60 34 L 90 30 L 90 38 L 60 32 Z" fill="url(#pink-wing)" opacity="0.45" />
+          </g>
+        )}
+
+        {wingStyle === 'gold' && (
+          <g>
+            <path d="M 20 14 L -4 5 L -4 52 L 20 38 Z" fill="url(#gold-wing)" />
+            <path d="M 60 14 L 84 5 L 84 52 L 60 38 Z" fill="url(#gold-wing)" />
+            <path d="M 20 22 L -10 16 L -10 44 L 20 34 Z" fill="url(#gold-wing)" opacity="0.8" />
+            <path d="M 60 22 L 90 16 L 90 44 L 60 34 Z" fill="url(#gold-wing)" opacity="0.8" />
+            <path d="M 20 30 L -14 26 L -14 38 L 20 30 Z" fill="url(#gold-wing)" opacity="0.5" />
+            <path d="M 60 30 L 94 26 L 94 38 L 60 30 Z" fill="url(#gold-wing)" opacity="0.5" />
+          </g>
+        )}
+
+        {/* HEXAGON DOCK BASE */}
+        <polygon 
+          points="40,11 62,23 62,47 40,59 18,47 18,23" 
+          fill="#0c0d21" 
+          stroke={color} 
+          strokeWidth="3.5"
+          style={{ filter: isHovered ? 'url(#badge-glow)' : 'none' }}
+        />
+
+        {/* INNER SOLID HIGHLIGHT */}
+        <polygon 
+          points="40,16 57,26 57,44 40,54 23,44 23,26" 
+          fill={`${color}12`} 
+          stroke={`${color}40`}
+          strokeWidth="1.5"
+        />
+
+        {/* INNER CENTER MICRO GEM */}
+        <polygon 
+          points="40,28 47,32 47,38 40,42 33,38 33,32" 
+          fill={color} 
+          opacity="0.85"
+        />
+      </svg>
+
+      {/* Floating Center Icon */}
+      <div 
+        className="absolute z-10 w-8 h-8 rounded-full flex items-center justify-center text-white"
+        style={{ textShadow: `0 0 10px ${color}` }}
+      >
+        <IconComponent className="w-4 h-4 text-white" />
+      </div>
+    </div>
+  );
+};
 
 const TechProgressionMap = () => {
   const [hoveredNode, setHoveredNode] = useState(null);
@@ -174,31 +281,37 @@ const TechProgressionMap = () => {
   return (
     <section className="max-w-7xl mx-auto px-6 mb-24 overflow-hidden relative">
       {/* Self-contained CSS styles for animations */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        @keyframes circuit-flow {
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes flow-active {
           from { stroke-dashoffset: 40; }
           to { stroke-dashoffset: 0; }
         }
-        .circuit-active-path {
-          stroke-dasharray: 8 12;
-          animation: circuit-flow 1.2s linear infinite;
+        .circuit-branch-path {
+          stroke-dasharray: 6 10;
+          animation: flow-active 2s linear infinite;
         }
-        @keyframes equalizer-pulse {
-          0%, 100% { transform: scaleY(0.3); }
-          50% { transform: scaleY(1.3); }
+        @keyframes commit-path-glide {
+          0% { offset-distance: 0%; }
+          100% { offset-distance: 100%; }
         }
-        .audio-eq-bar {
-          transform-origin: bottom;
-          animation: equalizer-pulse 1.2s ease-in-out infinite;
+        .gliding-dot-top {
+          offset-path: path("M 80 200 C 140 200, 160 100, 220 100 L 780 100 C 840 100, 860 200, 920 200");
+          animation: commit-path-glide 10s linear infinite;
         }
-        @keyframes pulse-ring {
-          0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.2; }
-          50% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.6; }
-          100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.2; }
+        .gliding-dot-mid {
+          offset-path: path("M 80 200 L 920 200");
+          animation: commit-path-glide 8s linear infinite;
         }
-        .pulse-globe-ring {
-          animation: pulse-ring 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        .gliding-dot-bot {
+          offset-path: path("M 80 200 C 140 200, 160 300, 220 300 L 640 300 C 740 300, 840 200, 920 200");
+          animation: commit-path-glide 12s linear infinite;
+        }
+        @keyframes target-pulse {
+          0%, 100% { transform: scale(0.9); opacity: 0.35; }
+          50% { transform: scale(1.15); opacity: 0.85; }
+        }
+        .animate-target-pulse {
+          animation: target-pulse 2.5s ease-in-out infinite;
         }
       `}} />
 
@@ -212,222 +325,78 @@ const TechProgressionMap = () => {
         </p>
       </div>
 
-      {/* DESKTOP VIEWPORT: INTERACTIVE PROGRESSION MAP */}
-      <div className="hidden lg:block relative w-full max-w-5xl mx-auto aspect-[2.5/1]">
-
+      {/* DESKTOP VIEWPORT: GIT COMMIT GRAPH LAYOUT */}
+      <div className="hidden lg:block relative w-full max-w-5xl mx-auto aspect-[2.4/1] select-none">
+        
         {/* Background Network Circuit Lines SVG Layer */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 1000 400" fill="none">
           <defs>
-            <filter id="neon-glow-filter" x="-20%" y="-20%" width="140%" height="140%">
+            <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
               <feGaussianBlur stdDeviation="3" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
-
-            {/* Gradients for traces */}
-            <linearGradient id="cyan-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.3" />
+            
+            {/* Cyber Git Commit Branch Gradients */}
+            <linearGradient id="cyan-blue-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#8b5cf6" />
+              <stop offset="30%" stopColor="#06b6d4" />
+              <stop offset="70%" stopColor="#0284c7" />
+              <stop offset="100%" stopColor="#06b6d4" />
             </linearGradient>
-            <linearGradient id="orange-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#f97316" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.3" />
+            <linearGradient id="purple-pink-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#8b5cf6" />
+              <stop offset="50%" stopColor="#d946ef" />
+              <stop offset="100%" stopColor="#ec4899" />
             </linearGradient>
-            <linearGradient id="emerald-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#10b981" stopOpacity="0.8" />
-            </linearGradient>
-            <linearGradient id="yellow-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#eab308" stopOpacity="0.8" />
+            <linearGradient id="orange-amber-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#8b5cf6" />
+              <stop offset="50%" stopColor="#f97316" />
+              <stop offset="100%" stopColor="#eab308" />
             </linearGradient>
           </defs>
 
-          {/* 1. SEEDLING TRACE (Center to Top Left) */}
-          <path
-            d="M 500 200 L 350 200 L 260 100 L 220 100"
-            stroke="#1e1e38"
-            strokeWidth="2"
+          {/* Underlay Dark Base Tracks */}
+          <path d="M 80 200 C 140 200, 160 100, 220 100 L 780 100 C 840 100, 860 200, 920 200" stroke="#121324" strokeWidth="3" />
+          <path d="M 80 200 L 920 200" stroke="#121324" strokeWidth="3" />
+          <path d="M 80 200 C 140 200, 160 300, 220 300 L 640 300 C 740 300, 840 200, 920 200" stroke="#121324" strokeWidth="3" />
+
+          {/* Animated Glowing Traces */}
+          <path 
+            d="M 80 200 C 140 200, 160 100, 220 100 L 780 100 C 840 100, 860 200, 920 200" 
+            stroke="url(#cyan-blue-grad)" 
+            strokeWidth="3.5" 
+            className="circuit-branch-path"
+            style={{ filter: 'url(#neon-glow)', animationDuration: '2.5s' }}
           />
-          <path
-            d="M 500 200 L 350 200 L 260 100 L 220 100"
-            stroke="url(#cyan-gradient)"
-            strokeWidth={hoveredNode === 'seedling' ? "3" : "2"}
-            className="circuit-active-path"
-            style={{
-              filter: hoveredNode === 'seedling' ? 'url(#neon-glow-filter)' : 'none',
-              animationDuration: hoveredNode === 'seedling' ? '0.6s' : '1.5s'
-            }}
+          <path 
+            d="M 80 200 L 920 200" 
+            stroke="url(#purple-pink-grad)" 
+            strokeWidth="3.5" 
+            className="circuit-branch-path"
+            style={{ filter: 'url(#neon-glow)', animationDuration: '2s' }}
+          />
+          <path 
+            d="M 80 200 C 140 200, 160 300, 220 300 L 640 300 C 740 300, 840 200, 920 200" 
+            stroke="url(#orange-amber-grad)" 
+            strokeWidth="3.5" 
+            className="circuit-branch-path"
+            style={{ filter: 'url(#neon-glow)', animationDuration: '3s' }}
           />
 
-          {/* 2. INFLUENCER TRACE (Center to Bottom Left) */}
-          <path
-            d="M 500 200 L 390 200 L 330 300 L 280 300"
-            stroke="#1e1e38"
-            strokeWidth="2"
-          />
-          <path
-            d="M 500 200 L 390 200 L 330 300 L 280 300"
-            stroke="url(#orange-gradient)"
-            strokeWidth={hoveredNode === 'influencer' ? "3" : "2"}
-            className="circuit-active-path"
-            style={{
-              filter: hoveredNode === 'influencer' ? 'url(#neon-glow-filter)' : 'none',
-              animationDuration: hoveredNode === 'influencer' ? '0.6s' : '1.5s'
-            }}
-          />
-
-          {/* 3. CONTRIBUTOR TRACE (Center to Top Right) */}
-          <path
-            d="M 500 200 L 650 200 L 690 100 L 720 100"
-            stroke="#1e1e38"
-            strokeWidth="2"
-          />
-          <path
-            d="M 500 200 L 650 200 L 690 100 L 720 100"
-            stroke="url(#emerald-gradient)"
-            strokeWidth={hoveredNode === 'contributor' ? "3" : "2"}
-            className="circuit-active-path"
-            style={{
-              filter: hoveredNode === 'contributor' ? 'url(#neon-glow-filter)' : 'none',
-              animationDuration: hoveredNode === 'contributor' ? '0.6s' : '1.5s'
-            }}
-          />
-
-          {/* 4. LEGEND TRACE (Center to Bottom Right) */}
-          <path
-            d="M 500 200 L 610 200 L 670 300 L 780 300"
-            stroke="#1e1e38"
-            strokeWidth="2"
-          />
-          <path
-            d="M 500 200 L 610 200 L 670 300 L 780 300"
-            stroke="url(#yellow-gradient)"
-            strokeWidth={hoveredNode === 'legend' ? "3" : "2"}
-            className="circuit-active-path"
-            style={{
-              filter: hoveredNode === 'legend' ? 'url(#neon-glow-filter)' : 'none',
-              animationDuration: hoveredNode === 'legend' ? '0.6s' : '1.5s'
-            }}
-          />
-
-          {/* 5. ESTABLISHED VOICE LINK (From Contributor & Legend to Far Right) */}
-          <path
-            d="M 720 100 L 830 100 L 880 200 L 920 200"
-            stroke="#1e1e38"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M 780 300 L 850 300 L 890 200 L 920 200"
-            stroke="#1e1e38"
-            strokeWidth="1.5"
-          />
-          {/* Animated combined stream to Established Voice */}
-          <path
-            d="M 720 100 L 830 100 L 880 200 L 920 200"
-            stroke="#94a3b8"
-            strokeOpacity="0.4"
-            strokeWidth="1.5"
-            className="circuit-active-path"
-            style={{ animationDuration: '2.5s' }}
-          />
-          <path
-            d="M 780 300 L 850 300 L 890 200 L 920 200"
-            stroke="#94a3b8"
-            strokeOpacity="0.4"
-            strokeWidth="1.5"
-            className="circuit-active-path"
-            style={{ animationDuration: '2.5s' }}
-          />
+          {/* Core Root Station Dot */}
+          <circle cx="80" cy="200" r="7" fill="#8b5cf6" stroke="#fff" strokeWidth="2" style={{ filter: 'url(#neon-glow)' }} />
+          <circle cx="80" cy="200" r="3" fill="#fff" />
         </svg>
 
-        {/* CENTER NODE: RISING WRITER (Pulsing Globe / Equalizer Dome) */}
-        <div
-          className="absolute z-10"
-          style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-          onMouseEnter={() => setHoveredNode('rising_writer')}
-          onMouseLeave={() => setHoveredNode(null)}
-        >
-          {/* Tooltip */}
-          <AnimatePresence>
-            {hoveredNode === 'rising_writer' && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                transition={{ duration: 0.2 }}
-                className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-8 w-72 p-4 rounded-2xl bg-gradient-to-br from-bg-card/98 via-bg-base/98 to-bg-card/98 border border-brand-cyan/45 shadow-[0_0_30px_rgba(6,182,212,0.15)] backdrop-blur-xl pointer-events-none z-50`}
-              >
-                <div className="space-y-3.5">
-                  <div className="flex items-center gap-2 border-b border-white/5 pb-2">
-                    <Pencil className="w-4 h-4 text-brand-cyan" />
-                    <h5 className="text-[11px] font-extrabold text-white tracking-widest">RISING WRITER</h5>
-                  </div>
+        {/* Gliding Glowing Orbs representing packet transfers */}
+        <div className="absolute w-3 h-3 rounded-full bg-white shadow-[0_0_15px_#06b6d4,0_0_30px_#8b5cf6] pointer-events-none z-10 gliding-dot-top" />
+        <div className="absolute w-3 h-3 rounded-full bg-white shadow-[0_0_15px_#d946ef,0_0_30px_#a855f7] pointer-events-none z-10 gliding-dot-mid" />
+        <div className="absolute w-3 h-3 rounded-full bg-white shadow-[0_0_15px_#f97316,0_0_30px_#eab308] pointer-events-none z-10 gliding-dot-bot" />
 
-                  <div className="space-y-2">
-                    <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Achieve</span>
-                    <ul className="space-y-1 text-[10px] text-gray-300">
-                      {TIER_DETAILS.rising_writer.requirements.map((req, idx) => (
-                        <li key={idx} className="flex items-start gap-1.5 leading-snug">
-                          <span className="text-brand-cyan mt-0.5">•</span>
-                          <span>{req}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="space-y-2">
-                    <span className="text-[8px] font-semibold text-brand-cyan uppercase tracking-widest block">Unlocked Privileges</span>
-                    <ul className="space-y-1 text-[10px] text-gray-300">
-                      {TIER_DETAILS.rising_writer.privileges.map((priv, idx) => (
-                        <li key={idx} className="flex items-start gap-1.5 leading-snug">
-                          <span className="text-[#8b5cf6] mt-0.5">✓</span>
-                          <span>{priv}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-                <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-bg-card/98 pointer-events-none" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Central Dome Structure */}
-          <div className="relative w-44 h-44 rounded-full flex flex-col items-center justify-center bg-bg-card/45 backdrop-blur-xl border border-[#06b6d4]/40 animate-pulse-glow shadow-[0_0_20px_rgba(6,182,212,0.2)]">
-
-            {/* Pulsing Outer Aura Rings */}
-            <div className="absolute top-1/2 left-1/2 w-56 h-56 rounded-full border border-[#06b6d4]/20 pulse-globe-ring -z-10" />
-            <div className="absolute top-1/2 left-1/2 w-64 h-64 rounded-full border border-[#8b5cf6]/10 pulse-globe-ring -z-10" style={{ animationDelay: '1.5s' }} />
-
-            {/* Glowing Icon Base */}
-            <div className="p-3.5 rounded-2xl bg-gradient-to-tr from-[#06b6d4]/20 to-[#8b5cf6]/30 border border-[#06b6d4]/40 flex items-center justify-center text-brand-cyan mb-2.5 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-              <Pencil className="w-6 h-6" />
-            </div>
-
-            <h3 className="text-xs font-bold text-white tracking-widest uppercase">Rising Writer</h3>
-            <span className="text-[9px] font-mono font-bold text-[#06b6d4] mt-0.5 tracking-wider">100-500 Reads</span>
-
-            {/* Audio Equalizer Graphics at bottom */}
-            <div className="flex gap-1 items-end h-4 mt-2">
-              {[6, 12, 18, 10, 16, 8, 14, 6].map((height, i) => (
-                <span
-                  key={i}
-                  className="w-[2px] rounded-full bg-brand-cyan/60 audio-eq-bar"
-                  style={{
-                    height: `${height}px`,
-                    animationDelay: `${i * 0.15}s`,
-                    animationDuration: `${0.8 + (i % 3) * 0.2}s`
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Progress Map Nodes */}
+        {/* GIT COMMIT BRANCH BADGE NODES */}
         {NODES.map((node) => {
           const IconComponent = node.icon;
           const isHovered = hoveredNode === node.id;
@@ -435,7 +404,7 @@ const TechProgressionMap = () => {
           return (
             <div
               key={node.id}
-              className="absolute z-20 group transition-all duration-300"
+              className="absolute z-20 group flex flex-col items-center w-36 cursor-pointer"
               style={{ top: node.top, left: node.left, transform: 'translate(-50%, -50%)' }}
               onMouseEnter={() => setHoveredNode(node.id)}
               onMouseLeave={() => setHoveredNode(null)}
@@ -449,17 +418,17 @@ const TechProgressionMap = () => {
                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
                     transition={{ duration: 0.2 }}
                     className={`absolute ${details.placement} w-72 p-4 rounded-2xl bg-gradient-to-br from-bg-card/98 via-bg-base/98 to-bg-card/98 border shadow-2xl backdrop-blur-xl pointer-events-none z-50`}
-                    style={{
-                      borderColor: `${node.color}50`,
+                    style={{ 
+                      borderColor: `${node.color}50`, 
                       boxShadow: `0 0 25px ${node.color}15, 0 10px 30px rgba(0,0,0,0.5)`
                     }}
                   >
-                    <div className="space-y-3.5">
+                    <div className="space-y-3.5 text-left">
                       <div className="flex items-center gap-2 border-b border-white/5 pb-2">
                         <IconComponent className="w-4 h-4" style={{ color: node.color }} />
                         <h5 className="text-[11px] font-extrabold text-white tracking-widest">{details.title}</h5>
                       </div>
-
+                      
                       <div className="space-y-2">
                         <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Achieve</span>
                         <ul className="space-y-1 text-[10px] text-gray-300">
@@ -485,93 +454,119 @@ const TechProgressionMap = () => {
                       </div>
                     </div>
                     {/* Tooltip pointer */}
-                    <div
-                      className={`absolute top-full border-8 border-transparent border-t-bg-card/98 pointer-events-none ${node.id === 'established' ? 'right-12 translate-x-1/2' : 'left-1/2 -translate-x-1/2'
-                        }`}
+                    <div 
+                      className={`absolute top-full border-8 border-transparent border-t-bg-card/98 pointer-events-none ${
+                        node.id === 'established' ? 'right-12 translate-x-1/2' : 'left-1/2 -translate-x-1/2'
+                      }`} 
                     />
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              <GlassCard
-                className={`p-3.5 w-44 border bg-bg-card/75 transition-all duration-300 flex items-center gap-3 relative cursor-pointer ${isHovered ? 'scale-105' : ''
-                  } ${node.glowClass} ${node.hoverGlowClass}`}
-              >
-                {/* Node Icon */}
-                <div
-                  className="p-2 rounded-xl shrink-0 transition-transform duration-300"
-                  style={{
-                    backgroundColor: `${node.color}15`,
-                    border: `1px solid ${node.color}35`,
-                    color: node.color
-                  }}
-                >
-                  <IconComponent className="w-5.5 h-5.5" />
-                </div>
+              {/* Dynamic Hexagon Badge component */}
+              <div className="transition-transform duration-300 group-hover:scale-108 group-hover:-translate-y-1">
+                <ProgressionHexBadge 
+                  color={node.color} 
+                  wingStyle={node.wingStyle} 
+                  isHovered={isHovered} 
+                  IconComponent={IconComponent} 
+                />
+              </div>
 
-                {/* Node Info */}
-                <div className="min-w-0 flex-grow">
-                  <h4 className="text-[10px] font-extrabold text-white tracking-widest truncate">{node.title}</h4>
-                  <span className="text-[8px] font-mono font-semibold text-gray-400 tracking-wider truncate block mt-0.5" style={{ color: node.color }}>
-                    {node.subtitle}
-                  </span>
-                </div>
-              </GlassCard>
+              {/* Pill Label */}
+              <div className="mt-3 px-3 py-1 rounded-full border border-white/10 bg-[#0d0f1e]/80 backdrop-blur-md flex items-center gap-1.5 shadow-md">
+                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: node.color }} />
+                <span className="text-[9px] font-extrabold text-white tracking-wider uppercase">{node.title}</span>
+              </div>
             </div>
           );
         })}
+
+        {/* TERMINAL END STATION NODE: ULTIMATE SYSTEM MASTER BADGE */}
+        <div 
+          className="absolute z-20 group flex flex-col items-center w-36 cursor-pointer"
+          style={{ top: '50%', left: '92%', transform: 'translate(-50%, -50%)' }}
+          onMouseEnter={() => setHoveredNode('master')}
+          onMouseLeave={() => setHoveredNode(null)}
+        >
+          {/* Tooltip */}
+          <AnimatePresence>
+            {hoveredNode === 'master' && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute bottom-full right-0 mb-5 translate-x-[10%] w-72 p-4 rounded-2xl bg-gradient-to-br from-bg-card/98 via-bg-base/98 to-bg-card/98 border border-[#06b6d4]/50 shadow-2xl backdrop-blur-xl pointer-events-none z-50"
+              >
+                <div className="space-y-3.5 text-left">
+                  <div className="flex items-center gap-2 border-b border-white/5 pb-2">
+                    <Award className="w-4 h-4 text-brand-cyan" />
+                    <h5 className="text-[11px] font-extrabold text-white tracking-widest">ULTIMATE SYSTEM MASTER</h5>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Achieve</span>
+                    <ul className="space-y-1 text-[10px] text-gray-300">
+                      {TIER_DETAILS.master.requirements.map((req, idx) => (
+                        <li key={idx} className="flex items-start gap-1.5 leading-snug">
+                          <span className="text-brand-cyan mt-0.5">•</span>
+                          <span>{req}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="space-y-2">
+                    <span className="text-[8px] font-semibold text-brand-cyan uppercase tracking-widest block">Unlocked Privileges</span>
+                    <ul className="space-y-1 text-[10px] text-gray-300">
+                      {TIER_DETAILS.master.privileges.map((priv, idx) => (
+                        <li key={idx} className="flex items-start gap-1.5 leading-snug">
+                          <span className="text-brand-purple mt-0.5">✓</span>
+                          <span>{priv}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div className="absolute top-full right-12 translate-x-1/2 border-8 border-transparent border-t-bg-card/98 pointer-events-none" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Central Target Pulsing Core Node */}
+          <div className="relative w-14 h-14 rounded-full border border-brand-cyan/60 bg-[#0d0f1e] flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110">
+            {/* Concentric targets */}
+            <div className="absolute inset-1.5 rounded-full border border-brand-cyan/30 animate-target-pulse" />
+            <div className="w-5 h-5 rounded-full bg-brand-cyan/20 border border-brand-cyan flex items-center justify-center">
+              <div className="w-2.5 h-2.5 rounded-full bg-brand-cyan" />
+            </div>
+          </div>
+
+          {/* Pill Label */}
+          <div className="mt-3 px-3 py-1 rounded-full border border-brand-cyan/30 bg-[#06b6d4]/5 backdrop-blur-md flex items-center gap-1.5 shadow-md">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-ping" />
+            <span className="text-[9px] font-extrabold text-brand-cyan tracking-wider uppercase">ULTIMATE MASTER</span>
+          </div>
+        </div>
       </div>
 
       {/* MOBILE / TABLET TIMELINE VERSION */}
-      <div className="lg:hidden space-y-6 max-w-md mx-auto">
-        {/* Rising Writer Dome shown at the top */}
-        <div className="flex justify-center mb-8">
-          <div className="relative w-full max-w-sm rounded-2xl flex flex-col p-5 bg-bg-card border border-[#06b6d4]/40 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
-            <div className="flex items-center gap-3.5 mb-3.5">
-              <div className="p-3.5 rounded-2xl bg-[#06b6d4]/10 border border-[#06b6d4]/30 text-brand-cyan">
-                <Pencil className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-white tracking-widest uppercase">Rising Writer</h3>
-                <span className="text-[10px] font-mono font-bold text-[#06b6d4] tracking-wider block mt-0.5">100-500 Reads</span>
-              </div>
-            </div>
-
-            <div className="pt-3.5 border-t border-white/5 space-y-2.5">
-              <div className="space-y-1">
-                <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Achieve:</span>
-                <ul className="list-disc pl-3.5 text-[10px] text-gray-300 space-y-1">
-                  {TIER_DETAILS.rising_writer.requirements.map((req, idx) => (
-                    <li key={idx}>{req}</li>
-                  ))}
-                </ul>
-              </div>
-              <div className="space-y-1">
-                <span className="text-[8px] font-semibold text-brand-cyan uppercase tracking-widest block">Unlocked Privileges:</span>
-                <ul className="list-disc pl-3.5 text-[10px] text-gray-300 space-y-1">
-                  {TIER_DETAILS.rising_writer.privileges.map((priv, idx) => (
-                    <li key={idx}>{priv}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-
+      <div className="lg:hidden space-y-6 max-w-md mx-auto text-left">
         {/* Stacked progression list */}
         <div className="space-y-4">
           {NODES.map((node) => {
             const IconComponent = node.icon;
             const details = TIER_DETAILS[node.id];
             return (
-              <GlassCard
-                key={node.id}
-                className={`p-4 border bg-bg-card flex flex-col gap-4 ${node.glowClass}`}
+              <GlassCard 
+                key={node.id} 
+                className={`p-4 border bg-bg-card flex flex-col gap-4 ${node.glowClass || ''}`}
               >
-                <div className="flex items-center gap-4 w-full">
-                  <div
+                <div className="flex items-center gap-4 w-full text-left">
+                  <div 
                     className="p-2.5 rounded-xl text-white shrink-0"
-                    style={{
+                    style={{ 
                       backgroundColor: `${node.color}15`,
                       border: `1px solid ${node.color}30`,
                       color: node.color
@@ -584,12 +579,12 @@ const TechProgressionMap = () => {
                       <h4 className="text-xs font-extrabold text-white tracking-widest">{node.title}</h4>
                       <span className="text-[9px] font-mono font-bold" style={{ color: node.color }}>{node.subtitle}</span>
                     </div>
-                    <p className="text-[10px] text-gray-400 mt-1">{node.desc}</p>
+                    <p className="text-[10px] text-gray-400 mt-1">{details.requirements[0]}</p>
                   </div>
                 </div>
 
                 {details && (
-                  <div className="pt-4 border-t border-white/5 space-y-3 w-full">
+                  <div className="pt-4 border-t border-white/5 space-y-3 w-full text-left">
                     <div className="space-y-1">
                       <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Achieve:</span>
                       <ul className="list-disc pl-3.5 text-[10px] text-gray-300 space-y-1">
@@ -617,7 +612,7 @@ const TechProgressionMap = () => {
       {/* Footer Text */}
       <div className="text-center mt-12">
         <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 py-1.5 px-4 bg-border-subtle/20 border border-border-subtle rounded-full inline-block">
-          Tech Progression Map
+          Git Commit Progression Map
         </span>
       </div>
     </section>
