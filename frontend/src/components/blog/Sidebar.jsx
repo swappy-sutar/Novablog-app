@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import GlassCard from '../ui/GlassCard';
 import toast from 'react-hot-toast';
 
 const Sidebar = ({ blog }) => {
+  const [activeId, setActiveId] = useState('');
+
   const headings = React.useMemo(() => {
     if (!blog?.content) return [];
     
@@ -14,6 +16,40 @@ const Sidebar = ({ blog }) => {
       text: match[2].replace(/<[^>]*>/g, "").trim(), // Strip any nested html tags
     }));
   }, [blog]);
+
+  useEffect(() => {
+    if (headings.length === 0) return;
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 120; // Offset for navbar + headers
+      
+      let currentActiveId = '';
+      for (let i = 0; i < headings.length; i++) {
+        const el = document.getElementById(headings[i].id);
+        if (el) {
+          const top = el.getBoundingClientRect().top + window.scrollY;
+          if (scrollPosition >= top) {
+            currentActiveId = headings[i].id;
+          } else {
+            break;
+          }
+        }
+      }
+
+      if (!currentActiveId && headings.length > 0) {
+        currentActiveId = headings[0].id;
+      }
+      
+      setActiveId(currentActiveId);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [headings]);
 
   const scrollToHeading = (e, id) => {
     e.preventDefault();
@@ -41,19 +77,26 @@ const Sidebar = ({ blog }) => {
         <div className="mb-8">
           <span className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4 block">Navigation</span>
           <ul className="space-y-3 text-sm">
-            {headings.map((heading) => (
-              <li key={heading.id} className={heading.tag === 'h2' ? 'ml-3' : ''}>
-                <a 
-                  href={`#${heading.id}`}
-                  onClick={(e) => scrollToHeading(e, heading.id)}
-                  className={`text-gray-400 hover:text-white transition-colors block border-l-2 border-transparent hover:border-brand-cyan pl-3 truncate ${
-                    heading.tag === 'h2' ? 'text-xs' : 'font-medium'
-                  }`}
-                >
-                  {heading.text}
-                </a>
-              </li>
-            ))}
+            {headings.map((heading) => {
+              const isActive = heading.id === activeId;
+              return (
+                <li key={heading.id} className={heading.tag === 'h2' ? 'ml-3' : ''}>
+                  <a 
+                    href={`#${heading.id}`}
+                    onClick={(e) => scrollToHeading(e, heading.id)}
+                    className={`transition-all duration-200 block border-l-2 pl-3 truncate ${
+                      isActive 
+                        ? 'text-brand-cyan border-brand-cyan font-bold scale-[1.01] origin-left' 
+                        : 'text-gray-400 border-transparent hover:text-white hover:border-brand-cyan/50'
+                    } ${
+                      heading.tag === 'h2' ? 'text-xs' : 'font-medium'
+                    }`}
+                  >
+                    {heading.text}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}
