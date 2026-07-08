@@ -168,7 +168,7 @@ const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 xl:bottom-auto xl:left-auto xl:right-full xl:top-1/2 xl:-translate-y-1/2 xl:mr-4 xl:mb-0 bg-bg-dropdown border border-border-subtle/80 backdrop-blur-md rounded-2xl p-3 shadow-2xl flex items-center gap-3 w-max z-50"
+                className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 xl:bottom-auto xl:left-auto xl:right-full xl:translate-x-0 xl:top-1/2 xl:-translate-y-1/2 xl:mr-4 xl:mb-0 bg-bg-dropdown border border-border-subtle/80 backdrop-blur-md rounded-2xl p-3 shadow-2xl flex items-center gap-3 w-max z-50"
               >
                 {/* X / Twitter */}
                 <button
