@@ -350,7 +350,10 @@ api.interceptors.response.use(
       const { data } = await axios.post(
         `${baseURL}/auth/refresh-token`,
         { refreshToken },
-        { headers: { 'Content-Type': 'application/json' } },
+        { 
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true
+        },
       );
 
       const tokens = data?.data ?? data;

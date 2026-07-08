@@ -139,9 +139,10 @@ export class AuthController {
   @Post('refresh-token')
   async refreshToken(
     @Req() req: express.Request,
+    @Body('refreshToken') bodyRefreshToken: string,
     @Res({ passthrough: true }) res: express.Response,
   ) {
-    const refreshToken = req.cookies?.refreshToken;
+    const refreshToken = req.cookies?.refreshToken || bodyRefreshToken;
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token not found');
     }
@@ -160,6 +161,7 @@ export class AuthController {
         ...result,
         data: {
           accessToken,
+          refreshToken: newRefreshToken,
         },
       };
     }
