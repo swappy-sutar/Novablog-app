@@ -79,6 +79,29 @@ export class BlogService {
       }),
     });
 
+    // Handle tags creation and association
+    const tagsInput = createBlogDto.tags || createBlogDto['tags[]'];
+    if (tagsInput && tagsInput.length > 0) {
+      for (const tagName of tagsInput) {
+        if (!tagName) continue;
+        const tagSlug = generateSlug(tagName);
+        const tag = await this.prisma.tag.upsert({
+          where: { name: tagName },
+          update: {},
+          create: {
+            name: tagName,
+            slug: tagSlug,
+          },
+        });
+        await this.prisma.blogTag.create({
+          data: {
+            blogId: blog.id,
+            tagId: tag.id,
+          },
+        });
+      }
+    }
+
     await this.cacheService.deleteByPattern(REDIS_KEYS.ALL_BLOGS);
 
     await this.cacheService.del(REDIS_KEYS.FEATURED_BLOGS());
@@ -220,8 +243,10 @@ export class BlogService {
       }
     }
 
+    const { tags: uTags, 'tags[]': uTagsArr, ...restUpdateDto } = updateBlogDto;
+
     const updatedBlog = await this.blogsRepository.update(blogId, {
-      ...updateBlogDto,
+      ...restUpdateDto,
 
       ...(slug && {
         slug,
@@ -235,6 +260,35 @@ export class BlogService {
         publishedAt: new Date(),
       }),
     });
+
+    // Handle tags update
+    const tagsInput = uTags || uTagsArr;
+    if (tagsInput) {
+      // Delete existing associations
+      await this.prisma.blogTag.deleteMany({
+        where: { blogId },
+      });
+
+      // Add new associations
+      for (const tagName of tagsInput) {
+        if (!tagName) continue;
+        const tagSlug = generateSlug(tagName);
+        const tag = await this.prisma.tag.upsert({
+          where: { name: tagName },
+          update: {},
+          create: {
+            name: tagName,
+            slug: tagSlug,
+          },
+        });
+        await this.prisma.blogTag.create({
+          data: {
+            blogId,
+            tagId: tag.id,
+          },
+        });
+      }
+    }
 
     await this.cacheService.deleteByPattern(REDIS_KEYS.ALL_BLOGS);
 

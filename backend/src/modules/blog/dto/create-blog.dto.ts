@@ -1,4 +1,4 @@
-import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { BlogStatus } from '@prisma/client';
 
@@ -33,4 +33,24 @@ export class CreateBlogDto {
   @IsOptional()
   @IsString()
   categoryId?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') return [value];
+    if (Array.isArray(value)) return value;
+    return value;
+  })
+  @IsArray()
+  @IsString({ each: true })
+  tags?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') return [value];
+    if (Array.isArray(value)) return value;
+    return value;
+  })
+  @IsArray()
+  @IsString({ each: true })
+  'tags[]'?: string[];
 }
