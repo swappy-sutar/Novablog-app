@@ -7,6 +7,7 @@ import Button from '../components/ui/Button';
 import Loader from '../components/ui/Loader';
 import { ProfileSkeleton } from '../components/ui/Skeleton';
 import { authAPI } from '../lib/api';
+import { Sprout, Flame, FileText, Crown, Award, Pencil } from 'lucide-react';
 
 const HEAT_WEEKS = 52;
 const HEAT_DAYS = 7;
@@ -216,6 +217,15 @@ const PublicProfilePage = () => {
     'Legend': '#3b82f6',
     'Established Voice': '#eab308'
   };
+  const levelIcons = {
+    'Reader': Sprout,
+    'Seedling': Sprout,
+    'Contributor': FileText,
+    'Influencer': Flame,
+    'Rising Writer': Pencil,
+    'Legend': Crown,
+    'Established Voice': Award
+  };
   const currentLevel = getWriterLevel(profile?.totalViews ?? 0);
   const currentAccent = levelColors[currentLevel] || '#8b5cf6';
 
@@ -419,24 +429,64 @@ const PublicProfilePage = () => {
           { label: 'WRITER LEVEL', value: getWriterLevel(profile?.totalViews ?? 0), accent: true },
         ].map((stat) => {
           const isWriterLevel = stat.label === 'WRITER LEVEL';
+          if (isWriterLevel) {
+            const IconComponent = levelIcons[currentLevel] || Sprout;
+            return (
+              <GlassCard
+                key={stat.label}
+                hoverEffect={true}
+                className="!rounded-[10px] p-4 border transition-all duration-300 relative flex items-center gap-3 md:gap-4 text-left"
+                style={{
+                  borderColor: `${currentAccent}35`,
+                  background: `linear-gradient(to bottom right, ${currentAccent}03, var(--color-bg-card))`,
+                  boxShadow: `0 0 20px ${currentAccent}12`
+                }}
+              >
+                {/* Glowing Level Badge Icon (exactly like the NASA space apps card) */}
+                <div 
+                  className="p-2.5 rounded-lg flex items-center justify-center shrink-0 border"
+                  style={{
+                    borderColor: `${currentAccent}40`,
+                    backgroundColor: `${currentAccent}10`,
+                    boxShadow: `0 0 15px ${currentAccent}20`
+                  }}
+                >
+                  <IconComponent className="w-5 h-5" style={{ color: currentAccent }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] md:text-xs font-semibold text-gray-500 tracking-wider mb-1">
+                    {stat.label}
+                  </p>
+                  <p
+                    className="text-base md:text-lg font-bold truncate tracking-wide"
+                    style={{
+                      color: currentAccent,
+                      textShadow: `0 0 10px ${currentAccent}20`
+                    }}
+                  >
+                    {stat.value}
+                  </p>
+                </div>
+              </GlassCard>
+            );
+          }
           return (
             <GlassCard
               key={stat.label}
               hoverEffect={true}
-              className="!rounded-[10px] p-4 md:p-5 border transition-all duration-300 relative"
+              className="!rounded-[10px] p-4 md:p-5 border transition-all duration-300 relative text-left"
               style={{
-                borderColor: isWriterLevel ? `${currentAccent}35` : 'var(--color-border-subtle)',
-                background: isWriterLevel ? `linear-gradient(to bottom right, ${currentAccent}03, var(--color-bg-card))` : 'var(--color-bg-card)',
-                boxShadow: isWriterLevel ? `0 0 20px ${currentAccent}12` : 'none'
+                borderColor: 'var(--color-border-subtle)',
+                background: 'var(--color-bg-card)',
               }}
             >
-              <p className="text-[10px] md:text-xs font-medium text-gray-500 tracking-wider mb-1">
+              <p className="text-[10px] md:text-xs font-semibold text-gray-500 tracking-wider mb-1">
                 {stat.label}
               </p>
               <p
-                className="text-xl md:text-2xl font-semibold tabular-nums"
+                className="text-xl md:text-2xl font-bold tabular-nums"
                 style={{
-                  color: isWriterLevel ? currentAccent : stat.accent ? '#06b6d4' : '#ffffff'
+                  color: stat.accent ? '#06b6d4' : '#ffffff'
                 }}
               >
                 {stat.value}
