@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Sprout, Flame, FileText, Crown, Award, Pencil } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import GlassCard from '../ui/GlassCard';
 
 const TIER_DETAILS = {
   seedling: {
