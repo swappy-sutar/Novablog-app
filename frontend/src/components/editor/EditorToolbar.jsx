@@ -179,27 +179,48 @@ const EditorToolbar = ({ editorRef }) => {
 
       // Synchronize font family and font size dropdowns with the cursor's selection
       try {
-        const currentFont = document.queryCommandValue('fontName');
-        if (currentFont) {
-          const cleanFont = currentFont.replace(/['"]/g, '').split(',')[0].trim();
-          const matchedOption = FONT_OPTIONS.find(opt => 
-            opt.value.replace(/['"]/g, '').split(',')[0].trim() === cleanFont
-          );
-          if (matchedOption) {
-            setFontFamily(matchedOption.value);
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          let container = range.startContainer;
+          if (container.nodeType === Node.TEXT_NODE) {
+            container = container.parentNode;
+          }
+
+          if (container) {
+            // Check Font Family
+            const fontFaceElement = container.closest('font[face]');
+            if (fontFaceElement) {
+              const faceAttr = fontFaceElement.getAttribute('face');
+              if (faceAttr) {
+                const cleanFont = faceAttr.replace(/['"]/g, '').split(',')[0].trim().toLowerCase();
+                const matchedOption = FONT_OPTIONS.find(opt => 
+                  opt.value.replace(/['"]/g, '').split(',')[0].trim().toLowerCase() === cleanFont
+                );
+                if (matchedOption) {
+                  setFontFamily(matchedOption.value);
+                }
+              }
+            } else {
+              // Default to Inter
+              setFontFamily(FONT_OPTIONS[0].value);
+            }
+
+            // Check Font Size
+            const fontSizeElement = container.closest('font[size]');
+            if (fontSizeElement) {
+              const sizeAttr = fontSizeElement.getAttribute('size');
+              if (sizeAttr) {
+                setFontSize(sizeAttr);
+              }
+            } else {
+              // Default to Normal ("3")
+              setFontSize('3');
+            }
           }
         }
       } catch (e) {
-        console.warn('Failed to query fontName:', e);
-      }
-
-      try {
-        const currentSize = document.queryCommandValue('fontSize');
-        if (currentSize) {
-          setFontSize(currentSize);
-        }
-      } catch (e) {
-        console.warn('Failed to query fontSize:', e);
+        console.warn('Failed to sync selection font properties:', e);
       }
     } catch {
       // queryCommandState can throw in some edge cases; ignore safely
