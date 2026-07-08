@@ -44,14 +44,14 @@ const TerminalMockup = () => {
 
   const script = [
     { type: 'input', text: 'novablog search "react hooks"' },
-    { type: 'output', text: '# Searching 50k+ articles...', color: 'text-gray-500' },
-    { type: 'output', text: '✓ Found 342 results', color: 'text-indigo-400' },
+    { type: 'output', text: '# Searching 50k+ articles...', color: 'text-[#64748b]' },
+    { type: 'output', text: '✓ Found 342 results', color: 'text-[#818cf8]' },
     { type: 'input', text: 'novablog publish --draft' },
-    { type: 'output', text: '✓ Draft saved · slug: react-hooks-deep-dive', color: 'text-indigo-400' },
-    { type: 'output', text: '✓ Estimated read: 8 min · SEO score: 94', color: 'text-indigo-400' },
+    { type: 'output', text: '✓ Draft saved · slug: react-hooks-deep-dive', color: 'text-[#818cf8]' },
+    { type: 'output', text: '✓ Estimated read: 8 min · SEO score: 94', color: 'text-[#818cf8]' },
     { type: 'input', text: 'novablog analytics --week' },
-    { type: 'output', text: '# Views +24% · Followers +12', color: 'text-gray-500' },
-    { type: 'output', text: '✓ Top post: "TypeScript Generics" · 4.2k views', color: 'text-indigo-400' }
+    { type: 'output', text: '# Views +24% · Followers +12', color: 'text-[#64748b]' },
+    { type: 'output', text: '✓ Top post: "TypeScript Generics" · 4.2k views', color: 'text-[#818cf8]' }
   ];
 
   useEffect(() => {
@@ -123,7 +123,7 @@ const TerminalMockup = () => {
           transformStyle: 'preserve-3d',
           willChange: 'transform'
         }}
-        className="w-full h-full border border-white/10 bg-[#090915]/95 shadow-2xl rounded-2xl overflow-hidden flex flex-col p-4 sm:p-6 font-mono text-xs sm:text-sm text-gray-300 relative"
+        className="w-full h-full border border-white/10 bg-[#090915]/95 shadow-2xl rounded-2xl overflow-hidden flex flex-col p-4 sm:p-6 font-mono text-xs sm:text-sm text-[#cbd5e1] relative"
       >
         {/* Dynamic spotlight reflection shine glare overlay */}
         <motion.div 
@@ -138,7 +138,7 @@ const TerminalMockup = () => {
             <span className="w-3 h-3 rounded-full bg-rose-500 animate-pulse" />
             <span className="w-3 h-3 rounded-full bg-amber-500" />
             <span className="w-3 h-3 rounded-full bg-emerald-500" />
-            <span className="text-[10px] text-gray-500 ml-2 font-mono">novablog ~ terminal</span>
+            <span className="text-[10px] text-[#64748b] ml-2 font-mono">novablog ~ terminal</span>
           </div>
         </div>
 
@@ -152,19 +152,19 @@ const TerminalMockup = () => {
             >
               {line.type === 'input' ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-emerald-400 font-bold">&gt;</span>
-                  <span className="text-white font-bold">{line.text}</span>
+                  <span className="text-[#34d399] font-bold">&gt;</span>
+                  <span className="text-[#ffffff] font-bold">{line.text}</span>
                 </div>
               ) : (
-                <p className={`mt-0.5 ${line.color || 'text-gray-300'}`}>{line.text}</p>
+                <p className={`mt-0.5 ${line.color || 'text-[#cbd5e1]'}`}>{line.text}</p>
               )}
             </motion.div>
           ))}
 
           <div className="flex items-center gap-2">
-            <span className="text-emerald-400 font-bold">&gt;</span>
-            <span className="text-white font-bold">{currentInput}</span>
-            <span className="w-2 h-4 bg-gray-400 animate-pulse inline-block" />
+            <span className="text-[#34d399] font-bold">&gt;</span>
+            <span className="text-[#ffffff] font-bold">{currentInput}</span>
+            <span className="w-2 h-4 bg-[#94a3b8] animate-pulse inline-block" />
           </div>
         </div>
       </motion.div>

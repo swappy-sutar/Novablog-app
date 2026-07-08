@@ -143,10 +143,10 @@ const TechProgressionMap = () => {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
                     transition={{ duration: 0.2 }}
-                    className={`hidden sm:block absolute bottom-full mb-5 w-64 p-4 rounded-2xl bg-[#070814] border shadow-2xl backdrop-blur-xl pointer-events-none z-50 text-left font-sans ${lvl.tooltipAlign}`}
+                    className={`hidden sm:block absolute bottom-full mb-5 w-64 p-4 rounded-2xl bg-bg-dropdown border shadow-2xl backdrop-blur-xl pointer-events-none z-50 text-left font-sans ${lvl.tooltipAlign}`}
                     style={{ 
                       borderColor: `${lvl.accentColor}50`, 
-                      boxShadow: `0 0 25px ${lvl.accentColor}20, 0 10px 30px rgba(0,0,0,0.6)`
+                      boxShadow: `0 0 25px ${lvl.accentColor}20, 0 10px 30px rgba(0,0,0,0.15)`
                     }}
                   >
                     <div className="space-y-3.5">
@@ -165,9 +165,9 @@ const TechProgressionMap = () => {
 
                     {/* Glowing rotated-square tooltip pointer that matches the glowing outline */}
                     <div 
-                      className={`absolute top-full -mt-1.5 w-2.5 h-2.5 rotate-45 border-r border-b bg-[#070814] pointer-events-none ${lvl.pointerAlign}`}
+                      className={`absolute top-full -mt-1.5 w-2.5 h-2.5 rotate-45 border-r border-b bg-bg-dropdown pointer-events-none ${lvl.pointerAlign}`}
                       style={{ 
-                        borderColor: `${lvl.accentColor}50`
+                        borderColor: `transparent ${lvl.accentColor}50 ${lvl.accentColor}50 transparent`
                       }}
                     />
                   </motion.div>
@@ -180,13 +180,13 @@ const TechProgressionMap = () => {
                 style={{
                   background: (isHovered || isExpanded)
                     ? `linear-gradient(to bottom, ${lvl.accentColor}, ${lvl.accentColor}10)`
-                    : `linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(255,255,255,0.02))`
+                    : `linear-gradient(to bottom, var(--color-border-subtle), transparent)`
                 }}
               >
                 
                 {/* Dark Glass Inner Card Content */}
                 <div 
-                  className="w-full h-full pt-12 pb-6 px-4.5 flex flex-col items-center text-center bg-[#070814]/90 backdrop-blur-2xl rounded-b-2xl cinematic-chevron-inner"
+                  className="w-full h-full pt-12 pb-6 px-4.5 flex flex-col items-center text-center bg-bg-card backdrop-blur-2xl rounded-b-2xl cinematic-chevron-inner"
                 >
                   
                   {/* Glowing Icon Shield Wrapper (Colored border & background on rest) */}
@@ -208,8 +208,7 @@ const TechProgressionMap = () => {
 
                   {/* Level Name */}
                   <h3 
-                    className="text-xs font-black tracking-widest mb-4 transition-colors duration-300"
-                    style={{ color: '#ffffff' }}
+                    className="text-xs font-black tracking-widest mb-4 transition-colors duration-300 text-white"
                   >
                     {lvl.title}
                   </h3>
@@ -228,7 +227,7 @@ const TechProgressionMap = () => {
                           animate={{ height: 'auto', opacity: 1, marginBottom: 18 }}
                           exit={{ height: 0, opacity: 0, marginBottom: 0 }}
                           transition={{ duration: 0.3, ease: 'easeInOut' }}
-                          className="text-left pt-3 border-t border-white/5 w-full"
+                          className="text-left pt-3 border-t border-border-subtle w-full"
                         >
                           <span className="text-[7.5px] font-bold text-gray-500 uppercase tracking-wider block mb-1">How to Unlock</span>
                           <p className="text-[10px] text-gray-300 leading-relaxed font-sans font-medium">
@@ -249,7 +248,7 @@ const TechProgressionMap = () => {
                   >
                     <span 
                       className="text-[9px] font-black tracking-widest font-mono uppercase transition-colors duration-300"
-                      style={{ color: (isHovered || isExpanded) ? '#ffffff' : lvl.accentColor }}
+                      style={{ color: lvl.accentColor }}
                     >
                       {lvl.level}
                     </span>

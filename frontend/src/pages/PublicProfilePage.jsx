@@ -425,8 +425,8 @@ const PublicProfilePage = () => {
               hoverEffect={true}
               className="!rounded-[10px] p-4 md:p-5 border transition-all duration-300 relative"
               style={{
-                borderColor: isWriterLevel ? `${currentAccent}35` : 'rgba(255, 255, 255, 0.08)',
-                background: isWriterLevel ? `linear-gradient(to bottom right, ${currentAccent}03, rgba(15,15,30,0.6))` : 'rgba(15, 15, 30, 0.6)',
+                borderColor: isWriterLevel ? `${currentAccent}35` : 'var(--color-border-subtle)',
+                background: isWriterLevel ? `linear-gradient(to bottom right, ${currentAccent}03, var(--color-bg-card))` : 'var(--color-bg-card)',
                 boxShadow: isWriterLevel ? `0 0 20px ${currentAccent}12` : 'none'
               }}
             >
