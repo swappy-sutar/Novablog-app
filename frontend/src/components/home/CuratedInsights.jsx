@@ -26,57 +26,6 @@ const formatViews = (views) => {
   return views.toString();
 };
 
-const defaultMocks = [
-  {
-    id: 'mock-1',
-    title: 'Smarter Debugging in 2024',
-    category: 'INSIGHT',
-    readTime: '2 min read',
-    thumbnail: 'https://images.unsplash.com/photo-1607799279861-4dd421887fb3?q=80&w=2670&auto=format&fit=crop',
-    author: { name: 'Swapnil Sutar', initials: 'SS', username: 'swapnil' }
-  },
-  {
-    id: 'mock-2',
-    title: 'How AI Changed My Software Development Workflow',
-    category: 'INSIGHT',
-    readTime: '1 min read',
-    thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop',
-    author: { name: 'Swapnil Sutar', initials: 'SS', username: 'swapnil' }
-  },
-  {
-    id: 'mock-3',
-    title: 'Vite Dev Tools in 2026',
-    category: 'INSIGHT',
-    readTime: '1 min read',
-    thumbnail: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2664&auto=format&fit=crop',
-    author: { name: 'Test User', initials: 'TU', username: 'testuser' }
-  },
-  {
-    id: 'mock-4',
-    title: 'The Day Quantum Computing Went Mainstream',
-    category: 'INSIGHT',
-    readTime: '1 min read',
-    thumbnail: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=2670&auto=format&fit=crop',
-    author: { name: 'Swapnil Sutar', initials: 'SS', username: 'swapnil' }
-  },
-  {
-    id: 'mock-5',
-    title: 'Why Redis Is a Game-Changer for Modern Applications',
-    category: 'INSIGHT',
-    readTime: '4 min read',
-    thumbnail: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?q=80&w=2670&auto=format&fit=crop',
-    author: { name: 'Miss.Vaishnavi Sa...', initials: 'VS', username: 'vaishnavi' }
-  },
-  {
-    id: 'mock-6',
-    title: 'Optimizing Data Persistency in Redis',
-    category: 'INSIGHT',
-    readTime: '4 min read',
-    thumbnail: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2668&auto=format&fit=crop',
-    author: { name: 'Miss.Vaishnavi Sa...', initials: 'VS', username: 'vaishnavi' }
-  }
-];
-
 const CuratedInsights = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -168,7 +117,7 @@ const CuratedInsights = () => {
     };
   });
 
-  const dbGridBlogs = blogs.slice(3, 9).map((apiBlog) => {
+  const gridBlogs = blogs.slice(3, 9).map((apiBlog) => {
     const authorName = `${apiBlog.author?.firstname || ""} ${apiBlog.author?.lastname || ""}`.trim() || apiBlog.author?.username || "Anonymous";
     const initials = `${apiBlog.author?.firstname?.[0] || ""}${apiBlog.author?.lastname?.[0] || ""}`.toUpperCase() || apiBlog.author?.username?.[0]?.toUpperCase() || "U";
     return {
@@ -185,8 +134,6 @@ const CuratedInsights = () => {
       }
     };
   });
-
-  const gridBlogs = [...dbGridBlogs, ...defaultMocks.slice(dbGridBlogs.length)];
 
   return (
     <section className="max-w-7xl mx-auto px-6 mb-24 space-y-16">
@@ -316,42 +263,33 @@ const CuratedInsights = () => {
       </div>
 
       {/* 2. More Perspectives Grid (NASA Apps inspired Layout) */}
-      <div className="space-y-8">
-        <div className="flex items-end justify-between border-b border-border-subtle/30 pb-4">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">More Perspectives</h2>
-            <p className="text-sm text-gray-400 mt-1">Explore diverse angles across the modern engineering stack.</p>
-          </div>
-          <Link 
-            to="/feed" 
-            className="text-xs font-bold text-brand-purple hover:text-[#c4b5fd] transition-colors"
-          >
-            See more insights
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {gridBlogs.map((post) => (
-            <GlassCard 
-              key={post.id} 
-              className="relative p-0 border border-border-subtle bg-bg-card hover:border-brand-purple/40 transition-all duration-300 h-80 overflow-hidden flex flex-col justify-end group"
+      {gridBlogs.length > 0 && (
+        <div className="space-y-8">
+          <div className="flex items-end justify-between border-b border-border-subtle/30 pb-4">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">More Perspectives</h2>
+              <p className="text-sm text-gray-400 mt-1">Explore diverse angles across the modern engineering stack.</p>
+            </div>
+            <Link 
+              to="/feed" 
+              className="text-xs font-bold text-brand-purple hover:text-[#c4b5fd] transition-colors"
             >
-              {/* Card Badge on top-left (teal theme) */}
-              <span className="absolute top-4 left-4 inline-block px-2.5 py-1 rounded bg-[#115e59]/35 border border-[#14b8a6]/25 text-[8.5px] font-extrabold text-[#2dd4bf] tracking-widest uppercase z-10">
-                {post.category}
-              </span>
+              See more insights
+            </Link>
+          </div>
 
-              {/* Full-bleed Thumbnail Background */}
-              {post.id.startsWith('mock') ? (
-                <div className="absolute inset-0 w-full h-full -z-10">
-                  <img 
-                    src={post.thumbnail} 
-                    alt={post.title} 
-                    className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#04040c] via-[#04040c]/70 to-transparent" />
-                </div>
-              ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {gridBlogs.map((post) => (
+              <GlassCard 
+                key={post.id} 
+                className="relative p-0 border border-border-subtle bg-bg-card hover:border-brand-purple/40 transition-all duration-300 h-80 overflow-hidden flex flex-col justify-end group"
+              >
+                {/* Card Badge on top-left (teal theme) */}
+                <span className="absolute top-4 left-4 inline-block px-2.5 py-1 rounded bg-[#115e59]/35 border border-[#14b8a6]/25 text-[8.5px] font-extrabold text-[#2dd4bf] tracking-widest uppercase z-10">
+                  {post.category}
+                </span>
+
+                {/* Full-bleed Thumbnail Background */}
                 <Link to={`/post/${post.id}`} className="absolute inset-0 w-full h-full -z-10 cursor-pointer block">
                   <img 
                     src={post.thumbnail} 
@@ -360,57 +298,47 @@ const CuratedInsights = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#04040c] via-[#04040c]/70 to-transparent" />
                 </Link>
-              )}
 
-              {/* Card Content Overlay */}
-              <div className="p-6 space-y-3 z-10 w-full text-left">
-                {post.id.startsWith('mock') ? (
-                  <h3 className="text-base font-extrabold text-white tracking-tight leading-snug group-hover:text-brand-purple transition-colors line-clamp-2">
-                    {post.title}
-                  </h3>
-                ) : (
+                {/* Card Content Overlay */}
+                <div className="p-6 space-y-3 z-10 w-full text-left">
                   <Link to={`/post/${post.id}`} className="block">
                     <h3 className="text-base font-extrabold text-white tracking-tight leading-snug group-hover:text-brand-purple transition-colors line-clamp-2 cursor-pointer">
                       {post.title}
                     </h3>
                   </Link>
-                )}
 
-                {/* Author Info Row */}
-                <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-2">
-                  <div className="flex items-center gap-2 text-xs">
-                    {post.author.avatar ? (
-                      <img 
-                        src={post.author.avatar} 
-                        alt={post.author.name} 
-                        className="w-6 h-6 rounded-full object-cover border border-border-subtle"
-                      />
-                    ) : (
-                      <div className="w-6 h-6 rounded-full bg-brand-purple/20 border border-brand-purple/30 flex items-center justify-center text-[10px] font-bold text-white">
-                        {post.author.initials || post.author.name?.[0]?.toUpperCase()}
-                      </div>
-                    )}
-                    {post.id.startsWith('mock') ? (
-                      <span className="font-bold text-gray-300 truncate max-w-[120px]">{post.author.name}</span>
-                    ) : (
+                  {/* Author Info Row */}
+                  <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-2">
+                    <div className="flex items-center gap-2 text-xs">
+                      {post.author.avatar ? (
+                        <img 
+                          src={post.author.avatar} 
+                          alt={post.author.name} 
+                          className="w-6 h-6 rounded-full object-cover border border-border-subtle"
+                        />
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-brand-purple/20 border border-brand-purple/30 flex items-center justify-center text-[10px] font-bold text-white">
+                          {post.author.initials || post.author.name?.[0]?.toUpperCase()}
+                        </div>
+                      )}
                       <Link 
                         to={post.author.username ? `/profile/${post.author.username}` : "#"}
                         className="font-bold text-gray-300 hover:text-brand-purple transition-colors truncate max-w-[120px]"
                       >
                         {post.author.name}
                       </Link>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[9px] text-gray-400 font-semibold tracking-wider">
-                    <Clock className="w-3.5 h-3.5 opacity-60" />
-                    <span>{post.readTime}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[9px] text-gray-400 font-semibold tracking-wider">
+                      <Clock className="w-3.5 h-3.5 opacity-60" />
+                      <span>{post.readTime}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </GlassCard>
-          ))}
+              </GlassCard>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 };
