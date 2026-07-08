@@ -34,7 +34,7 @@ const TIER_DETAILS = {
   },
   influencer: {
     title: 'INFLUENCER',
-    color: '#f97316', // orange
+    color: '#db2777', // pink
     requirements: [
       "Read 50-100 technical articles",
       "Share at least 3 custom blog reference links"
@@ -48,7 +48,7 @@ const TIER_DETAILS = {
   },
   rising_writer: {
     title: 'RISING WRITER',
-    color: '#eab308', // yellow
+    color: '#db2777', // pink
     requirements: [
       "Publish 3+ technical drafts or articles",
       "Earn 100-500 total views from readers"
@@ -76,7 +76,7 @@ const TIER_DETAILS = {
   },
   established: {
     title: 'ESTABLISHED VOICE',
-    color: '#10b981', // green
+    color: '#a855f7', // purple
     requirements: [
       "Accumulate 10+ published articles on Nova",
       "Secure peer editorial board recommendation check"
@@ -119,7 +119,7 @@ const NODES = [
     id: 'contributor',
     title: 'CONTRIBUTOR',
     icon: FileText,
-    color: '#a855f7', // purple/pink
+    color: '#a855f7', // purple
     top: '63.9%', // y: 230
     left: '30%', // x: 240
     cx: 240,
@@ -129,7 +129,7 @@ const NODES = [
     id: 'influencer',
     title: 'INFLUENCER',
     icon: Flame,
-    color: '#f97316', // orange
+    color: '#a855f7', // purple
     top: '50%', // y: 180
     left: '41.25%', // x: 330
     cx: 330,
@@ -139,7 +139,7 @@ const NODES = [
     id: 'rising_writer',
     title: 'RISING WRITER',
     icon: Pencil,
-    color: '#eab308', // yellow
+    color: '#db2777', // pink
     top: '63.9%', // y: 230
     left: '47.5%', // x: 380
     cx: 380,
@@ -159,7 +159,7 @@ const NODES = [
     id: 'established',
     title: 'ESTABLISHED',
     icon: Award,
-    color: '#10b981', // green
+    color: '#a855f7', // purple
     top: '50%', // y: 180
     left: '67.5%', // x: 540
     cx: 540,
@@ -174,6 +174,14 @@ const TechProgressionMap = () => {
     <section className="max-w-7xl mx-auto px-6 mb-24 overflow-hidden relative">
       {/* Self-contained CSS styles for animations */}
       <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes path-dash-flow {
+          from { stroke-dashoffset: 40; }
+          to { stroke-dashoffset: 0; }
+        }
+        .circuit-branch-path {
+          stroke-dasharray: 8 12;
+          animation: path-dash-flow 1.6s linear infinite;
+        }
         @keyframes commit-path-glide {
           0% { offset-distance: 0%; }
           100% { offset-distance: 100%; }
@@ -215,57 +223,69 @@ const TechProgressionMap = () => {
         {/* Background Network Circuit Lines SVG Layer */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 800 360" fill="none">
           <defs>
-            <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="2.5" result="blur" />
+            {/* Custom glows tailored for individual branch colors */}
+            <filter id="neon-glow-blue" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
             
-            {/* Git Branch Gradients */}
-            <linearGradient id="cyan-blue-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#3b82f6" />
-              <stop offset="50%" stopColor="#06b6d4" />
-              <stop offset="100%" stopColor="#3b82f6" />
-            </linearGradient>
-            <linearGradient id="purple-pink-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#a855f7" />
-              <stop offset="50%" stopColor="#db2777" />
-              <stop offset="100%" stopColor="#eab308" />
-            </linearGradient>
-            <linearGradient id="orange-amber-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#a855f7" />
-              <stop offset="50%" stopColor="#f97316" />
-              <stop offset="100%" stopColor="#eab308" />
-            </linearGradient>
+            <filter id="neon-glow-purple" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+
+            <filter id="neon-glow-pink" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
           </defs>
 
-          {/* Underlay Thin Base Tracks */}
-          <path d="M 60 180 L 120 180" stroke="#16182c" strokeWidth="1.5" />
-          <path d="M 120 180 C 170 180, 170 130, 220 130 L 600 130 C 620 130, 630 130, 640 130" stroke="#16182c" strokeWidth="1.5" />
-          <path d="M 120 180 L 540 180 C 580 180, 600 130, 640 130" stroke="#16182c" strokeWidth="1.5" />
-          <path d="M 120 180 C 170 180, 170 230, 220 230 L 380 230 C 440 230, 480 180, 540 180" stroke="#16182c" strokeWidth="1.5" />
+          {/* Underlay Dark Base Dashed Tracks */}
+          <path d="M 60 180 L 120 180" stroke="#3b82f6" strokeWidth="5.5" strokeDasharray="8 12" opacity="0.15" />
+          <path d="M 120 180 C 170 180, 170 130, 220 130 L 600 130 C 620 130, 630 130, 640 130" stroke="#3b82f6" strokeWidth="5.5" strokeDasharray="8 12" opacity="0.15" />
+          <path d="M 120 180 L 540 180 C 580 180, 600 130, 640 130" stroke="#a855f7" strokeWidth="5.5" strokeDasharray="8 12" opacity="0.15" />
+          <path d="M 120 180 C 170 180, 170 230, 220 230 L 380 230 C 440 230, 480 180, 540 180" stroke="#db2777" strokeWidth="5.5" strokeDasharray="8 12" opacity="0.15" />
 
-          {/* Solid Glowing branch lines (Replaced blocky dashes with premium solid vector glow) */}
-          <path d="M 60 180 L 120 180" stroke="#3b82f6" strokeWidth="2.5" style={{ filter: 'url(#neon-glow)' }} />
+          {/* Glowing Branch Dashed Lines (Exactly Matching user screenshot colors & styles) */}
+          <path d="M 60 180 L 120 180" stroke="#3b82f6" strokeWidth="5.5" strokeDasharray="8 12" style={{ filter: 'url(#neon-glow-blue)' }} />
+          
+          {/* Top Branch: Blue dashes */}
           <path 
             d="M 120 180 C 170 180, 170 130, 220 130 L 600 130 C 620 130, 630 130, 640 130" 
-            stroke="url(#cyan-blue-grad)" 
-            strokeWidth="2.5" 
-            style={{ filter: 'url(#neon-glow)' }}
+            stroke="#3b82f6" 
+            strokeWidth="5.5" 
+            strokeDasharray="8 12"
+            className="circuit-branch-path"
+            style={{ filter: 'url(#neon-glow-blue)' }}
           />
+
+          {/* Middle Branch: Purple dashes */}
           <path 
             d="M 120 180 L 540 180 C 580 180, 600 130, 640 130" 
-            stroke="url(#purple-pink-grad)" 
-            strokeWidth="2.5" 
-            style={{ filter: 'url(#neon-glow)' }}
+            stroke="#a855f7" 
+            strokeWidth="5.5" 
+            strokeDasharray="8 12"
+            className="circuit-branch-path"
+            style={{ filter: 'url(#neon-glow-purple)' }}
           />
+
+          {/* Bottom Branch: Pink dashes */}
           <path 
             d="M 120 180 C 170 180, 170 230, 220 230 L 380 230 C 440 230, 480 180, 540 180" 
-            stroke="url(#orange-amber-grad)" 
-            strokeWidth="2.5" 
-            style={{ filter: 'url(#neon-glow)' }}
+            stroke="#db2777" 
+            strokeWidth="5.5" 
+            strokeDasharray="8 12"
+            className="circuit-branch-path"
+            style={{ filter: 'url(#neon-glow-pink)' }}
           />
 
           {/* Start Origin Node */}
@@ -273,7 +293,7 @@ const TechProgressionMap = () => {
 
           {/* Root Globe Node Anchor */}
           <circle cx="120" cy="180" r="9" fill="#3b82f6" opacity="0.15" />
-          <circle cx="120" cy="180" r="7" fill="#3b82f6" style={{ filter: 'url(#neon-glow)' }} />
+          <circle cx="120" cy="180" r="7" fill="#3b82f6" style={{ filter: 'url(#neon-glow-blue)' }} />
 
           {/* Floating Cyan Accent Circle at (340, 195) */}
           <circle cx="340" cy="195" r="7" fill="#06b6d4" opacity="0.2" className="animate-target-glow" />
@@ -285,9 +305,9 @@ const TechProgressionMap = () => {
         </svg>
 
         {/* Dynamic Glowing Trace Packets */}
-        <div className="absolute w-2 h-2 rounded-full bg-white shadow-[0_0_10px_#3b82f6,0_0_20px_#3b82f6] pointer-events-none z-10 gliding-dot-top" />
-        <div className="absolute w-2 h-2 rounded-full bg-white shadow-[0_0_10px_#db2777,0_0_20px_#db2777] pointer-events-none z-10 gliding-dot-mid" />
-        <div className="absolute w-2 h-2 rounded-full bg-white shadow-[0_0_10px_#f97316,0_0_20px_#f97316] pointer-events-none z-10 gliding-dot-bot" />
+        <div className="absolute w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_12px_#3b82f6,0_0_24px_#3b82f6] pointer-events-none z-10 gliding-dot-top" />
+        <div className="absolute w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_12px_#a855f7,0_0_24px_#a855f7] pointer-events-none z-10 gliding-dot-mid" />
+        <div className="absolute w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_12px_#db2777,0_0_24px_#db2777] pointer-events-none z-10 gliding-dot-bot" />
 
         {/* Render World icon over the root node */}
         <div className="absolute z-10 pointer-events-none text-white flex items-center justify-center" style={{ top: '50%', left: '15%', transform: 'translate(-50%, -50%)' }}>
@@ -363,12 +383,12 @@ const TechProgressionMap = () => {
 
               {/* Glowing Branch Junction Badge Circle */}
               <div 
-                className="w-7 h-7 rounded-full border bg-[#0d0f1e] flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-115"
+                className="w-7.5 h-7.5 rounded-full border bg-[#0d0f1e] flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-115"
                 style={{ 
                   borderColor: isHovered ? '#fff' : node.color,
                   boxShadow: isHovered 
-                    ? `0 0 15px ${node.color}cc, inset 0 0 6px ${node.color}50` 
-                    : `0 0 6px ${node.color}30, inset 0 0 3px ${node.color}15`,
+                    ? `0 0 16px ${node.color}cc, inset 0 0 7px ${node.color}50` 
+                    : `0 0 6px ${node.color}35, inset 0 0 3px ${node.color}15`,
                   color: '#fff'
                 }}
               >
@@ -433,7 +453,7 @@ const TechProgressionMap = () => {
           {/* Concentric pulsing rings */}
           <div className="relative w-8 h-8 rounded-full border-2 border-brand-cyan/60 bg-[#0d0f1e] flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110">
             <div className="absolute inset-0.5 rounded-full border border-brand-cyan/30 animate-target-glow" />
-            <div className="w-3 h-3 rounded-full bg-brand-cyan/35 flex items-center justify-center">
+            <div className="w-3.5 h-3.5 rounded-full bg-brand-cyan/35 flex items-center justify-center">
               <div className="w-1.5 h-1.5 rounded-full bg-brand-cyan" />
             </div>
           </div>
@@ -454,7 +474,7 @@ const TechProgressionMap = () => {
           className="absolute z-10 px-2.5 py-1 rounded-xl border border-white/5 bg-[#0b0c16]/75 backdrop-blur-md flex items-center gap-1.5 shadow-md pointer-events-none text-left"
           style={{ top: '51%', left: '47.5%', transform: 'translateX(-50%)' }}
         >
-          <Pencil className="w-2.5 h-2.5 text-[#eab308]" />
+          <Pencil className="w-2.5 h-2.5 text-[#db2777]" />
           <span className="text-[9px] font-extrabold text-white tracking-wide">Rising Writer</span>
           <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#0b0c16]/75 pointer-events-none" />
         </div>
