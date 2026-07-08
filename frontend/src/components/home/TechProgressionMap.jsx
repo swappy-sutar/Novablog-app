@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Sprout, Flame, FileText, Crown, Award, Pencil } from 'lucide-react';
+import { Sprout, Flame, FileText, Crown, Award, Pencil, Globe, GitBranch } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '../ui/GlassCard';
 
 const TIER_DETAILS = {
   seedling: {
     title: 'SEEDLING',
-    color: '#06b6d4',
+    color: '#3b82f6', // blue
     requirements: [
       "Read 1-10 technical articles across any category",
       "Follow at least 1 author profile on the platform"
@@ -20,7 +20,7 @@ const TIER_DETAILS = {
   },
   contributor: {
     title: 'CONTRIBUTOR',
-    color: '#10b981',
+    color: '#a855f7', // purple
     requirements: [
       "Read 10-50 technical articles",
       "Initiate 1 discussion comment thread"
@@ -34,7 +34,7 @@ const TIER_DETAILS = {
   },
   influencer: {
     title: 'INFLUENCER',
-    color: '#f97316',
+    color: '#f97316', // orange
     requirements: [
       "Read 50-100 technical articles",
       "Share at least 3 custom blog reference links"
@@ -48,7 +48,7 @@ const TIER_DETAILS = {
   },
   rising_writer: {
     title: 'RISING WRITER',
-    color: '#a855f7',
+    color: '#eab308', // yellow
     requirements: [
       "Publish 3+ technical drafts or articles",
       "Earn 100-500 total views from readers"
@@ -62,7 +62,7 @@ const TIER_DETAILS = {
   },
   legend: {
     title: 'LEGEND',
-    color: '#eab308',
+    color: '#3b82f6', // blue
     requirements: [
       "Read 500+ technical articles",
       "Keep a 90% weekly reading goal streak"
@@ -76,7 +76,7 @@ const TIER_DETAILS = {
   },
   established: {
     title: 'ESTABLISHED VOICE',
-    color: '#94a3b8',
+    color: '#10b981', // green
     requirements: [
       "Accumulate 10+ published articles on Nova",
       "Secure peer editorial board recommendation check"
@@ -90,7 +90,7 @@ const TIER_DETAILS = {
   },
   master: {
     title: 'ULTIMATE MASTER',
-    color: '#06b6d4',
+    color: '#06b6d4', // cyan
     requirements: [
       "Unlock all 6 lower path progression badges",
       "Maintain active contribution status for 6 months"
@@ -108,172 +108,64 @@ const NODES = [
   {
     id: 'seedling',
     title: 'SEEDLING',
-    subtitle: 'LVL 1 - READS',
     icon: Sprout,
-    color: '#06b6d4', // cyan
-    wingStyle: 'silver',
-    top: '25%',
-    left: '22%'
-  },
-  {
-    id: 'rising_writer',
-    title: 'RISING WRITER',
-    subtitle: 'LVL 10 - WRITER',
-    icon: Pencil,
-    color: '#a855f7', // purple
-    wingStyle: 'cyan',
-    top: '50%',
-    left: '36%'
+    color: '#3b82f6', // blue
+    top: '36.1%', // y: 130
+    left: '26.25%', // x: 210
+    cx: 210,
+    cy: 130
   },
   {
     id: 'contributor',
     title: 'CONTRIBUTOR',
-    subtitle: 'LVL 20 - DISCUSS',
     icon: FileText,
-    color: '#10b981', // green
-    wingStyle: 'cyan',
-    top: '25%',
-    left: '50%'
+    color: '#a855f7', // purple/pink
+    top: '63.9%', // y: 230
+    left: '30%', // x: 240
+    cx: 240,
+    cy: 230
   },
   {
     id: 'influencer',
     title: 'INFLUENCER',
-    subtitle: 'LVL 50 - CURATE',
     icon: Flame,
     color: '#f97316', // orange
-    wingStyle: 'pink',
-    top: '75%',
-    left: '50%'
+    top: '50%', // y: 180
+    left: '41.25%', // x: 330
+    cx: 330,
+    cy: 180
   },
   {
-    id: 'established',
-    title: 'ESTABLISHED',
-    subtitle: 'LVL 80 - CREATOR',
-    icon: Award,
-    color: '#94a3b8', // slate
-    wingStyle: 'pink',
-    top: '50%',
-    left: '64%'
+    id: 'rising_writer',
+    title: 'RISING WRITER',
+    icon: Pencil,
+    color: '#eab308', // yellow
+    top: '63.9%', // y: 230
+    left: '47.5%', // x: 380
+    cx: 380,
+    cy: 230
   },
   {
     id: 'legend',
     title: 'LEGEND',
-    subtitle: 'LVL 100 - ELITE',
     icon: Crown,
-    color: '#eab308', // gold
-    wingStyle: 'gold',
-    top: '25%',
-    left: '78%'
+    color: '#3b82f6', // blue
+    top: '36.1%', // y: 130
+    left: '55%', // x: 440
+    cx: 440,
+    cy: 130
+  },
+  {
+    id: 'established',
+    title: 'ESTABLISHED',
+    icon: Award,
+    color: '#10b981', // green
+    top: '50%', // y: 180
+    left: '67.5%', // x: 540
+    cx: 540,
+    cy: 180
   }
 ];
-
-// Helper Component to Draw Hexagonal Badges with Wings based on Level/Color
-const ProgressionHexBadge = ({ color, wingStyle, isHovered, IconComponent }) => {
-  return (
-    <div className="relative w-20 h-[74px] flex items-center justify-center">
-      <svg className="absolute w-full h-full overflow-visible" viewBox="0 0 80 70" fill="none">
-        <defs>
-          <filter id="badge-glow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="3.5" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-
-          {/* Gradients for wings */}
-          <linearGradient id="silver-wing" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#e2e8f0" />
-            <stop offset="100%" stopColor="#475569" />
-          </linearGradient>
-          <linearGradient id="cyan-wing" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#38bdf8" />
-            <stop offset="100%" stopColor="#0369a1" />
-          </linearGradient>
-          <linearGradient id="pink-wing" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#f472b6" />
-            <stop offset="100%" stopColor="#db2777" />
-          </linearGradient>
-          <linearGradient id="gold-wing" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fbbf24" />
-            <stop offset="100%" stopColor="#b45309" />
-          </linearGradient>
-        </defs>
-
-        {/* WING STRUCTURES */}
-        {wingStyle === 'silver' && (
-          <g>
-            <path d="M 20 22 L 4 18 L 4 48 L 20 44 Z" fill="url(#silver-wing)" opacity="0.85" />
-            <path d="M 60 22 L 76 18 L 76 48 L 60 44 Z" fill="url(#silver-wing)" opacity="0.85" />
-          </g>
-        )}
-
-        {wingStyle === 'cyan' && (
-          <g>
-            <path d="M 20 20 L 2 14 L 2 48 L 20 42 Z" fill="url(#cyan-wing)" opacity="0.9" />
-            <path d="M 60 20 L 78 14 L 78 48 L 60 42 Z" fill="url(#cyan-wing)" opacity="0.9" />
-            <path d="M 20 28 L -4 24 L -4 42 L 20 36 Z" fill="url(#cyan-wing)" opacity="0.6" />
-            <path d="M 60 28 L 84 24 L 84 42 L 60 36 Z" fill="url(#cyan-wing)" opacity="0.6" />
-          </g>
-        )}
-
-        {wingStyle === 'pink' && (
-          <g>
-            <path d="M 20 18 L 0 10 L 0 50 L 20 40 Z" fill="url(#pink-wing)" />
-            <path d="M 60 18 L 80 10 L 80 50 L 60 40 Z" fill="url(#pink-wing)" />
-            <path d="M 20 26 L -6 20 L -6 44 L 20 36 Z" fill="url(#pink-wing)" opacity="0.75" />
-            <path d="M 60 26 L 86 20 L 86 44 L 60 36 Z" fill="url(#pink-wing)" opacity="0.75" />
-            <path d="M 20 34 L -10 30 L -10 38 L 20 32 Z" fill="url(#pink-wing)" opacity="0.45" />
-            <path d="M 60 34 L 90 30 L 90 38 L 60 32 Z" fill="url(#pink-wing)" opacity="0.45" />
-          </g>
-        )}
-
-        {wingStyle === 'gold' && (
-          <g>
-            <path d="M 20 14 L -4 5 L -4 52 L 20 38 Z" fill="url(#gold-wing)" />
-            <path d="M 60 14 L 84 5 L 84 52 L 60 38 Z" fill="url(#gold-wing)" />
-            <path d="M 20 22 L -10 16 L -10 44 L 20 34 Z" fill="url(#gold-wing)" opacity="0.8" />
-            <path d="M 60 22 L 90 16 L 90 44 L 60 34 Z" fill="url(#gold-wing)" opacity="0.8" />
-            <path d="M 20 30 L -14 26 L -14 38 L 20 30 Z" fill="url(#gold-wing)" opacity="0.5" />
-            <path d="M 60 30 L 94 26 L 94 38 L 60 30 Z" fill="url(#gold-wing)" opacity="0.5" />
-          </g>
-        )}
-
-        {/* HEXAGON DOCK BASE */}
-        <polygon 
-          points="40,11 62,23 62,47 40,59 18,47 18,23" 
-          fill="#0c0d21" 
-          stroke={color} 
-          strokeWidth="3.5"
-          style={{ filter: isHovered ? 'url(#badge-glow)' : 'none' }}
-        />
-
-        {/* INNER SOLID HIGHLIGHT */}
-        <polygon 
-          points="40,16 57,26 57,44 40,54 23,44 23,26" 
-          fill={`${color}12`} 
-          stroke={`${color}40`}
-          strokeWidth="1.5"
-        />
-
-        {/* INNER CENTER MICRO GEM */}
-        <polygon 
-          points="40,28 47,32 47,38 40,42 33,38 33,32" 
-          fill={color} 
-          opacity="0.85"
-        />
-      </svg>
-
-      {/* Floating Center Icon */}
-      <div 
-        className="absolute z-10 w-8 h-8 rounded-full flex items-center justify-center text-white"
-        style={{ textShadow: `0 0 10px ${color}` }}
-      >
-        <IconComponent className="w-4 h-4 text-white" />
-      </div>
-    </div>
-  );
-};
 
 const TechProgressionMap = () => {
   const [hoveredNode, setHoveredNode] = useState(null);
@@ -282,121 +174,138 @@ const TechProgressionMap = () => {
     <section className="max-w-7xl mx-auto px-6 mb-24 overflow-hidden relative">
       {/* Self-contained CSS styles for animations */}
       <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes flow-active {
+        @keyframes path-dash-flow {
           from { stroke-dashoffset: 40; }
           to { stroke-dashoffset: 0; }
         }
         .circuit-branch-path {
           stroke-dasharray: 6 10;
-          animation: flow-active 2s linear infinite;
+          animation: path-dash-flow 1.8s linear infinite;
         }
         @keyframes commit-path-glide {
           0% { offset-distance: 0%; }
           100% { offset-distance: 100%; }
         }
         .gliding-dot-top {
-          offset-path: path("M 80 200 C 140 200, 160 100, 220 100 L 780 100 C 840 100, 860 200, 920 200");
+          offset-path: path("M 120 180 C 170 180, 170 130, 220 130 L 600 130 C 620 130, 630 130, 640 130");
           animation: commit-path-glide 10s linear infinite;
         }
         .gliding-dot-mid {
-          offset-path: path("M 80 200 L 920 200");
+          offset-path: path("M 120 180 L 540 180 C 580 180, 600 130, 640 130");
           animation: commit-path-glide 8s linear infinite;
         }
         .gliding-dot-bot {
-          offset-path: path("M 80 200 C 140 200, 160 300, 220 300 L 640 300 C 740 300, 840 200, 920 200");
+          offset-path: path("M 120 180 C 170 180, 170 230, 220 230 L 380 230 C 440 230, 480 180, 540 180");
           animation: commit-path-glide 12s linear infinite;
         }
-        @keyframes target-pulse {
-          0%, 100% { transform: scale(0.9); opacity: 0.35; }
+        @keyframes target-glow-pulse {
+          0%, 100% { transform: scale(0.95); opacity: 0.3; }
           50% { transform: scale(1.15); opacity: 0.85; }
         }
-        .animate-target-pulse {
-          animation: target-pulse 2.5s ease-in-out infinite;
+        .animate-target-glow {
+          animation: target-glow-pulse 2s ease-in-out infinite;
         }
       `}} />
 
       {/* Header */}
       <div className="text-center mb-16 space-y-2">
         <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
-          Level Up As You <span className="text-gradient">Read</span>
+          Git <span className="text-gradient">Commit</span> Graph
         </h2>
         <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto leading-relaxed">
           Unlock exclusive badges and platform privileges as your technical knowledge expands.
         </p>
       </div>
 
-      {/* DESKTOP VIEWPORT: GIT COMMIT GRAPH LAYOUT */}
-      <div className="hidden lg:block relative w-full max-w-5xl mx-auto aspect-[2.4/1] select-none">
+      {/* DESKTOP VIEWPORT: EXACT GIT COMMIT GRAPH LAYOUT */}
+      <div className="hidden lg:block relative w-full max-w-4xl mx-auto aspect-[2.2/1] select-none bg-[#070813]/40 border border-white/5 rounded-3xl p-6 shadow-[inset_0_0_40px_rgba(0,0,0,0.8)]">
         
         {/* Background Network Circuit Lines SVG Layer */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 1000 400" fill="none">
+        <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 800 360" fill="none">
           <defs>
             <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feGaussianBlur stdDeviation="3.5" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
             
-            {/* Cyber Git Commit Branch Gradients */}
+            {/* Git Branch Gradients */}
             <linearGradient id="cyan-blue-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#8b5cf6" />
-              <stop offset="30%" stopColor="#06b6d4" />
-              <stop offset="70%" stopColor="#0284c7" />
-              <stop offset="100%" stopColor="#06b6d4" />
+              <stop offset="0%" stopColor="#3b82f6" />
+              <stop offset="50%" stopColor="#06b6d4" />
+              <stop offset="100%" stopColor="#3b82f6" />
             </linearGradient>
             <linearGradient id="purple-pink-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#8b5cf6" />
-              <stop offset="50%" stopColor="#d946ef" />
-              <stop offset="100%" stopColor="#ec4899" />
+              <stop offset="0%" stopColor="#a855f7" />
+              <stop offset="50%" stopColor="#db2777" />
+              <stop offset="100%" stopColor="#eab308" />
             </linearGradient>
             <linearGradient id="orange-amber-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#8b5cf6" />
+              <stop offset="0%" stopColor="#a855f7" />
               <stop offset="50%" stopColor="#f97316" />
               <stop offset="100%" stopColor="#eab308" />
             </linearGradient>
           </defs>
 
           {/* Underlay Dark Base Tracks */}
-          <path d="M 80 200 C 140 200, 160 100, 220 100 L 780 100 C 840 100, 860 200, 920 200" stroke="#121324" strokeWidth="3" />
-          <path d="M 80 200 L 920 200" stroke="#121324" strokeWidth="3" />
-          <path d="M 80 200 C 140 200, 160 300, 220 300 L 640 300 C 740 300, 840 200, 920 200" stroke="#121324" strokeWidth="3" />
+          <path d="M 60 180 L 120 180" stroke="#14162e" strokeWidth="3" />
+          <path d="M 120 180 C 170 180, 170 130, 220 130 L 600 130 C 620 130, 630 130, 640 130" stroke="#14162e" strokeWidth="3" />
+          <path d="M 120 180 L 540 180 C 580 180, 600 130, 640 130" stroke="#14162e" strokeWidth="3" />
+          <path d="M 120 180 C 170 180, 170 230, 220 230 L 380 230 C 440 230, 480 180, 540 180" stroke="#14162e" strokeWidth="3" />
 
-          {/* Animated Glowing Traces */}
+          {/* Active Animated Paths */}
+          <path d="M 60 180 L 120 180" stroke="#3b82f6" strokeWidth="3" />
           <path 
-            d="M 80 200 C 140 200, 160 100, 220 100 L 780 100 C 840 100, 860 200, 920 200" 
+            d="M 120 180 C 170 180, 170 130, 220 130 L 600 130 C 620 130, 630 130, 640 130" 
             stroke="url(#cyan-blue-grad)" 
             strokeWidth="3.5" 
             className="circuit-branch-path"
-            style={{ filter: 'url(#neon-glow)', animationDuration: '2.5s' }}
+            style={{ filter: 'url(#neon-glow)' }}
           />
           <path 
-            d="M 80 200 L 920 200" 
+            d="M 120 180 L 540 180 C 580 180, 600 130, 640 130" 
             stroke="url(#purple-pink-grad)" 
             strokeWidth="3.5" 
             className="circuit-branch-path"
-            style={{ filter: 'url(#neon-glow)', animationDuration: '2s' }}
+            style={{ filter: 'url(#neon-glow)' }}
           />
           <path 
-            d="M 80 200 C 140 200, 160 300, 220 300 L 640 300 C 740 300, 840 200, 920 200" 
+            d="M 120 180 C 170 180, 170 230, 220 230 L 380 230 C 440 230, 480 180, 540 180" 
             stroke="url(#orange-amber-grad)" 
             strokeWidth="3.5" 
             className="circuit-branch-path"
-            style={{ filter: 'url(#neon-glow)', animationDuration: '3s' }}
+            style={{ filter: 'url(#neon-glow)' }}
           />
 
-          {/* Core Root Station Dot */}
-          <circle cx="80" cy="200" r="7" fill="#8b5cf6" stroke="#fff" strokeWidth="2" style={{ filter: 'url(#neon-glow)' }} />
-          <circle cx="80" cy="200" r="3" fill="#fff" />
+          {/* Start Hollow Circle Node */}
+          <circle cx="60" cy="180" r="6" fill="#0d0f1e" stroke="#3b82f6" strokeWidth="2.5" />
+
+          {/* Root Globe Node */}
+          <circle cx="120" cy="180" r="11" fill="#3b82f6" opacity="0.15" />
+          <circle cx="120" cy="180" r="8" fill="#3b82f6" style={{ filter: 'url(#neon-glow)' }} />
+
+          {/* Floating Cyan Accent Circle at (340, 195) */}
+          <circle cx="340" cy="195" r="9" fill="#06b6d4" opacity="0.15" className="animate-target-glow" />
+          <circle cx="340" cy="195" r="5" fill="#06b6d4" />
+
+          {/* Middle Branch Junction circles (Yellow & Green hollow) */}
+          <circle cx="410" cy="180" r="5.5" fill="#0d0f1e" stroke="#eab308" strokeWidth="2" />
+          <circle cx="480" cy="180" r="5.5" fill="#0d0f1e" stroke="#10b981" strokeWidth="2" />
         </svg>
 
-        {/* Gliding Glowing Orbs representing packet transfers */}
-        <div className="absolute w-3 h-3 rounded-full bg-white shadow-[0_0_15px_#06b6d4,0_0_30px_#8b5cf6] pointer-events-none z-10 gliding-dot-top" />
-        <div className="absolute w-3 h-3 rounded-full bg-white shadow-[0_0_15px_#d946ef,0_0_30px_#a855f7] pointer-events-none z-10 gliding-dot-mid" />
-        <div className="absolute w-3 h-3 rounded-full bg-white shadow-[0_0_15px_#f97316,0_0_30px_#eab308] pointer-events-none z-10 gliding-dot-bot" />
+        {/* Dynamic Glowing Trace Packets */}
+        <div className="absolute w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_15px_#3b82f6] pointer-events-none z-10 gliding-dot-top" />
+        <div className="absolute w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_15px_#db2777] pointer-events-none z-10 gliding-dot-mid" />
+        <div className="absolute w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_15px_#f97316] pointer-events-none z-10 gliding-dot-bot" />
 
-        {/* GIT COMMIT BRANCH BADGE NODES */}
+        {/* Render World icon over the root node */}
+        <div className="absolute z-10 pointer-events-none text-white flex items-center justify-center" style={{ top: '50%', left: '15%', transform: 'translate(-50%, -50%)' }}>
+          <Globe className="w-3.5 h-3.5 text-white" />
+        </div>
+
+        {/* MAP PROGRESSION NODES */}
         {NODES.map((node) => {
           const IconComponent = node.icon;
           const isHovered = hoveredNode === node.id;
@@ -404,7 +313,7 @@ const TechProgressionMap = () => {
           return (
             <div
               key={node.id}
-              className="absolute z-20 group flex flex-col items-center w-36 cursor-pointer"
+              className="absolute z-20 group flex flex-col items-center justify-center cursor-pointer"
               style={{ top: node.top, left: node.left, transform: 'translate(-50%, -50%)' }}
               onMouseEnter={() => setHoveredNode(node.id)}
               onMouseLeave={() => setHoveredNode(null)}
@@ -423,7 +332,7 @@ const TechProgressionMap = () => {
                       boxShadow: `0 0 25px ${node.color}15, 0 10px 30px rgba(0,0,0,0.5)`
                     }}
                   >
-                    <div className="space-y-3.5 text-left">
+                    <div className="space-y-3.5 text-left font-sans">
                       <div className="flex items-center gap-2 border-b border-white/5 pb-2">
                         <IconComponent className="w-4 h-4" style={{ color: node.color }} />
                         <h5 className="text-[11px] font-extrabold text-white tracking-widest">{details.title}</h5>
@@ -463,29 +372,27 @@ const TechProgressionMap = () => {
                 )}
               </AnimatePresence>
 
-              {/* Dynamic Hexagon Badge component */}
-              <div className="transition-transform duration-300 group-hover:scale-108 group-hover:-translate-y-1">
-                <ProgressionHexBadge 
-                  color={node.color} 
-                  wingStyle={node.wingStyle} 
-                  isHovered={isHovered} 
-                  IconComponent={IconComponent} 
-                />
-              </div>
-
-              {/* Pill Label */}
-              <div className="mt-3 px-3 py-1 rounded-full border border-white/10 bg-[#0d0f1e]/80 backdrop-blur-md flex items-center gap-1.5 shadow-md">
-                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: node.color }} />
-                <span className="text-[9px] font-extrabold text-white tracking-wider uppercase">{node.title}</span>
+              {/* Glowing Branch Junction Badge Circle */}
+              <div 
+                className="w-8 h-8 rounded-full border bg-[#0d0f1e] flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-115"
+                style={{ 
+                  borderColor: isHovered ? '#fff' : node.color,
+                  boxShadow: isHovered 
+                    ? `0 0 18px ${node.color}cc, inset 0 0 8px ${node.color}50` 
+                    : `0 0 8px ${node.color}40, inset 0 0 4px ${node.color}20`,
+                  color: '#fff'
+                }}
+              >
+                <IconComponent className="w-3.5 h-3.5 text-white" />
               </div>
             </div>
           );
         })}
 
-        {/* TERMINAL END STATION NODE: ULTIMATE SYSTEM MASTER BADGE */}
+        {/* TERMINAL ULTIMATE NODE: CYAN CONCENTRIC RINGS AT (640, 130) */}
         <div 
-          className="absolute z-20 group flex flex-col items-center w-36 cursor-pointer"
-          style={{ top: '50%', left: '92%', transform: 'translate(-50%, -50%)' }}
+          className="absolute z-20 group flex flex-col items-center justify-center cursor-pointer"
+          style={{ top: '36.1%', left: '80%', transform: 'translate(-50%, -50%)' }}
           onMouseEnter={() => setHoveredNode('master')}
           onMouseLeave={() => setHoveredNode(null)}
         >
@@ -499,10 +406,10 @@ const TechProgressionMap = () => {
                 transition={{ duration: 0.2 }}
                 className="absolute bottom-full right-0 mb-5 translate-x-[10%] w-72 p-4 rounded-2xl bg-gradient-to-br from-bg-card/98 via-bg-base/98 to-bg-card/98 border border-[#06b6d4]/50 shadow-2xl backdrop-blur-xl pointer-events-none z-50"
               >
-                <div className="space-y-3.5 text-left">
+                <div className="space-y-3.5 text-left font-sans">
                   <div className="flex items-center gap-2 border-b border-white/5 pb-2">
-                    <Award className="w-4 h-4 text-brand-cyan" />
-                    <h5 className="text-[11px] font-extrabold text-white tracking-widest">ULTIMATE SYSTEM MASTER</h5>
+                    <Award className="w-4 h-4 text-[#06b6d4]" />
+                    <h5 className="text-[11px] font-extrabold text-white tracking-widest">ULTIMATE MASTER</h5>
                   </div>
                   
                   <div className="space-y-2">
@@ -518,7 +425,7 @@ const TechProgressionMap = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <span className="text-[8px] font-semibold text-brand-cyan uppercase tracking-widest block">Unlocked Privileges</span>
+                    <span className="text-[8px] font-semibold text-[#06b6d4] uppercase tracking-widest block">Unlocked Privileges</span>
                     <ul className="space-y-1 text-[10px] text-gray-300">
                       {TIER_DETAILS.master.privileges.map((priv, idx) => (
                         <li key={idx} className="flex items-start gap-1.5 leading-snug">
@@ -534,21 +441,67 @@ const TechProgressionMap = () => {
             )}
           </AnimatePresence>
 
-          {/* Central Target Pulsing Core Node */}
-          <div className="relative w-14 h-14 rounded-full border border-brand-cyan/60 bg-[#0d0f1e] flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110">
-            {/* Concentric targets */}
-            <div className="absolute inset-1.5 rounded-full border border-brand-cyan/30 animate-target-pulse" />
-            <div className="w-5 h-5 rounded-full bg-brand-cyan/20 border border-brand-cyan flex items-center justify-center">
-              <div className="w-2.5 h-2.5 rounded-full bg-brand-cyan" />
+          {/* Concentric pulsing rings */}
+          <div className="relative w-9 h-9 rounded-full border-2 border-brand-cyan/60 bg-[#0d0f1e] flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110">
+            <div className="absolute inset-1 rounded-full border border-brand-cyan/40 animate-target-glow" />
+            <div className="w-3.5 h-3.5 rounded-full bg-brand-cyan/30 flex items-center justify-center">
+              <div className="w-1.5 h-1.5 rounded-full bg-brand-cyan" />
             </div>
           </div>
-
-          {/* Pill Label */}
-          <div className="mt-3 px-3 py-1 rounded-full border border-brand-cyan/30 bg-[#06b6d4]/5 backdrop-blur-md flex items-center gap-1.5 shadow-md">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-ping" />
-            <span className="text-[9px] font-extrabold text-brand-cyan tracking-wider uppercase">ULTIMATE MASTER</span>
-          </div>
         </div>
+
+        {/* FLOATING TEXT CALLOUTS / PILL BUBBLES */}
+        {/* 1. "Contributor" pill (below Contributor node at x: 240, y: 230) */}
+        <div 
+          className="absolute z-10 px-3 py-1.5 rounded-2xl border border-white/5 bg-[#0b0c16]/75 backdrop-blur-md flex items-center gap-1.5 shadow-md pointer-events-none text-left"
+          style={{ top: '78%', left: '30%', transform: 'translateX(-50%)' }}
+        >
+          <GitBranch className="w-3 h-3 text-[#a855f7]" />
+          <span className="text-[10px] font-extrabold text-white tracking-wide">Contributor</span>
+        </div>
+
+        {/* 2. "Rising Writer" callout bubble (above Rising Writer node at x: 380, y: 230) */}
+        <div 
+          className="absolute z-10 px-3 py-1.5 rounded-2xl border border-white/5 bg-[#0b0c16]/75 backdrop-blur-md flex items-center gap-1.5 shadow-md pointer-events-none text-left"
+          style={{ top: '51%', left: '47.5%', transform: 'translateX(-50%)' }}
+        >
+          <Pencil className="w-3 h-3 text-[#eab308]" />
+          <span className="text-[10px] font-extrabold text-white tracking-wide">Rising Writer</span>
+          {/* Small Speech Bubble tail */}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#0b0c16]/75 pointer-events-none" />
+        </div>
+
+        {/* 3. "Git Commit Graph" label bubble (above Legend node at x: 440, y: 130) */}
+        <div 
+          className="absolute z-10 px-3 py-1.5 rounded-2xl border border-white/5 bg-[#0b0c16]/75 backdrop-blur-md flex items-center gap-1.5 shadow-md pointer-events-none text-left"
+          style={{ top: '21%', left: '55%', transform: 'translateX(-50%)' }}
+        >
+          <GitBranch className="w-3 h-3 text-[#3b82f6]" />
+          <span className="text-[10px] font-extrabold text-white tracking-wide">Git Commit Graph</span>
+          {/* Small Speech Bubble tail */}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#0b0c16]/75 pointer-events-none" />
+        </div>
+
+        {/* 4. "Git Commit Braph +0" (above Target node at x: 640, y: 130) */}
+        <div 
+          className="absolute z-10 px-3 py-1.5 rounded-2xl border border-rose-500/20 bg-rose-500/10 backdrop-blur-md flex items-center gap-1.5 shadow-md pointer-events-none text-left"
+          style={{ top: '19%', left: '80%', transform: 'translateX(-50%)' }}
+        >
+          <Award className="w-3 h-3 text-rose-500" />
+          <span className="text-[10px] font-extrabold text-rose-500 tracking-wide font-mono">Git Commit Braph +0</span>
+          {/* Small Speech Bubble tail */}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-rose-500/10 pointer-events-none" />
+        </div>
+
+        {/* 5. "Git Commit Map" green pill (to the right of target node) */}
+        <div 
+          className="absolute z-10 px-3 py-1.5 rounded-full border border-brand-cyan bg-[#06b6d4]/5 backdrop-blur-md flex items-center gap-1.5 shadow-md pointer-events-none text-left"
+          style={{ top: '36.1%', left: '92.5%', transform: 'translateY(-50%)' }}
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-ping" />
+          <span className="text-[10px] font-extrabold text-brand-cyan tracking-wider font-mono uppercase">Git Commit Map</span>
+        </div>
+
       </div>
 
       {/* MOBILE / TABLET TIMELINE VERSION */}
@@ -561,7 +514,7 @@ const TechProgressionMap = () => {
             return (
               <GlassCard 
                 key={node.id} 
-                className={`p-4 border bg-bg-card flex flex-col gap-4 ${node.glowClass || ''}`}
+                className={`p-4 border bg-bg-card flex flex-col gap-4`}
               >
                 <div className="flex items-center gap-4 w-full text-left">
                   <div 
@@ -611,8 +564,8 @@ const TechProgressionMap = () => {
 
       {/* Footer Text */}
       <div className="text-center mt-12">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 py-1.5 px-4 bg-border-subtle/20 border border-border-subtle rounded-full inline-block">
-          Git Commit Progression Map
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 py-1.5 px-4 bg-border-subtle/20 border border-border-subtle rounded-full inline-block animate-pulse">
+          Interactive Git Commit Graph
         </span>
       </div>
     </section>
