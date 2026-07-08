@@ -1,6 +1,94 @@
 import React, { useState } from 'react';
 import { Sprout, Flame, FileText, Crown, Award, Pencil } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '../ui/GlassCard';
+
+const TIER_DETAILS = {
+  seedling: {
+    title: 'SEEDLING',
+    color: '#06b6d4',
+    requirements: [
+      "Read 1-10 technical articles across any category",
+      "Follow at least 1 author profile on the platform"
+    ],
+    privileges: [
+      "Post comments on active publications",
+      "Bookmark articles to your reading dashboard",
+      "Basic Seedling platform profile badge"
+    ],
+    placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
+  },
+  influencer: {
+    title: 'INFLUENCER',
+    color: '#f97316',
+    requirements: [
+      "Read 50-100 technical articles",
+      "Share at least 3 custom blog reference links"
+    ],
+    privileges: [
+      "Receive real-time push follower notifications",
+      "Customize profile header backgrounds",
+      "Access early beta layout layouts & features"
+    ],
+    placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
+  },
+  contributor: {
+    title: 'CONTRIBUTOR',
+    color: '#10b981',
+    requirements: [
+      "Read 10-50 technical articles",
+      "Initiate 1 discussion comment thread"
+    ],
+    privileges: [
+      "Edit comment content within 1 hour",
+      "Submit article drafts for review",
+      "Exclusive Contributor profile badge"
+    ],
+    placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
+  },
+  legend: {
+    title: 'LEGEND',
+    color: '#eab308',
+    requirements: [
+      "Read 500+ technical articles",
+      "Keep a 90% weekly reading goal streak"
+    ],
+    privileges: [
+      "VIP neon highlight surrounding comments",
+      "Weekly direct feedback channel to editors",
+      "Guaranteed landing page feed curation slots"
+    ],
+    placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
+  },
+  established: {
+    title: 'ESTABLISHED VOICE',
+    color: '#94a3b8',
+    requirements: [
+      "Accumulate 10+ published articles on Nova",
+      "Secure peer editorial board recommendation check"
+    ],
+    privileges: [
+      "Verified blue creator mark on username",
+      "Pin posts to the global platform feed",
+      "Community moderation privileges in threads"
+    ],
+    placement: "bottom-full right-0 mb-5 translate-x-[15%]"
+  },
+  rising_writer: {
+    title: 'RISING WRITER',
+    color: '#06b6d4',
+    requirements: [
+      "Publish 3+ technical drafts or articles",
+      "Earn 100-500 total views from readers"
+    ],
+    privileges: [
+      "Creator Hub statistics dashboard access",
+      "Configure custom footer signature blocks",
+      "Receive reader tips and support donations"
+    ],
+    placement: "bottom-full left-1/2 -translate-x-1/2 mb-8"
+  }
+};
 
 const NODES = [
   {
@@ -258,7 +346,54 @@ const TechProgressionMap = () => {
         <div 
           className="absolute z-10" 
           style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+          onMouseEnter={() => setHoveredNode('rising_writer')}
+          onMouseLeave={() => setHoveredNode(null)}
         >
+          {/* Tooltip */}
+          <AnimatePresence>
+            {hoveredNode === 'rising_writer' && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                transition={{ duration: 0.2 }}
+                className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-8 w-72 p-4 rounded-2xl bg-gradient-to-br from-bg-card/98 via-bg-base/98 to-bg-card/98 border border-brand-cyan/45 shadow-[0_0_30px_rgba(6,182,212,0.15)] backdrop-blur-xl pointer-events-none z-50`}
+              >
+                <div className="space-y-3.5">
+                  <div className="flex items-center gap-2 border-b border-white/5 pb-2">
+                    <Pencil className="w-4 h-4 text-brand-cyan" />
+                    <h5 className="text-[11px] font-extrabold text-white tracking-widest">RISING WRITER</h5>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Achieve</span>
+                    <ul className="space-y-1 text-[10px] text-gray-300">
+                      {TIER_DETAILS.rising_writer.requirements.map((req, idx) => (
+                        <li key={idx} className="flex items-start gap-1.5 leading-snug">
+                          <span className="text-brand-cyan mt-0.5">•</span>
+                          <span>{req}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="space-y-2">
+                    <span className="text-[8px] font-semibold text-brand-cyan uppercase tracking-widest block">Unlocked Privileges</span>
+                    <ul className="space-y-1 text-[10px] text-gray-300">
+                      {TIER_DETAILS.rising_writer.privileges.map((priv, idx) => (
+                        <li key={idx} className="flex items-start gap-1.5 leading-snug">
+                          <span className="text-[#8b5cf6] mt-0.5">✓</span>
+                          <span>{priv}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-bg-card/98 pointer-events-none" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Central Dome Structure */}
           <div className="relative w-44 h-44 rounded-full flex flex-col items-center justify-center bg-bg-card/45 backdrop-blur-xl border border-[#06b6d4]/40 animate-pulse-glow shadow-[0_0_20px_rgba(6,182,212,0.2)]">
             
@@ -295,6 +430,7 @@ const TechProgressionMap = () => {
         {NODES.map((node) => {
           const IconComponent = node.icon;
           const isHovered = hoveredNode === node.id;
+          const details = TIER_DETAILS[node.id];
           return (
             <div
               key={node.id}
@@ -303,6 +439,60 @@ const TechProgressionMap = () => {
               onMouseEnter={() => setHoveredNode(node.id)}
               onMouseLeave={() => setHoveredNode(null)}
             >
+              {/* Tooltip */}
+              <AnimatePresence>
+                {isHovered && details && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                    transition={{ duration: 0.2 }}
+                    className={`absolute ${details.placement} w-72 p-4 rounded-2xl bg-gradient-to-br from-bg-card/98 via-bg-base/98 to-bg-card/98 border shadow-2xl backdrop-blur-xl pointer-events-none z-50`}
+                    style={{ 
+                      borderColor: `${node.color}50`, 
+                      boxShadow: `0 0 25px ${node.color}15, 0 10px 30px rgba(0,0,0,0.5)`
+                    }}
+                  >
+                    <div className="space-y-3.5">
+                      <div className="flex items-center gap-2 border-b border-white/5 pb-2">
+                        <IconComponent className="w-4 h-4" style={{ color: node.color }} />
+                        <h5 className="text-[11px] font-extrabold text-white tracking-widest">{details.title}</h5>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Achieve</span>
+                        <ul className="space-y-1 text-[10px] text-gray-300">
+                          {details.requirements.map((req, idx) => (
+                            <li key={idx} className="flex items-start gap-1.5 leading-snug">
+                              <span style={{ color: node.color }} className="mt-0.5">•</span>
+                              <span>{req}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="space-y-2">
+                        <span className="text-[8px] font-semibold uppercase tracking-widest block" style={{ color: node.color }}>Unlocked Privileges</span>
+                        <ul className="space-y-1 text-[10px] text-gray-300">
+                          {details.privileges.map((priv, idx) => (
+                            <li key={idx} className="flex items-start gap-1.5 leading-snug">
+                              <span className="text-brand-purple mt-0.5">✓</span>
+                              <span>{priv}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                    {/* Tooltip pointer */}
+                    <div 
+                      className={`absolute top-full border-8 border-transparent border-t-bg-card/98 pointer-events-none ${
+                        node.id === 'established' ? 'right-12 translate-x-1/2' : 'left-1/2 -translate-x-1/2'
+                      }`} 
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <GlassCard 
                 className={`p-3.5 w-44 border bg-bg-card/75 transition-all duration-300 flex items-center gap-3 relative cursor-pointer ${
                   isHovered ? 'scale-105' : ''
@@ -337,24 +527,34 @@ const TechProgressionMap = () => {
       <div className="lg:hidden space-y-6 max-w-md mx-auto">
         {/* Rising Writer Dome shown at the top */}
         <div className="flex justify-center mb-8">
-          <div className="relative w-40 h-40 rounded-full flex flex-col items-center justify-center bg-bg-card/60 border border-[#06b6d4]/40 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
-            <div className="p-3 rounded-2xl bg-[#06b6d4]/10 border border-[#06b6d4]/30 text-brand-cyan mb-2">
-              <Pencil className="w-5.5 h-5.5" />
+          <div className="relative w-full max-w-sm rounded-2xl flex flex-col p-5 bg-bg-card border border-[#06b6d4]/40 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+            <div className="flex items-center gap-3.5 mb-3.5">
+              <div className="p-3.5 rounded-2xl bg-[#06b6d4]/10 border border-[#06b6d4]/30 text-brand-cyan">
+                <Pencil className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white tracking-widest uppercase">Rising Writer</h3>
+                <span className="text-[10px] font-mono font-bold text-[#06b6d4] tracking-wider block mt-0.5">100-500 Reads</span>
+              </div>
             </div>
-            <h3 className="text-xs font-bold text-white tracking-widest uppercase">Rising Writer</h3>
-            <span className="text-[8px] font-mono font-bold text-[#06b6d4] tracking-wider">100-500 Reads</span>
-            
-            <div className="flex gap-0.5 items-end h-3 mt-1.5">
-              {[4, 8, 12, 6, 10, 6, 4].map((height, i) => (
-                <span 
-                  key={i} 
-                  className="w-[1.5px] bg-brand-cyan/60 audio-eq-bar" 
-                  style={{ 
-                    height: `${height}px`,
-                    animationDelay: `${i * 0.1}s`
-                  }} 
-                />
-              ))}
+
+            <div className="pt-3.5 border-t border-white/5 space-y-2.5">
+              <div className="space-y-1">
+                <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Achieve:</span>
+                <ul className="list-disc pl-3.5 text-[10px] text-gray-300 space-y-1">
+                  {TIER_DETAILS.rising_writer.requirements.map((req, idx) => (
+                    <li key={idx}>{req}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="space-y-1">
+                <span className="text-[8px] font-semibold text-brand-cyan uppercase tracking-widest block">Unlocked Privileges:</span>
+                <ul className="list-disc pl-3.5 text-[10px] text-gray-300 space-y-1">
+                  {TIER_DETAILS.rising_writer.privileges.map((priv, idx) => (
+                    <li key={idx}>{priv}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -363,28 +563,52 @@ const TechProgressionMap = () => {
         <div className="space-y-4">
           {NODES.map((node) => {
             const IconComponent = node.icon;
+            const details = TIER_DETAILS[node.id];
             return (
               <GlassCard 
                 key={node.id} 
-                className={`p-4 border bg-bg-card flex items-center gap-4 ${node.glowClass}`}
+                className={`p-4 border bg-bg-card flex flex-col gap-4 ${node.glowClass}`}
               >
-                <div 
-                  className="p-2.5 rounded-xl text-white shrink-0"
-                  style={{ 
-                    backgroundColor: `${node.color}15`,
-                    border: `1px solid ${node.color}30`,
-                    color: node.color
-                  }}
-                >
-                  <IconComponent className="w-6 h-6" />
-                </div>
-                <div className="flex-grow">
-                  <div className="flex items-baseline justify-between">
-                    <h4 className="text-xs font-extrabold text-white tracking-widest">{node.title}</h4>
-                    <span className="text-[9px] font-mono font-bold" style={{ color: node.color }}>{node.subtitle}</span>
+                <div className="flex items-center gap-4 w-full">
+                  <div 
+                    className="p-2.5 rounded-xl text-white shrink-0"
+                    style={{ 
+                      backgroundColor: `${node.color}15`,
+                      border: `1px solid ${node.color}30`,
+                      color: node.color
+                    }}
+                  >
+                    <IconComponent className="w-6 h-6" />
                   </div>
-                  <p className="text-[10px] text-gray-500 mt-1">{node.desc}</p>
+                  <div className="flex-grow">
+                    <div className="flex items-baseline justify-between">
+                      <h4 className="text-xs font-extrabold text-white tracking-widest">{node.title}</h4>
+                      <span className="text-[9px] font-mono font-bold" style={{ color: node.color }}>{node.subtitle}</span>
+                    </div>
+                    <p className="text-[10px] text-gray-400 mt-1">{node.desc}</p>
+                  </div>
                 </div>
+
+                {details && (
+                  <div className="pt-4 border-t border-white/5 space-y-3 w-full">
+                    <div className="space-y-1">
+                      <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Achieve:</span>
+                      <ul className="list-disc pl-3.5 text-[10px] text-gray-300 space-y-1">
+                        {details.requirements.map((req, idx) => (
+                          <li key={idx}>{req}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[8px] font-semibold uppercase tracking-widest block" style={{ color: node.color }}>Unlocked Privileges:</span>
+                      <ul className="list-disc pl-3.5 text-[10px] text-gray-300 space-y-1">
+                        {details.privileges.map((priv, idx) => (
+                          <li key={idx}>{priv}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </GlassCard>
             );
           })}
