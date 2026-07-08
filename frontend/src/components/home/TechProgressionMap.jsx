@@ -74,7 +74,7 @@ const NODES = [
     desc: 'Begin your technical exploration.',
     icon: Sprout,
     color: '#06b6d4', // cyan
-    glowClass: 'shadow-[0_0_20px_rgba(6,182,212,0.4)] border-brand-cyan/50',
+    glowClass: 'shadow-[0_0_20px_rgba(6,182,212,0.35)] border-brand-cyan/40',
     top: '75%',
     left: '10%',
     x: 100,
@@ -87,7 +87,7 @@ const NODES = [
     desc: 'Share verified insights.',
     icon: FileText,
     color: '#10b981', // green
-    glowClass: 'shadow-[0_0_20px_rgba(16,185,129,0.4)] border-emerald-500/50',
+    glowClass: 'shadow-[0_0_20px_rgba(16,185,129,0.35)] border-emerald-500/40',
     top: '25%',
     left: '26%',
     x: 260,
@@ -100,7 +100,7 @@ const NODES = [
     desc: 'Command attention with your views.',
     icon: Flame,
     color: '#f97316', // orange
-    glowClass: 'shadow-[0_0_20px_rgba(249,115,22,0.4)] border-orange-500/50',
+    glowClass: 'shadow-[0_0_20px_rgba(249,115,22,0.35)] border-orange-500/40',
     top: '75%',
     left: '42%',
     x: 420,
@@ -113,7 +113,7 @@ const NODES = [
     desc: 'Grow technical creative reach.',
     icon: Pencil,
     color: '#a855f7', // purple
-    glowClass: 'shadow-[0_0_20px_rgba(168,85,247,0.4)] border-purple-500/50',
+    glowClass: 'shadow-[0_0_20px_rgba(168,85,247,0.35)] border-purple-500/40',
     top: '25%',
     left: '58%',
     x: 580,
@@ -126,7 +126,7 @@ const NODES = [
     desc: 'Master the developer narrative.',
     icon: Crown,
     color: '#eab308', // gold
-    glowClass: 'shadow-[0_0_20px_rgba(234,179,8,0.4)] border-yellow-500/50',
+    glowClass: 'shadow-[0_0_20px_rgba(234,179,8,0.35)] border-yellow-500/40',
     top: '75%',
     left: '74%',
     x: 740,
@@ -139,7 +139,7 @@ const NODES = [
     desc: 'Ultimate platform authority badge.',
     icon: Award,
     color: '#94a3b8', // slate/silver
-    glowClass: 'shadow-[0_0_20px_rgba(148,163,184,0.4)] border-slate-500/50',
+    glowClass: 'shadow-[0_0_20px_rgba(148,163,184,0.35)] border-slate-500/40',
     top: '25%',
     left: '90%',
     x: 900,
@@ -171,10 +171,16 @@ const TechProgressionMap = () => {
           animation: path-glide 10s linear infinite;
         }
         
+        /* 3D Isometric Platform Transforms */
+        .iso-platform {
+          transform: rotateX(60deg) rotateZ(-45deg);
+          transform-style: preserve-3d;
+        }
+        
         /* Soft Floating Keyframes for Spheres */
         @keyframes float-badge {
           0%, 100% { transform: translateY(0px) scale(1); }
-          50% { transform: translateY(-5px) scale(1.03); }
+          50% { transform: translateY(-7px) scale(1.03); }
         }
         .animate-float-badge {
           animation: float-badge 3s ease-in-out infinite;
@@ -191,7 +197,7 @@ const TechProgressionMap = () => {
         </p>
       </div>
 
-      {/* DESKTOP VIEWPORT: ZIGZAG GAME PATH MAP */}
+      {/* DESKTOP VIEWPORT: ZIGZAG GAME PATH MAP WITH 3D PLATFORMS */}
       <div className="hidden lg:block relative w-full max-w-5xl mx-auto aspect-[2.3/1] select-none">
         
         {/* Background Network Circuit Lines SVG Layer */}
@@ -243,7 +249,7 @@ const TechProgressionMap = () => {
           style={{ animationPlayState: hoveredNode ? 'paused' : 'running' }}
         />
 
-        {/* ZIGZAG PATH NODES */}
+        {/* ZIGZAG PATH NODES WITH 3D PLATFORMS AND BEACON BEAMS */}
         {NODES.map((node) => {
           const IconComponent = node.icon;
           const isHovered = hoveredNode === node.id;
@@ -251,7 +257,7 @@ const TechProgressionMap = () => {
           return (
             <div
               key={node.id}
-              className="absolute z-20 group flex flex-col items-center w-36"
+              className="absolute z-20 group flex flex-col items-center justify-center w-40 h-40"
               style={{ top: node.top, left: node.left, transform: 'translate(-50%, -50%)' }}
               onMouseEnter={() => setHoveredNode(node.id)}
               onMouseLeave={() => setHoveredNode(null)}
@@ -309,19 +315,43 @@ const TechProgressionMap = () => {
                 )}
               </AnimatePresence>
 
-              {/* Glowing Badge Sphere Node */}
-              <div 
-                className="w-14 h-14 rounded-full border bg-gradient-to-tr from-[#0b0c16] via-[#101124] to-[#0b0c16] flex items-center justify-center shadow-[0_4px_15px_rgba(0,0,0,0.5)] transition-all duration-300 group-hover:scale-110 cursor-pointer animate-float-badge"
-                style={{ 
-                  borderColor: isHovered ? node.color : `${node.color}50`,
-                  boxShadow: isHovered 
-                    ? `0 0 25px ${node.color}75, inset 0 0 10px ${node.color}30` 
-                    : `0 0 15px ${node.color}25, inset 0 0 8px ${node.color}15`,
-                  color: node.color,
-                  animationDelay: `${NODES.indexOf(node) * 0.2}s`
-                }}
-              >
-                <IconComponent className="w-5.5 h-5.5" />
+              {/* 3D Isometric Platform Group */}
+              <div className="relative w-28 h-28 flex flex-col items-center justify-center">
+                
+                {/* 3D Platform Plane */}
+                <div 
+                  className={`absolute w-20 h-20 bg-gradient-to-br from-[#101124] to-[#080812] border rounded-2xl transition-all duration-300 group-hover:scale-105 iso-platform shadow-[0_15px_30px_rgba(0,0,0,0.65)] ${node.glowClass}`}
+                  style={{
+                    borderColor: isHovered ? node.color : 'rgba(255,255,255,0.06)'
+                  }}
+                />
+
+                {/* Cyber Vertical Beacon Light Beam */}
+                <div 
+                  className="absolute w-[2px] h-12 bg-gradient-to-b from-transparent via-[#ffffff] to-transparent opacity-30 transition-all duration-300"
+                  style={{
+                    backgroundImage: `linear-gradient(to bottom, transparent, ${node.color}, transparent)`,
+                    opacity: isHovered ? 0.75 : 0.25,
+                    transform: 'translateY(-6px)'
+                  }}
+                />
+
+                {/* Floating Glowing Badge Sphere */}
+                <div 
+                  className="absolute z-10 w-12 h-12 rounded-full border flex items-center justify-center animate-float-badge shadow-lg bg-gradient-to-t from-transparent transition-all duration-300"
+                  style={{ 
+                    top: '-6px',
+                    borderColor: `${node.color}50`,
+                    boxShadow: isHovered 
+                      ? `0 0 25px ${node.color}80, inset 0 0 10px ${node.color}40` 
+                      : `0 0 15px ${node.color}35, inset 0 0 8px ${node.color}20`,
+                    backgroundImage: `radial-gradient(circle at 35% 35%, rgba(255,255,255,0.1), ${node.color}15)`,
+                    color: node.color,
+                    animationDelay: `${NODES.indexOf(node) * 0.25}s`
+                  }}
+                >
+                  <IconComponent className="w-5.5 h-5.5" />
+                </div>
               </div>
 
               {/* Monospace Centered Label */}
