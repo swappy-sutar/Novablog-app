@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Sprout, Flame, FileText, Crown, Award, Pencil } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import GlassCard from '../ui/GlassCard';
 
 const TIER_DETAILS = {
   seedling: {
@@ -74,13 +73,11 @@ const NODES = [
     desc: 'Begin your technical exploration.',
     icon: Sprout,
     color: '#06b6d4', // cyan
-    glowClass: 'shadow-[0_0_20px_rgba(6,182,212,0.3)] border-brand-cyan/40',
-    hoverGlowClass: 'group-hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] group-hover:border-brand-cyan/80',
+    glowClass: 'shadow-[0_0_20px_rgba(6,182,212,0.35)] border-brand-cyan/40',
     top: '25%',
     left: '22%',
     x: 220,
-    y: 100,
-    flowClass: 'text-brand-cyan'
+    y: 100
   },
   {
     id: 'influencer',
@@ -89,13 +86,11 @@ const NODES = [
     desc: 'Command attention with your views.',
     icon: Flame,
     color: '#f97316', // orange
-    glowClass: 'shadow-[0_0_20px_rgba(249,115,22,0.3)] border-orange-500/40',
-    hoverGlowClass: 'group-hover:shadow-[0_0_30px_rgba(249,115,22,0.6)] group-hover:border-orange-500/80',
+    glowClass: 'shadow-[0_0_20px_rgba(249,115,22,0.35)] border-orange-500/40',
     top: '75%',
     left: '28%',
     x: 280,
-    y: 300,
-    flowClass: 'text-orange-500'
+    y: 300
   },
   {
     id: 'contributor',
@@ -104,13 +99,11 @@ const NODES = [
     desc: 'Share verified insights.',
     icon: FileText,
     color: '#10b981', // green
-    glowClass: 'shadow-[0_0_20px_rgba(16,185,129,0.3)] border-emerald-500/40',
-    hoverGlowClass: 'group-hover:shadow-[0_0_30px_rgba(16,185,129,0.6)] group-hover:border-emerald-500/80',
+    glowClass: 'shadow-[0_0_20px_rgba(16,185,129,0.35)] border-emerald-500/40',
     top: '25%',
     left: '72%',
     x: 720,
-    y: 100,
-    flowClass: 'text-emerald-500'
+    y: 100
   },
   {
     id: 'legend',
@@ -119,13 +112,11 @@ const NODES = [
     desc: 'Master the developer narrative.',
     icon: Crown,
     color: '#eab308', // gold
-    glowClass: 'shadow-[0_0_20px_rgba(234,179,8,0.3)] border-yellow-500/40',
-    hoverGlowClass: 'group-hover:shadow-[0_0_30px_rgba(234,179,8,0.6)] group-hover:border-yellow-500/80',
+    glowClass: 'shadow-[0_0_20px_rgba(234,179,8,0.35)] border-yellow-500/40',
     top: '75%',
     left: '78%',
     x: 780,
-    y: 300,
-    flowClass: 'text-yellow-500'
+    y: 300
   },
   {
     id: 'established',
@@ -134,13 +125,11 @@ const NODES = [
     desc: 'Ultimate platform authority badge.',
     icon: Award,
     color: '#94a3b8', // slate/silver
-    glowClass: 'shadow-[0_0_20px_rgba(148,163,184,0.3)] border-slate-500/40',
-    hoverGlowClass: 'group-hover:shadow-[0_0_30px_rgba(148,163,184,0.6)] group-hover:border-slate-500/80',
+    glowClass: 'shadow-[0_0_20px_rgba(148,163,184,0.35)] border-slate-500/40',
     top: '50%',
     left: '92%',
     x: 920,
-    y: 200,
-    flowClass: 'text-slate-400'
+    y: 200
   }
 ];
 
@@ -149,7 +138,7 @@ const TechProgressionMap = () => {
 
   return (
     <section className="max-w-7xl mx-auto px-6 mb-24 overflow-hidden relative">
-      {/* Self-contained CSS styles for animations */}
+      {/* Self-contained CSS styles for isometric projections and keyframes */}
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes circuit-flow {
           from { stroke-dashoffset: 40; }
@@ -169,11 +158,26 @@ const TechProgressionMap = () => {
         }
         @keyframes pulse-ring {
           0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.2; }
-          50% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.6; }
+          50% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.5; }
           100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.2; }
         }
         .pulse-globe-ring {
           animation: pulse-ring 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        /* 3D Isometric Platform Transforms */
+        .iso-platform {
+          transform: rotateX(60deg) rotateZ(-45deg);
+          transform-style: preserve-3d;
+        }
+        
+        /* Soft Floating Keyframes for Spheres */
+        @keyframes float-icon {
+          0%, 100% { transform: translateY(0px) scale(1); }
+          50% { transform: translateY(-6px) scale(1.03); }
+        }
+        .animate-float-icon {
+          animation: float-icon 3s ease-in-out infinite;
         }
       `}} />
 
@@ -188,7 +192,7 @@ const TechProgressionMap = () => {
       </div>
 
       {/* DESKTOP VIEWPORT: INTERACTIVE PROGRESSION MAP */}
-      <div className="hidden lg:block relative w-full max-w-5xl mx-auto aspect-[2.5/1]">
+      <div className="hidden lg:block relative w-full max-w-5xl mx-auto aspect-[2.3/1] select-none">
         
         {/* Background Network Circuit Lines SVG Layer */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 1000 400" fill="none">
@@ -318,7 +322,7 @@ const TechProgressionMap = () => {
           />
         </svg>
 
-        {/* CENTER NODE: RISING WRITER (Pulsing Globe / Equalizer Dome) */}
+        {/* CENTER NODE: RISING WRITER (3D Glass Sphere Dome) */}
         <div 
           className="absolute z-10" 
           style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
@@ -333,9 +337,9 @@ const TechProgressionMap = () => {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 10 }}
                 transition={{ duration: 0.2 }}
-                className="absolute bottom-full left-1/2 -translate-x-1/2 mb-8 w-72 p-4 rounded-2xl bg-gradient-to-br from-bg-card/98 via-bg-base/98 to-bg-card/98 border border-brand-cyan/45 shadow-[0_0_30px_rgba(6,182,212,0.15)] backdrop-blur-xl pointer-events-none z-50"
+                className="absolute bottom-full left-1/2 -translate-x-1/2 mb-10 w-72 p-4 rounded-2xl bg-gradient-to-br from-[#0b0c16]/98 via-[#131526]/98 to-[#0b0c16]/98 border border-brand-cyan/40 shadow-[0_0_30px_rgba(6,182,212,0.15)] backdrop-blur-xl pointer-events-none z-50"
               >
-                <div className="space-y-3.5">
+                <div className="space-y-3.5 text-left">
                   <div className="flex items-center gap-2 border-b border-white/5 pb-2">
                     <Pencil className="w-4 h-4 text-brand-cyan" />
                     <h5 className="text-[11px] font-extrabold text-white tracking-widest">RISING WRITER BADGE</h5>
@@ -360,32 +364,35 @@ const TechProgressionMap = () => {
                     </p>
                   </div>
                 </div>
-                <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-bg-card/98 pointer-events-none" />
+                <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-[#0b0c16]/98 pointer-events-none" />
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Central Dome Structure */}
-          <div className="relative w-44 h-44 rounded-full flex flex-col items-center justify-center bg-bg-card/45 backdrop-blur-xl border border-[#06b6d4]/40 animate-pulse-glow shadow-[0_0_20px_rgba(6,182,212,0.2)]">
+          {/* Central Dome structure with isometric glow styling */}
+          <div className="relative w-44 h-44 rounded-full flex flex-col items-center justify-center bg-gradient-to-b from-[#06b6d4]/15 to-[#8b5cf6]/5 border border-[#06b6d4]/45 backdrop-blur-xl animate-pulse-glow shadow-[0_0_30px_rgba(6,182,212,0.25)] select-none">
             
-            {/* Pulsing Outer Aura Rings */}
+            {/* Ambient inner glass reflection effect */}
+            <div className="absolute inset-2 rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.08),transparent_60%)] pointer-events-none" />
+
+            {/* Glowing Rings */}
             <div className="absolute top-1/2 left-1/2 w-56 h-56 rounded-full border border-[#06b6d4]/20 pulse-globe-ring -z-10" />
             <div className="absolute top-1/2 left-1/2 w-64 h-64 rounded-full border border-[#8b5cf6]/10 pulse-globe-ring -z-10" style={{ animationDelay: '1.5s' }} />
 
-            {/* Glowing Icon Base */}
-            <div className="p-3.5 rounded-2xl bg-gradient-to-tr from-[#06b6d4]/20 to-[#8b5cf6]/30 border border-[#06b6d4]/40 flex items-center justify-center text-brand-cyan mb-2.5 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+            {/* Float Badge Container */}
+            <div className="p-3.5 rounded-2xl bg-gradient-to-tr from-[#06b6d4]/20 to-[#8b5cf6]/20 border border-[#06b6d4]/45 flex items-center justify-center text-brand-cyan mb-2 shadow-[0_0_15px_rgba(6,182,212,0.3)] animate-float-icon">
               <Pencil className="w-6 h-6" />
             </div>
 
-            <h3 className="text-xs font-bold text-white tracking-widest uppercase">Rising Writer</h3>
-            <span className="text-[9px] font-mono font-bold text-[#06b6d4] mt-0.5 tracking-wider">100-500 Reads</span>
+            <h3 className="text-[10px] font-extrabold text-white tracking-widest uppercase">Rising Writer</h3>
+            <span className="text-[8px] font-mono font-bold text-[#06b6d4] mt-0.5 tracking-wider">100-500 Reads</span>
 
-            {/* Audio Equalizer Graphics at bottom */}
-            <div className="flex gap-1 items-end h-4 mt-2">
+            {/* Audio Equalizer Graphics */}
+            <div className="flex gap-0.5 items-end h-3 mt-2 select-none">
               {[6, 12, 18, 10, 16, 8, 14, 6].map((height, i) => (
                 <span 
                   key={i} 
-                  className="w-[2px] rounded-full bg-brand-cyan/60 audio-eq-bar" 
+                  className="w-[1.5px] rounded-full bg-[#06b6d4]/65 audio-eq-bar" 
                   style={{ 
                     height: `${height}px`,
                     animationDelay: `${i * 0.15}s`,
@@ -397,7 +404,7 @@ const TechProgressionMap = () => {
           </div>
         </div>
 
-        {/* Progress Map Nodes */}
+        {/* PROGRESS MAP TIER NODES: ISOMETRIC PLATFORMS */}
         {NODES.map((node) => {
           const IconComponent = node.icon;
           const isHovered = hoveredNode === node.id;
@@ -405,7 +412,7 @@ const TechProgressionMap = () => {
           return (
             <div
               key={node.id}
-              className="absolute z-20 group transition-all duration-300"
+              className="absolute z-20 group flex flex-col items-center justify-center w-40 h-40"
               style={{ top: node.top, left: node.left, transform: 'translate(-50%, -50%)' }}
               onMouseEnter={() => setHoveredNode(node.id)}
               onMouseLeave={() => setHoveredNode(null)}
@@ -418,15 +425,14 @@ const TechProgressionMap = () => {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute z-50 w-72 p-4 rounded-2xl bg-gradient-to-br from-bg-card/98 via-bg-base/98 to-bg-card/98 border shadow-2xl backdrop-blur-xl pointer-events-none"
+                    className="absolute z-50 w-72 p-4 rounded-2xl bg-gradient-to-br from-[#0b0c16]/98 via-[#131526]/98 to-[#0b0c16]/98 border shadow-2xl backdrop-blur-xl pointer-events-none"
                     style={{ 
                       borderColor: `${node.color}50`, 
                       boxShadow: `0 0 25px ${node.color}15, 0 10px 30px rgba(0,0,0,0.5)`,
-                      top: details.placement.includes('bottom-full') ? 'auto' : '100%',
-                      bottom: details.placement.includes('bottom-full') ? '100%' : 'auto',
+                      bottom: '100%',
                       left: details.placement.includes('right-0') ? 'auto' : '50%',
                       right: details.placement.includes('right-0') ? '0px' : 'auto',
-                      transform: details.placement.includes('right-0') ? 'translate(15%, -12px)' : 'translate(-50%, -12px)'
+                      transform: details.placement.includes('right-0') ? 'translate(20%, -15px)' : 'translate(-50%, -15px)'
                     }}
                   >
                     <div className="space-y-3.5 text-left">
@@ -456,7 +462,7 @@ const TechProgressionMap = () => {
                     </div>
                     {/* Tooltip pointer */}
                     <div 
-                      className={`absolute top-full border-8 border-transparent border-t-bg-card/98 pointer-events-none ${
+                      className={`absolute top-full border-8 border-transparent border-t-[#0b0c16]/98 pointer-events-none ${
                         node.id === 'established' ? 'right-12 translate-x-1/2' : 'left-1/2 -translate-x-1/2'
                       }`} 
                     />
@@ -464,31 +470,41 @@ const TechProgressionMap = () => {
                 )}
               </AnimatePresence>
 
-              <GlassCard 
-                className={`p-3.5 w-44 border bg-bg-card/75 transition-all duration-300 flex items-center gap-3 relative cursor-pointer ${
-                  isHovered ? 'scale-105' : ''
-                } ${node.glowClass} ${node.hoverGlowClass}`}
-              >
-                {/* Node Icon */}
+              {/* 3D Isometric Platform Group */}
+              <div className="relative w-28 h-28 flex flex-col items-center justify-center">
+                
+                {/* 3D Platform Plane */}
                 <div 
-                  className="p-2 rounded-xl shrink-0 transition-transform duration-300"
+                  className={`absolute w-20 h-20 bg-gradient-to-br from-[#101124] to-[#080812] border rounded-2xl transition-all duration-300 group-hover:scale-105 iso-platform shadow-[0_15px_30px_rgba(0,0,0,0.65)] ${node.glowClass}`}
+                  style={{
+                    borderColor: isHovered ? node.color : 'rgba(255,255,255,0.06)'
+                  }}
+                />
+
+                {/* Floating Glowing Sphere Badge above the Platform */}
+                <div 
+                  className="absolute z-10 w-12 h-12 rounded-full border flex items-center justify-center animate-float-icon shadow-lg bg-gradient-to-t from-transparent transition-all duration-300"
                   style={{ 
-                    backgroundColor: `${node.color}15`,
-                    border: `1px solid ${node.color}35`,
+                    top: '-6px',
+                    borderColor: `${node.color}50`,
+                    boxShadow: isHovered 
+                      ? `0 0 25px ${node.color}80, inset 0 0 10px ${node.color}40` 
+                      : `0 0 15px ${node.color}35, inset 0 0 8px ${node.color}20`,
+                    backgroundImage: `radial-gradient(circle at 35% 35%, rgba(255,255,255,0.1), ${node.color}15)`,
                     color: node.color
                   }}
                 >
-                  <IconComponent className="w-5.5 h-5.5" />
+                  <IconComponent className="w-5 h-5" />
                 </div>
+              </div>
 
-                {/* Node Info */}
-                <div className="min-w-0 flex-grow text-left">
-                  <h4 className="text-[10px] font-extrabold text-white tracking-widest truncate">{node.title}</h4>
-                  <span className="text-[8px] font-mono font-semibold tracking-wider truncate block mt-0.5" style={{ color: node.color }}>
-                    {node.subtitle}
-                  </span>
-                </div>
-              </GlassCard>
+              {/* Monospace Centered Label */}
+              <div className="text-center mt-3 z-10">
+                <h4 className="text-[10px] font-extrabold text-white tracking-widest uppercase">{node.title}</h4>
+                <span className="text-[8px] font-mono font-bold tracking-widest block mt-0.5" style={{ color: node.color }}>
+                  {node.subtitle}
+                </span>
+              </div>
             </div>
           );
         })}
