@@ -5,87 +5,63 @@ import GlassCard from '../ui/GlassCard';
 
 const TIER_DETAILS = {
   seedling: {
-    title: 'SEEDLING',
+    title: 'SEEDLING BADGE',
     color: '#06b6d4',
     requirements: [
       "Read 1-10 technical articles across any category",
       "Follow at least 1 author profile on the platform"
     ],
-    privileges: [
-      "Post comments on active publications",
-      "Bookmark articles to your reading dashboard",
-      "Basic Seedling platform profile badge"
-    ],
+    badgeShowcase: "Unlocks the Seedling profile badge, displaying a cyan sprout icon on your public profile to showcase early platform exploration.",
     placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
   },
   influencer: {
-    title: 'INFLUENCER',
+    title: 'INFLUENCER BADGE',
     color: '#f97316',
     requirements: [
       "Read 50-100 technical articles",
       "Share at least 3 custom blog reference links"
     ],
-    privileges: [
-      "Receive real-time push follower notifications",
-      "Customize profile header backgrounds",
-      "Access early beta layout layouts & features"
-    ],
+    badgeShowcase: "Unlocks the Influencer profile badge, showing an orange flame icon on your profile marking you as a prominent technical content curator.",
     placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
   },
   contributor: {
-    title: 'CONTRIBUTOR',
+    title: 'CONTRIBUTOR BADGE',
     color: '#10b981',
     requirements: [
       "Read 10-50 technical articles",
       "Initiate 1 discussion comment thread"
     ],
-    privileges: [
-      "Edit comment content within 1 hour",
-      "Submit article drafts for review",
-      "Exclusive Contributor profile badge"
-    ],
+    badgeShowcase: "Unlocks the Contributor profile badge, featuring a green clipboard icon on comments and discussions to identify active tech contributors.",
     placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
   },
   legend: {
-    title: 'LEGEND',
+    title: 'LEGEND BADGE',
     color: '#eab308',
     requirements: [
       "Read 500+ technical articles",
       "Keep a 90% weekly reading goal streak"
     ],
-    privileges: [
-      "VIP neon highlight surrounding comments",
-      "Weekly direct feedback channel to editors",
-      "Guaranteed landing page feed curation slots"
-    ],
+    badgeShowcase: "Unlocks the golden Legend badge, displaying an amber crown icon on your user card, reserved exclusively for the top technical reading elite.",
     placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
   },
   established: {
-    title: 'ESTABLISHED VOICE',
+    title: 'ESTABLISHED VOICE BADGE',
     color: '#94a3b8',
     requirements: [
       "Accumulate 10+ published articles on Nova",
       "Secure peer editorial board recommendation check"
     ],
-    privileges: [
-      "Verified blue creator mark on username",
-      "Pin posts to the global platform feed",
-      "Community moderation privileges in threads"
-    ],
+    badgeShowcase: "Unlocks the Verified Blue Checkmark and silver established seal, highlighting your high-quality writing and verified platform authority.",
     placement: "bottom-full right-0 mb-5 translate-x-[15%]"
   },
   rising_writer: {
-    title: 'RISING WRITER',
+    title: 'RISING WRITER BADGE',
     color: '#06b6d4',
     requirements: [
       "Publish 3+ technical drafts or articles",
       "Earn 100-500 total views from readers"
     ],
-    privileges: [
-      "Creator Hub statistics dashboard access",
-      "Configure custom footer signature blocks",
-      "Receive reader tips and support donations"
-    ],
+    badgeShowcase: "Unlocks the Rising Writer badge, adding a cyan pencil icon next to your name to recognize your technical writing and initial reader reach.",
     placement: "bottom-full left-1/2 -translate-x-1/2 mb-8"
   }
 };
@@ -207,7 +183,7 @@ const TechProgressionMap = () => {
           Level Up As You <span className="text-gradient">Read</span>
         </h2>
         <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto leading-relaxed">
-          Unlock exclusive badges and platform privileges as your technical knowledge expands.
+          Unlock exclusive badges as your technical knowledge expands.
         </p>
       </div>
 
@@ -357,16 +333,16 @@ const TechProgressionMap = () => {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 10 }}
                 transition={{ duration: 0.2 }}
-                className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-8 w-72 p-4 rounded-2xl bg-gradient-to-br from-bg-card/98 via-bg-base/98 to-bg-card/98 border border-brand-cyan/45 shadow-[0_0_30px_rgba(6,182,212,0.15)] backdrop-blur-xl pointer-events-none z-50`}
+                className="absolute bottom-full left-1/2 -translate-x-1/2 mb-8 w-72 p-4 rounded-2xl bg-gradient-to-br from-bg-card/98 via-bg-base/98 to-bg-card/98 border border-brand-cyan/45 shadow-[0_0_30px_rgba(6,182,212,0.15)] backdrop-blur-xl pointer-events-none z-50"
               >
                 <div className="space-y-3.5">
                   <div className="flex items-center gap-2 border-b border-white/5 pb-2">
                     <Pencil className="w-4 h-4 text-brand-cyan" />
-                    <h5 className="text-[11px] font-extrabold text-white tracking-widest">RISING WRITER</h5>
+                    <h5 className="text-[11px] font-extrabold text-white tracking-widest">RISING WRITER BADGE</h5>
                   </div>
                   
                   <div className="space-y-2">
-                    <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Achieve</span>
+                    <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Unlock</span>
                     <ul className="space-y-1 text-[10px] text-gray-300">
                       {TIER_DETAILS.rising_writer.requirements.map((req, idx) => (
                         <li key={idx} className="flex items-start gap-1.5 leading-snug">
@@ -377,16 +353,11 @@ const TechProgressionMap = () => {
                     </ul>
                   </div>
 
-                  <div className="space-y-2">
-                    <span className="text-[8px] font-semibold text-brand-cyan uppercase tracking-widest block">Unlocked Privileges</span>
-                    <ul className="space-y-1 text-[10px] text-gray-300">
-                      {TIER_DETAILS.rising_writer.privileges.map((priv, idx) => (
-                        <li key={idx} className="flex items-start gap-1.5 leading-snug">
-                          <span className="text-[#8b5cf6] mt-0.5">✓</span>
-                          <span>{priv}</span>
-                        </li>
-                      ))}
-                    </ul>
+                  <div className="space-y-1.5">
+                    <span className="text-[8px] font-semibold text-brand-cyan uppercase tracking-widest block">Badge Showcase</span>
+                    <p className="text-[10px] text-gray-300 leading-snug">
+                      {TIER_DETAILS.rising_writer.badgeShowcase}
+                    </p>
                   </div>
                 </div>
                 <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-bg-card/98 pointer-events-none" />
@@ -447,20 +418,25 @@ const TechProgressionMap = () => {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
                     transition={{ duration: 0.2 }}
-                    className={`absolute ${details.placement} w-72 p-4 rounded-2xl bg-gradient-to-br from-bg-card/98 via-bg-base/98 to-bg-card/98 border shadow-2xl backdrop-blur-xl pointer-events-none z-50`}
+                    className="absolute z-50 w-72 p-4 rounded-2xl bg-gradient-to-br from-bg-card/98 via-bg-base/98 to-bg-card/98 border shadow-2xl backdrop-blur-xl pointer-events-none"
                     style={{ 
                       borderColor: `${node.color}50`, 
-                      boxShadow: `0 0 25px ${node.color}15, 0 10px 30px rgba(0,0,0,0.5)`
+                      boxShadow: `0 0 25px ${node.color}15, 0 10px 30px rgba(0,0,0,0.5)`,
+                      top: details.placement.includes('bottom-full') ? 'auto' : '100%',
+                      bottom: details.placement.includes('bottom-full') ? '100%' : 'auto',
+                      left: details.placement.includes('right-0') ? 'auto' : '50%',
+                      right: details.placement.includes('right-0') ? '0px' : 'auto',
+                      transform: details.placement.includes('right-0') ? 'translate(15%, -12px)' : 'translate(-50%, -12px)'
                     }}
                   >
-                    <div className="space-y-3.5">
+                    <div className="space-y-3.5 text-left">
                       <div className="flex items-center gap-2 border-b border-white/5 pb-2">
                         <IconComponent className="w-4 h-4" style={{ color: node.color }} />
                         <h5 className="text-[11px] font-extrabold text-white tracking-widest">{details.title}</h5>
                       </div>
                       
                       <div className="space-y-2">
-                        <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Achieve</span>
+                        <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Unlock</span>
                         <ul className="space-y-1 text-[10px] text-gray-300">
                           {details.requirements.map((req, idx) => (
                             <li key={idx} className="flex items-start gap-1.5 leading-snug">
@@ -471,16 +447,11 @@ const TechProgressionMap = () => {
                         </ul>
                       </div>
 
-                      <div className="space-y-2">
-                        <span className="text-[8px] font-semibold uppercase tracking-widest block" style={{ color: node.color }}>Unlocked Privileges</span>
-                        <ul className="space-y-1 text-[10px] text-gray-300">
-                          {details.privileges.map((priv, idx) => (
-                            <li key={idx} className="flex items-start gap-1.5 leading-snug">
-                              <span className="text-brand-purple mt-0.5">✓</span>
-                              <span>{priv}</span>
-                            </li>
-                          ))}
-                        </ul>
+                      <div className="space-y-1.5">
+                        <span className="text-[8px] font-semibold uppercase tracking-widest block" style={{ color: node.color }}>Badge Showcase</span>
+                        <p className="text-[10px] text-gray-300 leading-snug">
+                          {details.badgeShowcase}
+                        </p>
                       </div>
                     </div>
                     {/* Tooltip pointer */}
@@ -511,9 +482,9 @@ const TechProgressionMap = () => {
                 </div>
 
                 {/* Node Info */}
-                <div className="min-w-0 flex-grow">
+                <div className="min-w-0 flex-grow text-left">
                   <h4 className="text-[10px] font-extrabold text-white tracking-widest truncate">{node.title}</h4>
-                  <span className="text-[8px] font-mono font-semibold text-gray-400 tracking-wider truncate block mt-0.5" style={{ color: node.color }}>
+                  <span className="text-[8px] font-mono font-semibold tracking-wider truncate block mt-0.5" style={{ color: node.color }}>
                     {node.subtitle}
                   </span>
                 </div>
@@ -532,15 +503,15 @@ const TechProgressionMap = () => {
               <div className="p-3.5 rounded-2xl bg-[#06b6d4]/10 border border-[#06b6d4]/30 text-brand-cyan">
                 <Pencil className="w-6 h-6" />
               </div>
-              <div>
+              <div className="text-left">
                 <h3 className="text-sm font-bold text-white tracking-widest uppercase">Rising Writer</h3>
                 <span className="text-[10px] font-mono font-bold text-[#06b6d4] tracking-wider block mt-0.5">100-500 Reads</span>
               </div>
             </div>
 
-            <div className="pt-3.5 border-t border-white/5 space-y-2.5">
+            <div className="pt-3.5 border-t border-white/5 space-y-2.5 text-left">
               <div className="space-y-1">
-                <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Achieve:</span>
+                <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Unlock:</span>
                 <ul className="list-disc pl-3.5 text-[10px] text-gray-300 space-y-1">
                   {TIER_DETAILS.rising_writer.requirements.map((req, idx) => (
                     <li key={idx}>{req}</li>
@@ -548,12 +519,8 @@ const TechProgressionMap = () => {
                 </ul>
               </div>
               <div className="space-y-1">
-                <span className="text-[8px] font-semibold text-brand-cyan uppercase tracking-widest block">Unlocked Privileges:</span>
-                <ul className="list-disc pl-3.5 text-[10px] text-gray-300 space-y-1">
-                  {TIER_DETAILS.rising_writer.privileges.map((priv, idx) => (
-                    <li key={idx}>{priv}</li>
-                  ))}
-                </ul>
+                <span className="text-[8px] font-semibold text-brand-cyan uppercase tracking-widest block">Badge Showcase:</span>
+                <p className="text-[10px] text-gray-300 leading-snug">{TIER_DETAILS.rising_writer.badgeShowcase}</p>
               </div>
             </div>
           </div>
@@ -569,7 +536,7 @@ const TechProgressionMap = () => {
                 key={node.id} 
                 className={`p-4 border bg-bg-card flex flex-col gap-4 ${node.glowClass}`}
               >
-                <div className="flex items-center gap-4 w-full">
+                <div className="flex items-center gap-4 w-full text-left">
                   <div 
                     className="p-2.5 rounded-xl text-white shrink-0"
                     style={{ 
@@ -590,9 +557,9 @@ const TechProgressionMap = () => {
                 </div>
 
                 {details && (
-                  <div className="pt-4 border-t border-white/5 space-y-3 w-full">
+                  <div className="pt-4 border-t border-white/5 space-y-3 w-full text-left">
                     <div className="space-y-1">
-                      <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Achieve:</span>
+                      <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Unlock:</span>
                       <ul className="list-disc pl-3.5 text-[10px] text-gray-300 space-y-1">
                         {details.requirements.map((req, idx) => (
                           <li key={idx}>{req}</li>
@@ -600,12 +567,8 @@ const TechProgressionMap = () => {
                       </ul>
                     </div>
                     <div className="space-y-1">
-                      <span className="text-[8px] font-semibold uppercase tracking-widest block" style={{ color: node.color }}>Unlocked Privileges:</span>
-                      <ul className="list-disc pl-3.5 text-[10px] text-gray-300 space-y-1">
-                        {details.privileges.map((priv, idx) => (
-                          <li key={idx}>{priv}</li>
-                        ))}
-                      </ul>
+                      <span className="text-[8px] font-semibold uppercase tracking-widest block" style={{ color: node.color }}>Badge Showcase:</span>
+                      <p className="text-[10px] text-gray-300 leading-snug">{details.badgeShowcase}</p>
                     </div>
                   </div>
                 )}
