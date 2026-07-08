@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowUp } from "lucide-react";
 import Navbar from "../components/layout/Navbar";
 import EditorToolbar from "../components/editor/EditorToolbar";
 import { blogAPI } from "../lib/api";
@@ -54,6 +56,19 @@ const WritePage = () => {
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState("");
   const [isFeatured, setIsFeatured] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // Autosave state
   const [draftId, setDraftId] = useState(editId || null);
@@ -469,6 +484,22 @@ const WritePage = () => {
           </div>
         </div>
       </main>
+
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 p-3.5 glass-panel rounded-full shadow-2xl text-gray-400 hover:text-white hover:border-gray-500 transition-all duration-200 z-50 cursor-pointer active:scale-90"
+            title="Go to Top"
+          >
+            <ArrowUp className="w-5 h-5" strokeWidth={2.5} />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
