@@ -21,14 +21,14 @@ const Sidebar = ({ blog }) => {
     if (headings.length === 0) return;
 
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + 120; // Offset for navbar + headers
-      
       let currentActiveId = '';
+      const offset = 220; // Trigger threshold from top of viewport
+
       for (let i = 0; i < headings.length; i++) {
         const el = document.getElementById(headings[i].id);
         if (el) {
-          const top = el.getBoundingClientRect().top + window.scrollY;
-          if (scrollPosition >= top) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= offset) {
             currentActiveId = headings[i].id;
           } else {
             break;
