@@ -90,6 +90,7 @@ const TechProgressionMap = () => {
           clip-path: polygon(0 24px, 50% 0, 100% 24px, 100% 100%, 0 100%);
           transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
           will-change: transform;
+          filter: drop-shadow(0 8px 12px rgba(0,0,0,0.12));
         }
         .cinematic-chevron-inner {
           clip-path: polygon(0 23px, 50% 0, 100% 23px, 100% 100%, 0 100%);
@@ -97,7 +98,7 @@ const TechProgressionMap = () => {
         @media (min-width: 640px) {
           .cinematic-group:hover .cinematic-chevron-border {
             transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.3));
           }
         }
       `}} />
@@ -176,7 +177,7 @@ const TechProgressionMap = () => {
 
               {/* 1px Gradient Border Chevron Container */}
               <div 
-                className="flex-grow p-[1px] rounded-b-2xl bg-white/10 cinematic-chevron-border z-10 shadow-2xl"
+                className="flex-grow p-[1px] bg-white/10 cinematic-chevron-border z-10"
                 style={{
                   background: (isHovered || isExpanded)
                     ? `linear-gradient(to bottom, ${lvl.accentColor}, ${lvl.accentColor}10)`
@@ -186,7 +187,7 @@ const TechProgressionMap = () => {
                 
                 {/* Dark Glass Inner Card Content */}
                 <div 
-                  className="w-full h-full pt-12 pb-6 px-4.5 flex flex-col items-center text-center bg-bg-card backdrop-blur-2xl rounded-b-2xl cinematic-chevron-inner"
+                  className="w-full h-full pt-12 pb-6 px-4.5 flex flex-col items-center text-center bg-bg-card backdrop-blur-2xl cinematic-chevron-inner"
                 >
                   
                   {/* Glowing Icon Shield Wrapper (Colored border & background on rest) */}
