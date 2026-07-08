@@ -25,8 +25,8 @@ const TerminalMockup = () => {
         color = 'text-[#e5c07b]'; // flag/arg (yellow-gold)
       }
       return (
-        <span key={idx} className={`${color} mr-1.5 last:mr-0`}>
-          {token}
+        <span key={idx} className={color}>
+          {token}{idx < tokens.length - 1 ? ' ' : ''}
         </span>
       );
     });
@@ -50,6 +50,9 @@ const TerminalMockup = () => {
           color = 'text-[#e5c07b]';
         } else if (word.includes('-') && !word.startsWith('·')) {
           color = 'text-[#98c379] font-medium';
+        }
+        if (/^\s+$/.test(word)) {
+          return word;
         }
         return <span key={wIdx} className={color}>{word}</span>;
       });
@@ -199,12 +202,12 @@ const TerminalMockup = () => {
               {line.type === 'input' ? (
                 <div className="flex items-center gap-2">
                   <span className="text-[#98c379] font-bold">&gt;</span>
-                  <div className="flex flex-wrap items-center font-bold">
+                  <span className="text-[#ffffff] font-bold whitespace-pre-wrap">
                     {highlightInput(line.text)}
-                  </div>
+                  </span>
                 </div>
               ) : (
-                <p className="mt-0.5 font-bold flex flex-wrap items-center">
+                <p className="mt-0.5 font-bold whitespace-pre-wrap">
                   {highlightOutput(line.text)}
                 </p>
               )}
@@ -213,10 +216,10 @@ const TerminalMockup = () => {
 
           <div className="flex items-center gap-2">
             <span className="text-[#98c379] font-bold">&gt;</span>
-            <div className="flex flex-wrap items-center font-bold">
+            <span className="text-[#ffffff] font-bold whitespace-pre-wrap">
               {highlightInput(currentInput)}
-            </div>
-            <span className="w-2 h-4 bg-[#94a3b8] animate-pulse inline-block" />
+            </span>
+            <span className="w-2 h-4 bg-[#94a3b8] animate-pulse inline-block shrink-0" />
           </div>
         </div>
       </motion.div>
