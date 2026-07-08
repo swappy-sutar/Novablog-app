@@ -176,7 +176,7 @@ const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked
                     shareOnX();
                     setShowShareMenu(false);
                   }}
-                  className="p-2.5 rounded-xl bg-border-subtle/30 hover:bg-border-subtle/80 text-white hover:text-brand-blue transition-colors duration-300 cursor-pointer flex items-center justify-center"
+                  className="p-2.5 rounded-xl bg-black hover:bg-neutral-900 text-white border border-white/10 transition-all duration-300 cursor-pointer flex items-center justify-center hover:scale-110 active:scale-95"
                   title="Share on X"
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -190,11 +190,11 @@ const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked
                     shareOnWhatsApp();
                     setShowShareMenu(false);
                   }}
-                  className="p-2.5 rounded-xl bg-border-subtle/30 hover:bg-border-subtle/80 text-white hover:text-emerald-500 transition-colors duration-300 cursor-pointer flex items-center justify-center"
+                  className="p-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white border border-[#25d366]/20 transition-all duration-300 cursor-pointer flex items-center justify-center hover:scale-110 active:scale-95"
                   title="Share on WhatsApp"
                 >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6-1.155 3.48-1.472 4.198-1.472h.168c5.4 0 9.79-4.378 9.794-9.76 0-2.584-1.002-5.016-2.822-6.837C16.16 1.05 13.73.05 11.156.05c-5.4 0-9.79 4.38-9.794 9.762-.001 2.213.568 4.305 1.648 6.136l-.946 3.454 3.583-.938zm13.107-7.89c-.104-.174-.388-.278-.767-.468-.379-.19-2.24-1.107-2.59-1.233-.353-.127-.61-.19-.868.19-.258.379-.997 1.266-1.222 1.519-.224.25-.45.282-.83.09-.379-.19-1.602-.59-3.05-1.884-1.127-1.006-1.888-2.25-2.11-2.63-.223-.379-.024-.585.166-.774.17-.17.38-.44.57-.66.19-.224.25-.38.38-.633.128-.254.065-.477-.03-.666-.097-.19-.868-2.09-1.192-2.87-.315-.76-.636-.66-.868-.672-.224-.01-.482-.012-.74-.012-.258 0-.677.097-1.03.477-.353.379-1.353 1.325-1.353 3.227 0 1.9 1.383 3.738 1.577 3.99.19.25 2.72 4.153 6.59 5.823.92.397 1.637.633 2.196.81.925.294 1.766.252 2.43.153.74-.11 2.24-.915 2.55-1.8.31-.884.31-1.643.217-1.8-.094-.158-.379-.25-.768-.44z" />
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
                   </svg>
                 </button>
 
@@ -204,11 +204,11 @@ const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked
                     shareOnLinkedIn();
                     setShowShareMenu(false);
                   }}
-                  className="p-2.5 rounded-xl bg-border-subtle/30 hover:bg-border-subtle/80 text-white hover:text-[#0a66c2] transition-colors duration-300 cursor-pointer flex items-center justify-center"
+                  className="p-2.5 rounded-xl bg-[#0077b5] hover:bg-[#0a66c2] text-white border border-[#0077b5]/20 transition-all duration-300 cursor-pointer flex items-center justify-center hover:scale-110 active:scale-95"
                   title="Share on LinkedIn"
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0h.003z" />
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452z" />
                   </svg>
                 </button>
 
@@ -218,7 +218,7 @@ const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked
                     shareOnInstagram();
                     setShowShareMenu(false);
                   }}
-                  className="p-2.5 rounded-xl bg-border-subtle/30 hover:bg-border-subtle/80 text-white hover:text-pink-500 transition-colors duration-300 cursor-pointer flex items-center justify-center"
+                  className="p-2.5 rounded-xl bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] hover:brightness-110 text-white border border-white/10 transition-all duration-300 cursor-pointer flex items-center justify-center hover:scale-110 active:scale-95"
                   title="Share on Instagram"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
@@ -234,7 +234,7 @@ const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked
                     copyLink();
                     setShowShareMenu(false);
                   }}
-                  className="p-2.5 rounded-xl bg-border-subtle/30 hover:bg-border-subtle/80 text-white hover:text-brand-purple transition-colors duration-300 cursor-pointer flex items-center justify-center"
+                  className="p-2.5 rounded-xl bg-brand-purple/20 hover:bg-brand-purple text-brand-purple hover:text-white border border-brand-purple/30 transition-all duration-300 cursor-pointer flex items-center justify-center hover:scale-110 active:scale-95"
                   title="Copy link"
                 >
                   <Link2 className="w-4 h-4" />
