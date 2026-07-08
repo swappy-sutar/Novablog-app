@@ -8,12 +8,24 @@ const injectDropCap = (html) => {
   const pIndex = html.indexOf("<p>");
   if (pIndex === -1) return html;
   
-  // Find the first letter inside the paragraph
   const contentStart = pIndex + 3;
-  const match = html.slice(contentStart).match(/[a-zA-Z]/);
-  if (!match) return html;
+  let inTag = false;
+  let charIndex = -1;
   
-  const charIndex = contentStart + match.index;
+  for (let i = contentStart; i < html.length; i++) {
+    const char = html[i];
+    if (char === '<') {
+      inTag = true;
+    } else if (char === '>') {
+      inTag = false;
+    } else if (!inTag && /[a-zA-Z]/.test(char)) {
+      charIndex = i;
+      break;
+    }
+  }
+  
+  if (charIndex === -1) return html;
+  
   const firstChar = html[charIndex];
   
   return (

@@ -58,8 +58,8 @@ const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked
   }, [showShareMenu]);
 
   return (
-    <div className="fixed right-6 top-1/2 -translate-y-1/2 hidden xl:flex flex-col gap-4 z-40">
-      <div className="glass-panel p-2.5 flex flex-col gap-4.5 rounded-full border-border-subtle/50 shadow-2xl items-center bg-bg-card backdrop-blur-md">
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md xl:bottom-auto xl:left-auto xl:right-6 xl:top-1/2 xl:-translate-y-1/2 xl:w-auto xl:max-w-none z-40">
+      <div className="glass-panel w-full xl:w-auto p-2.5 flex flex-row xl:flex-col gap-4.5 rounded-full border-border-subtle/50 shadow-2xl items-center justify-around bg-bg-card backdrop-blur-md">
         {/* Like Button */}
         <button
           onClick={onToggleLike}
@@ -136,7 +136,7 @@ const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked
           </span>
         </button>
 
-        <div className="w-6 h-px bg-border-subtle/60"></div>
+        <div className="w-px h-6 xl:w-6 xl:h-px bg-border-subtle/60"></div>
 
         {/* Share Button with Popover */}
         <div className="relative" ref={shareMenuRef}>
@@ -164,11 +164,11 @@ const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked
           <AnimatePresence>
             {showShareMenu && (
               <motion.div
-                initial={{ opacity: 0, x: 15, scale: 0.95 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 15, scale: 0.95 }}
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-full top-1/2 -translate-y-1/2 mr-4 bg-bg-dropdown border border-border-subtle/80 backdrop-blur-md rounded-2xl p-3 shadow-2xl flex items-center gap-3 w-max z-50"
+                className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 xl:bottom-auto xl:left-auto xl:right-full xl:top-1/2 xl:-translate-y-1/2 xl:mr-4 xl:mb-0 bg-bg-dropdown border border-border-subtle/80 backdrop-blur-md rounded-2xl p-3 shadow-2xl flex items-center gap-3 w-max z-50"
               >
                 {/* X / Twitter */}
                 <button
