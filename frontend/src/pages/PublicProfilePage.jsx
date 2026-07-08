@@ -207,6 +207,18 @@ const PublicProfilePage = () => {
   const websiteDisplay = profile?.websiteUrl?.replace(/^https?:\/\//i, '') || '';
   const roleLabel = profile?.role ? profile.role.replace(/_/g, ' ') : 'Member';
 
+  const levelColors = {
+    'Reader': '#94a3b8',
+    'Seedling': '#06b6d4',
+    'Contributor': '#10b981',
+    'Influencer': '#f97316',
+    'Rising Writer': '#a855f7',
+    'Legend': '#3b82f6',
+    'Established Voice': '#eab308'
+  };
+  const currentLevel = getWriterLevel(profile?.totalViews ?? 0);
+  const currentAccent = levelColors[currentLevel] || '#8b5cf6';
+
   if (loading && !profile) {
     return <ProfileSkeleton />;
   }
@@ -227,8 +239,11 @@ const PublicProfilePage = () => {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45 }}
-      className="max-w-6xl mx-auto px-4 md:px-6 pt-6 pb-12"
+      className="max-w-6xl mx-auto px-4 md:px-6 pt-6 pb-12 relative overflow-visible"
     >
+      {/* Ambient Cosmic Background Glow Blobs */}
+      <div className="absolute top-20 left-10 w-96 h-96 rounded-full bg-brand-purple/5 blur-[120px] pointer-events-none -z-10 animate-pulse" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 rounded-full bg-brand-cyan/5 blur-[120px] pointer-events-none -z-10 animate-pulse" style={{ animationDelay: '2s' }} />
       <input
         ref={fileRef}
         type="file"
@@ -249,6 +264,16 @@ const PublicProfilePage = () => {
       )}
 
       <section className="relative mb-8">
+        {/* Inline CSS animation styles for the banner flow */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          @keyframes laser-flow {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(50%); }
+          }
+          .animate-laser-flow {
+            animation: laser-flow 8s linear infinite;
+          }
+        `}} />
         <div
           className="relative h-44 md:h-52 rounded-xl overflow-hidden border border-border-subtle"
           style={{
@@ -259,6 +284,13 @@ const PublicProfilePage = () => {
             `,
           }}
         >
+          {/* Laser beam tracer effect */}
+          <div 
+            className="absolute top-0 left-[-50%] w-[200%] h-[1.5px] bg-gradient-to-r from-transparent via-[#06b6d4]/40 to-transparent animate-laser-flow pointer-events-none"
+            style={{
+              backgroundImage: `linear-gradient(to right, transparent, ${currentAccent}60, transparent)`
+            }}
+          />
           <div
             className="absolute inset-0 opacity-[0.35]"
             style={{
@@ -285,7 +317,11 @@ const PublicProfilePage = () => {
               type="button"
               onClick={() => isOwnProfile && fileRef.current?.click()}
               disabled={uploading || !isOwnProfile}
-              className={`relative w-32 h-32 md:w-40 md:h-40 rounded-xl border-2 border-[#0b0e14] overflow-hidden shadow-xl shadow-black/40 bg-bg-card text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${isOwnProfile ? 'cursor-pointer' : 'cursor-default'}`}
+              className={`relative w-32 h-32 md:w-40 md:h-40 rounded-xl border-2 overflow-hidden shadow-xl shadow-black/40 bg-bg-card text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${isOwnProfile ? 'cursor-pointer' : 'cursor-default'}`}
+              style={{
+                borderColor: currentAccent,
+                boxShadow: `0 0 25px ${currentAccent}25, 0 10px 30px rgba(0,0,0,0.5)`
+              }}
               aria-label="Profile photo"
             >
               {profile?.avatar ? (
@@ -301,7 +337,14 @@ const PublicProfilePage = () => {
                 </span>
               )}
             </button>
-            <span className="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide bg-brand-purple text-white shadow-lg border border-white/10">
+            <span 
+              className="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide text-white shadow-lg border"
+              style={{
+                backgroundColor: currentAccent,
+                borderColor: 'rgba(255,255,255,0.1)',
+                boxShadow: `0 2px 10px ${currentAccent}40`
+              }}
+            >
               {profile?.isVerified ? 'Verified' : roleLabel}
             </span>
           </div>
@@ -374,24 +417,33 @@ const PublicProfilePage = () => {
           { label: 'FOLLOWING', value: profile?.followingCount ?? 0, accent: false },
           { label: 'TOTAL READS', value: profile?.totalViews ?? 0, accent: true },
           { label: 'WRITER LEVEL', value: getWriterLevel(profile?.totalViews ?? 0), accent: true },
-        ].map((stat) => (
-          <GlassCard
-            key={stat.label}
-            hoverEffect={false}
-            className="!rounded-[10px] p-4 md:p-5 border border-border-subtle bg-white/[0.03]"
-          >
-            <p className="text-[10px] md:text-xs font-medium text-gray-500 tracking-wider mb-1">
-              {stat.label}
-            </p>
-            <p
-              className={`text-xl md:text-2xl font-semibold tabular-nums ${
-                stat.accent ? 'text-brand-cyan' : 'text-white'
-              }`}
+        ].map((stat) => {
+          const isWriterLevel = stat.label === 'WRITER LEVEL';
+          return (
+            <GlassCard
+              key={stat.label}
+              hoverEffect={true}
+              className="!rounded-[10px] p-4 md:p-5 border transition-all duration-300 relative"
+              style={{
+                borderColor: isWriterLevel ? `${currentAccent}35` : 'rgba(255, 255, 255, 0.08)',
+                background: isWriterLevel ? `linear-gradient(to bottom right, ${currentAccent}03, rgba(15,15,30,0.6))` : 'rgba(15, 15, 30, 0.6)',
+                boxShadow: isWriterLevel ? `0 0 20px ${currentAccent}12` : 'none'
+              }}
             >
-              {stat.value}
-            </p>
-          </GlassCard>
-        ))}
+              <p className="text-[10px] md:text-xs font-medium text-gray-500 tracking-wider mb-1">
+                {stat.label}
+              </p>
+              <p
+                className="text-xl md:text-2xl font-semibold tabular-nums"
+                style={{
+                  color: isWriterLevel ? currentAccent : stat.accent ? '#06b6d4' : '#ffffff'
+                }}
+              >
+                {stat.value}
+              </p>
+            </GlassCard>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 items-stretch">
