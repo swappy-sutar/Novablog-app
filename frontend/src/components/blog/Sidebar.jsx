@@ -6,11 +6,12 @@ const Sidebar = ({ blog }) => {
   const headings = React.useMemo(() => {
     if (!blog?.content) return [];
     
-    // Extract text inside <h2> tags
-    const matches = [...blog.content.matchAll(/<h2[^>]*>(.*?)<\/h2>/gi)];
+    // Extract text inside h1 and h2 tags (case-insensitive, matching across multiple lines)
+    const matches = [...blog.content.matchAll(/<(h1|h2)[^>]*>([\s\S]*?)<\/\1>/gi)];
     return matches.map((match, i) => ({
       id: `heading-${i}`,
-      text: match[1].replace(/<[^>]*>/g, "").trim(), // Strip any nested html tags
+      tag: match[1].toLowerCase(),
+      text: match[2].replace(/<[^>]*>/g, "").trim(), // Strip any nested html tags
     }));
   }, [blog]);
 
@@ -41,11 +42,13 @@ const Sidebar = ({ blog }) => {
           <span className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4 block">Navigation</span>
           <ul className="space-y-3 text-sm">
             {headings.map((heading) => (
-              <li key={heading.id}>
+              <li key={heading.id} className={heading.tag === 'h2' ? 'ml-3' : ''}>
                 <a 
                   href={`#${heading.id}`}
                   onClick={(e) => scrollToHeading(e, heading.id)}
-                  className="text-gray-400 hover:text-white transition-colors block border-l-2 border-transparent hover:border-brand-cyan pl-3 truncate"
+                  className={`text-gray-400 hover:text-white transition-colors block border-l-2 border-transparent hover:border-brand-cyan pl-3 truncate ${
+                    heading.tag === 'h2' ? 'text-xs' : 'font-medium'
+                  }`}
                 >
                   {heading.text}
                 </a>

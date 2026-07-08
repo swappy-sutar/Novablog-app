@@ -176,10 +176,35 @@ const EditorToolbar = ({ editorRef }) => {
         h1: blockTag === 'h1',
         h2: blockTag === 'h2',
       });
+
+      // Synchronize font family and font size dropdowns with the cursor's selection
+      try {
+        const currentFont = document.queryCommandValue('fontName');
+        if (currentFont) {
+          const cleanFont = currentFont.replace(/['"]/g, '').split(',')[0].trim();
+          const matchedOption = FONT_OPTIONS.find(opt => 
+            opt.value.replace(/['"]/g, '').split(',')[0].trim() === cleanFont
+          );
+          if (matchedOption) {
+            setFontFamily(matchedOption.value);
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to query fontName:', e);
+      }
+
+      try {
+        const currentSize = document.queryCommandValue('fontSize');
+        if (currentSize) {
+          setFontSize(currentSize);
+        }
+      } catch (e) {
+        console.warn('Failed to query fontSize:', e);
+      }
     } catch {
       // queryCommandState can throw in some edge cases; ignore safely
     }
-  }, []);
+  }, [setFontFamily, setFontSize]);
 
   useEffect(() => {
     const node = editorRef?.current;

@@ -28,10 +28,12 @@ const ArticleContent = ({ blog }) => {
     if (!blog) return "";
     let html = blog.content || "";
     
-    // Replace standard h2 tags to add scrollable anchors
+    // Replace standard h1 and h2 tags to add scrollable anchors
     let count = 0;
-    html = html.replace(/<h2[^>]*>/gi, () => {
-      const replaced = `<h2 id="heading-${count}" class="text-2xl font-bold mt-12 mb-6">`;
+    html = html.replace(/<(h1|h2)[^>]*>/gi, (match, tag) => {
+      const tagLower = tag.toLowerCase();
+      const className = tagLower === 'h1' ? 'text-3xl font-extrabold mt-12 mb-6' : 'text-2xl font-bold mt-12 mb-6';
+      const replaced = `<${tagLower} id="heading-${count}" class="${className}">`;
       count++;
       return replaced;
     });
@@ -40,7 +42,7 @@ const ArticleContent = ({ blog }) => {
   }, [blog]);
 
   const sanitizedContent = useMemo(() => {
-    return DOMPurify.sanitize(processedContent);
+    return DOMPurify.sanitize(processedContent, { ADD_ATTR: ['id'] });
   }, [processedContent]);
 
   if (!blog) return null;
