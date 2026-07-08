@@ -185,9 +185,9 @@ const TechProgressionMap = () => {
                 }}
               >
                 
-                {/* Dark Glass Inner Card Content */}
+                {/* Opaque Inner Card Content to block gradient bleed */}
                 <div 
-                  className="w-full h-full pt-12 pb-6 px-4.5 flex flex-col items-center text-center bg-bg-card backdrop-blur-2xl cinematic-chevron-inner"
+                  className="w-full h-full pt-12 pb-6 px-4.5 flex flex-col items-center text-center bg-bg-dropdown cinematic-chevron-inner"
                 >
                   
                   {/* Glowing Icon Shield Wrapper (Colored border & background on rest) */}
