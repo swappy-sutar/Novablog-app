@@ -158,7 +158,7 @@ const CuratedInsights = () => {
                   </span>
                 </div>
 
-                <h3 className="text-2xl sm:text-3xl font-extrabold text-[#ffffff] tracking-tight leading-tight group-hover/text:text-brand-purple transition-colors max-w-2xl">
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-[#ffffff] tracking-tight leading-tight group-hover/text:text-brand-purple transition-colors max-w-2xl line-clamp-2">
                   {mainBlog.title}
                 </h3>
                 

@@ -1,6 +1,21 @@
 import { Link, useNavigate } from 'react-router-dom';
 import Tag from '../ui/Tag';
 
+const getTitleSizeClass = (titleText) => {
+  if (!titleText) return "text-4xl md:text-5xl lg:text-6xl";
+  const len = titleText.length;
+  if (len > 150) {
+    return "text-xl sm:text-2xl md:text-3xl";
+  }
+  if (len > 100) {
+    return "text-2xl sm:text-3xl md:text-4xl";
+  }
+  if (len > 50) {
+    return "text-3xl sm:text-4xl md:text-5xl";
+  }
+  return "text-4xl sm:text-5xl md:text-6xl";
+};
+
 const BlogHero = ({ blog }) => {
   const navigate = useNavigate();
   if (!blog) return null;
@@ -24,7 +39,7 @@ const BlogHero = ({ blog }) => {
   return (
     <section className="relative w-full overflow-hidden mb-16">
       {/* Massive featured image */}
-      <div className="absolute inset-0 -z-10 h-[600px] w-full">
+      <div className="absolute inset-0 -z-10 w-full h-full">
         <img 
           src={coverImage} 
           alt={blog.title} 
@@ -59,7 +74,7 @@ const BlogHero = ({ blog }) => {
           <span className="text-gray-400 text-xs tracking-widest uppercase font-semibold">Featured Article</span>
         </div>
         
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-8 leading-tight text-gray-200">
+        <h1 className={`${getTitleSizeClass(blog.title)} font-bold tracking-tight mb-8 leading-tight text-gray-200`}>
           {blog.title}
         </h1>
  
