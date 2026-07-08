@@ -10,6 +10,52 @@ const TerminalMockup = () => {
   const [currentInput, setCurrentInput] = useState('');
   const scrollRef = useRef(null);
 
+  // VS Code One Dark syntax highlighting helpers
+  const highlightInput = (text) => {
+    const tokens = text.split(' ');
+    return tokens.map((token, idx) => {
+      let color = 'text-[#cbd5e1]';
+      if (token === 'novablog') {
+        color = 'text-[#61afef] font-bold'; // function name (blue)
+      } else if (['search', 'publish', 'analytics'].includes(token)) {
+        color = 'text-[#c678dd] font-semibold'; // keyword (purple)
+      } else if (token.startsWith('"') || token.endsWith('"') || token.includes('"')) {
+        color = 'text-[#98c379]'; // string (green)
+      } else if (token.startsWith('--') || token.startsWith('-')) {
+        color = 'text-[#e5c07b]'; // flag/arg (yellow-gold)
+      }
+      return (
+        <span key={idx} className={`${color} mr-1.5 last:mr-0`}>
+          {token}
+        </span>
+      );
+    });
+  };
+
+  const highlightOutput = (text) => {
+    if (text.startsWith('#')) {
+      return <span className="text-[#64748b] italic">{text}</span>;
+    }
+    const parts = text.split(/("[^"]*")/g);
+    return parts.map((part, pIdx) => {
+      if (part.startsWith('"') && part.endsWith('"')) {
+        return <span key={pIdx} className="text-[#98c379]">{part}</span>;
+      }
+      const words = part.split(/(\s+)/);
+      return words.map((word, wIdx) => {
+        let color = 'text-[#cbd5e1]';
+        if (word === '✓') {
+          color = 'text-[#98c379] font-bold';
+        } else if (/^\+?\d+(?:\.\d+)?[k%]?$/.test(word.trim())) {
+          color = 'text-[#e5c07b]';
+        } else if (word.includes('-') && !word.startsWith('·')) {
+          color = 'text-[#98c379] font-medium';
+        }
+        return <span key={wIdx} className={color}>{word}</span>;
+      });
+    });
+  };
+
   // 3D mouse perspective values
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -152,18 +198,24 @@ const TerminalMockup = () => {
             >
               {line.type === 'input' ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-[#34d399] font-bold">&gt;</span>
-                  <span className="text-[#ffffff] font-bold">{line.text}</span>
+                  <span className="text-[#98c379] font-bold">&gt;</span>
+                  <div className="flex flex-wrap items-center font-bold">
+                    {highlightInput(line.text)}
+                  </div>
                 </div>
               ) : (
-                <p className={`mt-0.5 ${line.color || 'text-[#cbd5e1]'}`}>{line.text}</p>
+                <p className="mt-0.5 font-bold flex flex-wrap items-center">
+                  {highlightOutput(line.text)}
+                </p>
               )}
             </motion.div>
           ))}
 
           <div className="flex items-center gap-2">
-            <span className="text-[#34d399] font-bold">&gt;</span>
-            <span className="text-[#ffffff] font-bold">{currentInput}</span>
+            <span className="text-[#98c379] font-bold">&gt;</span>
+            <div className="flex flex-wrap items-center font-bold">
+              {highlightInput(currentInput)}
+            </div>
             <span className="w-2 h-4 bg-[#94a3b8] animate-pulse inline-block" />
           </div>
         </div>
