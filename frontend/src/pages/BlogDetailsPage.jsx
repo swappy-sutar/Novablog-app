@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { ArrowUp } from 'lucide-react';
 import BlogHero from '../components/blog/BlogHero';
 import Sidebar from '../components/blog/Sidebar';
 import ArticleContent from '../components/blog/ArticleContent';
@@ -23,6 +24,19 @@ const BlogDetailsPage = () => {
 
   const [relatedBlogs, setRelatedBlogs] = useState([]);
   const [loadingRelated, setLoadingRelated] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   useDocumentTitle(blog ? blog.title : "Loading Post");
 
@@ -262,6 +276,22 @@ const BlogDetailsPage = () => {
           <Discussion blog={blog} />
         </div>
       </div>
+
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            onClick={scrollToTop}
+            className="fixed bottom-24 right-6 xl:bottom-8 xl:right-8 p-3.5 glass-panel rounded-full shadow-2xl text-gray-400 hover:text-white hover:border-gray-500 transition-all duration-200 z-50 cursor-pointer active:scale-90"
+            title="Go to Top"
+          >
+            <ArrowUp className="w-5 h-5" strokeWidth={2.5} />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
