@@ -80,12 +80,13 @@ function formatJoined(iso) {
 }
 
 const getWriterLevel = (reads) => {
-  if (typeof reads !== 'number') return 'Nova';
-  if (reads < 100) return 'Nova';
-  if (reads < 500) return 'Explorer';
-  if (reads < 2000) return 'Architect';
-  if (reads < 5000) return 'Elite';
-  return 'Nexus Master';
+  if (typeof reads !== 'number' || reads < 1) return 'Reader';
+  if (reads < 10) return 'Seedling';
+  if (reads < 50) return 'Contributor';
+  if (reads < 100) return 'Influencer';
+  if (reads < 250) return 'Rising Writer';
+  if (reads < 500) return 'Legend';
+  return 'Established Voice';
 };
 
 const PublicProfilePage = () => {

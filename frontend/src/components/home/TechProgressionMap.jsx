@@ -9,8 +9,8 @@ const LEVELS_DATA = [
     id: 'seedling',
     icon: Sprout,
     accentColor: '#06b6d4', // Cyan
-    summary: 'Unlocked by reading your first technical articles.',
-    description: 'Read 1-10 technical articles across any category and follow at least 1 author profile on the platform.',
+    summary: 'Unlocked at 1+ Reads',
+    description: 'Read 1 or more technical articles on the platform to unlock this badge.',
     tooltipAlign: 'left-0 translate-x-0',
     pointerAlign: 'left-8 -translate-x-1/2'
   },
@@ -20,8 +20,8 @@ const LEVELS_DATA = [
     id: 'contributor',
     icon: FileText,
     accentColor: '#10b981', // Green
-    summary: 'Unlocked by engaging with the community.',
-    description: 'Read 10-50 technical articles and initiate 1 active technical discussion thread.',
+    summary: 'Unlocked at 10+ Reads',
+    description: 'Read 10 or more technical articles on the platform to unlock this badge.',
     tooltipAlign: 'left-1/2 -translate-x-1/2',
     pointerAlign: 'left-1/2 -translate-x-1/2'
   },
@@ -31,8 +31,8 @@ const LEVELS_DATA = [
     id: 'influencer',
     icon: Flame,
     accentColor: '#f97316', // Orange
-    summary: 'Unlocked by sharing and curation.',
-    description: 'Read 50-100 technical articles and share 3 blog reference links.',
+    summary: 'Unlocked at 50+ Reads',
+    description: 'Read 50 or more technical articles on the platform to unlock this badge.',
     tooltipAlign: 'left-1/2 -translate-x-1/2',
     pointerAlign: 'left-1/2 -translate-x-1/2'
   },
@@ -42,8 +42,8 @@ const LEVELS_DATA = [
     id: 'rising_writer',
     icon: Pencil,
     accentColor: '#a855f7', // Purple
-    summary: 'Unlocked by publishing high-quality drafts.',
-    description: 'Publish 3+ technical drafts or articles and earn 100-500 views.',
+    summary: 'Unlocked at 100+ Reads',
+    description: 'Read 100 or more technical articles on the platform to unlock this badge.',
     tooltipAlign: 'left-1/2 -translate-x-1/2',
     pointerAlign: 'left-1/2 -translate-x-1/2'
   },
@@ -53,8 +53,8 @@ const LEVELS_DATA = [
     id: 'legend',
     icon: Crown,
     accentColor: '#3b82f6', // Blue
-    summary: 'Unlocked by maintaining an active streak.',
-    description: 'Read 500+ technical articles and keep a 90% weekly reading streak.',
+    summary: 'Unlocked at 250+ Reads',
+    description: 'Read 250 or more technical articles on the platform to unlock this badge.',
     tooltipAlign: 'left-1/2 -translate-x-1/2',
     pointerAlign: 'left-1/2 -translate-x-1/2'
   },
@@ -64,8 +64,8 @@ const LEVELS_DATA = [
     id: 'established',
     icon: Award,
     accentColor: '#eab308', // Gold
-    summary: 'The ultimate editorial achievement.',
-    description: 'Accumulate 10+ published articles on Nova and secure peer recommendations.',
+    summary: 'Unlocked at 500+ Reads',
+    description: 'Read 500 or more technical articles on the platform to unlock this badge.',
     tooltipAlign: 'right-0 left-auto translate-x-0',
     pointerAlign: 'right-8 translate-x-1/2'
   }
