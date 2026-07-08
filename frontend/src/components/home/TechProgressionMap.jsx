@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Sprout, Flame, FileText, Crown, Award, Pencil, Globe, GitBranch } from 'lucide-react';
+import { Sprout, Flame, FileText, Crown, Award, Pencil } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '../ui/GlassCard';
 
 const TIER_DETAILS = {
   seedling: {
     title: 'SEEDLING',
-    color: '#3b82f6', // blue
+    color: '#06b6d4', // cyan
     requirements: [
       "Read 1-10 technical articles across any category",
       "Follow at least 1 author profile on the platform"
@@ -16,11 +16,11 @@ const TIER_DETAILS = {
       "Bookmark articles to your reading dashboard",
       "Basic Seedling platform profile badge"
     ],
-    placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
+    placement: "bottom-full left-1/2 -translate-x-1/2 mb-8"
   },
   contributor: {
     title: 'CONTRIBUTOR',
-    color: '#a855f7', // purple
+    color: '#10b981', // green
     requirements: [
       "Read 10-50 technical articles",
       "Initiate 1 discussion comment thread"
@@ -30,11 +30,11 @@ const TIER_DETAILS = {
       "Submit article drafts for review",
       "Exclusive Contributor profile badge"
     ],
-    placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
+    placement: "bottom-full left-1/2 -translate-x-1/2 mb-8"
   },
   influencer: {
     title: 'INFLUENCER',
-    color: '#db2777', // pink
+    color: '#f97316', // orange
     requirements: [
       "Read 50-100 technical articles",
       "Share at least 3 custom blog reference links"
@@ -44,11 +44,11 @@ const TIER_DETAILS = {
       "Customize profile header backgrounds",
       "Access early beta layouts & features"
     ],
-    placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
+    placement: "bottom-full left-1/2 -translate-x-1/2 mb-8"
   },
   rising_writer: {
     title: 'RISING WRITER',
-    color: '#db2777', // pink
+    color: '#06b6d4', // cyan
     requirements: [
       "Publish 3+ technical drafts or articles",
       "Earn 100-500 total views from readers"
@@ -58,11 +58,11 @@ const TIER_DETAILS = {
       "Configure custom footer signature blocks",
       "Receive reader tips and support donations"
     ],
-    placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
+    placement: "bottom-full left-1/2 -translate-x-1/2 mb-10"
   },
   legend: {
     title: 'LEGEND',
-    color: '#3b82f6', // blue
+    color: '#eab308', // gold
     requirements: [
       "Read 500+ technical articles",
       "Keep a 90% weekly reading goal streak"
@@ -72,11 +72,11 @@ const TIER_DETAILS = {
       "Weekly direct feedback channel to editors",
       "Guaranteed landing page feed curation slots"
     ],
-    placement: "bottom-full left-1/2 -translate-x-1/2 mb-5"
+    placement: "bottom-full left-1/2 -translate-x-1/2 mb-8"
   },
   established: {
     title: 'ESTABLISHED VOICE',
-    color: '#a855f7', // purple
+    color: '#94a3b8', // slate/silver
     requirements: [
       "Accumulate 10+ published articles on Nova",
       "Secure peer editorial board recommendation check"
@@ -86,21 +86,7 @@ const TIER_DETAILS = {
       "Pin posts to the global platform feed",
       "Community moderation privileges in threads"
     ],
-    placement: "bottom-full right-0 mb-5 translate-x-[15%]"
-  },
-  master: {
-    title: 'ULTIMATE MASTER',
-    color: '#06b6d4', // cyan
-    requirements: [
-      "Unlock all 6 lower path progression badges",
-      "Maintain active contribution status for 6 months"
-    ],
-    privileges: [
-      "Nova Platform Master public avatar seal",
-      "Founder Direct Slack coordination channel access",
-      "Host custom blog events on platform home page"
-    ],
-    placement: "bottom-full right-0 mb-5 translate-x-[10%]"
+    placement: "bottom-full right-0 mb-8 translate-x-[15%]"
   }
 };
 
@@ -109,61 +95,46 @@ const NODES = [
     id: 'seedling',
     title: 'SEEDLING',
     icon: Sprout,
-    color: '#3b82f6', // blue
-    top: '36.1%', // y: 130
-    left: '26.25%', // x: 210
-    cx: 210,
-    cy: 130
-  },
-  {
-    id: 'contributor',
-    title: 'CONTRIBUTOR',
-    icon: FileText,
-    color: '#a855f7', // purple
-    top: '63.9%', // y: 230
-    left: '30%', // x: 240
-    cx: 240,
-    cy: 230
+    color: '#06b6d4', // cyan
+    glowClass: 'shadow-[0_0_20px_rgba(6,182,212,0.35)] border-brand-cyan/40',
+    top: '25%',
+    left: '22%'
   },
   {
     id: 'influencer',
     title: 'INFLUENCER',
     icon: Flame,
-    color: '#a855f7', // purple
-    top: '50%', // y: 180
-    left: '41.25%', // x: 330
-    cx: 330,
-    cy: 180
+    color: '#f97316', // orange
+    glowClass: 'shadow-[0_0_20px_rgba(249,115,22,0.35)] border-orange-500/40',
+    top: '75%',
+    left: '28%'
   },
   {
-    id: 'rising_writer',
-    title: 'RISING WRITER',
-    icon: Pencil,
-    color: '#db2777', // pink
-    top: '63.9%', // y: 230
-    left: '47.5%', // x: 380
-    cx: 380,
-    cy: 230
+    id: 'contributor',
+    title: 'CONTRIBUTOR',
+    icon: FileText,
+    color: '#10b981', // green
+    glowClass: 'shadow-[0_0_20px_rgba(16,185,129,0.35)] border-emerald-500/40',
+    top: '25%',
+    left: '72%'
   },
   {
     id: 'legend',
     title: 'LEGEND',
     icon: Crown,
-    color: '#3b82f6', // blue
-    top: '36.1%', // y: 130
-    left: '55%', // x: 440
-    cx: 440,
-    cy: 130
+    color: '#eab308', // gold
+    glowClass: 'shadow-[0_0_20px_rgba(234,179,8,0.35)] border-yellow-500/40',
+    top: '75%',
+    left: '78%'
   },
   {
     id: 'established',
-    title: 'ESTABLISHED',
+    title: 'ESTABLISHED VOICE',
     icon: Award,
-    color: '#a855f7', // purple
-    top: '50%', // y: 180
-    left: '67.5%', // x: 540
-    cx: 540,
-    cy: 180
+    color: '#94a3b8', // silver
+    glowClass: 'shadow-[0_0_20px_rgba(148,163,184,0.35)] border-slate-500/40',
+    top: '50%',
+    left: '92%'
   }
 ];
 
@@ -172,149 +143,235 @@ const TechProgressionMap = () => {
 
   return (
     <section className="max-w-7xl mx-auto px-6 mb-24 overflow-hidden relative">
-      {/* Self-contained CSS styles for animations */}
+      {/* Self-contained CSS styles for animations and isometric shapes */}
       <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes path-dash-flow {
+        @keyframes circuit-flow {
           from { stroke-dashoffset: 40; }
           to { stroke-dashoffset: 0; }
         }
-        .circuit-branch-path {
+        .circuit-active-path {
           stroke-dasharray: 8 12;
-          animation: path-dash-flow 1.6s linear infinite;
+          animation: circuit-flow 1.3s linear infinite;
         }
-        @keyframes commit-path-glide {
-          0% { offset-distance: 0%; }
-          100% { offset-distance: 100%; }
+        @keyframes equalizer-pulse {
+          0%, 100% { transform: scaleY(0.3); }
+          50% { transform: scaleY(1.3); }
         }
-        .gliding-dot-top {
-          offset-path: path("M 120 180 C 170 180, 170 130, 220 130 L 600 130 C 620 130, 630 130, 640 130");
-          animation: commit-path-glide 12s linear infinite;
+        .audio-eq-bar {
+          transform-origin: bottom;
+          animation: equalizer-pulse 1.2s ease-in-out infinite;
         }
-        .gliding-dot-mid {
-          offset-path: path("M 120 180 L 540 180 C 580 180, 600 130, 640 130");
-          animation: commit-path-glide 10s linear infinite;
+        @keyframes pulse-ring {
+          0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.2; }
+          50% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.5; }
+          100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.2; }
         }
-        .gliding-dot-bot {
-          offset-path: path("M 120 180 C 170 180, 170 230, 220 230 L 380 230 C 440 230, 480 180, 540 180");
-          animation: commit-path-glide 14s linear infinite;
+        .pulse-globe-ring {
+          animation: pulse-ring 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
-        @keyframes target-glow-pulse {
-          0%, 100% { transform: scale(0.95); opacity: 0.25; }
-          50% { transform: scale(1.15); opacity: 0.75; }
+        
+        /* 3D Isometric Platform Transforms */
+        .iso-platform {
+          transform: rotateX(60deg) rotateZ(-45deg);
+          transform-style: preserve-3d;
         }
-        .animate-target-glow {
-          animation: target-glow-pulse 2.5s ease-in-out infinite;
+        
+        /* Soft Floating Keyframes for Spheres */
+        @keyframes float-badge-icon {
+          0%, 100% { transform: translateY(0px) scale(1); }
+          50% { transform: translateY(-6px) scale(1.03); }
+        }
+        .animate-float-badge-icon {
+          animation: float-badge-icon 3s ease-in-out infinite;
         }
       `}} />
 
       {/* Header */}
       <div className="text-center mb-16 space-y-2">
         <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
-          Git <span className="text-gradient">Commit</span> Graph
+          Level Up As You <span className="text-gradient">Read</span>
         </h2>
         <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto leading-relaxed">
           Unlock exclusive badges and platform privileges as your technical knowledge expands.
         </p>
       </div>
 
-      {/* DESKTOP VIEWPORT: EXACT GIT COMMIT GRAPH LAYOUT */}
-      <div className="hidden lg:block relative w-full max-w-4xl mx-auto aspect-[2.2/1] select-none bg-[#070813]/40 border border-white/5 rounded-3xl p-6 shadow-[inset_0_0_40px_rgba(0,0,0,0.8)]">
+      {/* DESKTOP VIEWPORT: INTERACTIVE PROGRESSION NETWORK MAP */}
+      <div className="hidden lg:block relative w-full max-w-5xl mx-auto aspect-[2.5/1]">
         
         {/* Background Network Circuit Lines SVG Layer */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 800 360" fill="none">
+        <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 1000 400" fill="none">
           <defs>
-            {/* Custom glows tailored for individual branch colors */}
-            <filter id="neon-glow-blue" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
+            <filter id="neon-glow-filter" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3.5" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
             
-            <filter id="neon-glow-purple" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-
-            <filter id="neon-glow-pink" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
+            {/* Soft Purple/Magenta gradient matching the glowing circuit traces in the screenshot */}
+            <linearGradient id="purple-trace-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#c084fc" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#db2777" stopOpacity="0.3" />
+            </linearGradient>
           </defs>
 
-          {/* Underlay Dark Base Dashed Tracks */}
-          <path d="M 60 180 L 120 180" stroke="#3b82f6" strokeWidth="5.5" strokeDasharray="8 12" opacity="0.15" />
-          <path d="M 120 180 C 170 180, 170 130, 220 130 L 600 130 C 620 130, 630 130, 640 130" stroke="#3b82f6" strokeWidth="5.5" strokeDasharray="8 12" opacity="0.15" />
-          <path d="M 120 180 L 540 180 C 580 180, 600 130, 640 130" stroke="#a855f7" strokeWidth="5.5" strokeDasharray="8 12" opacity="0.15" />
-          <path d="M 120 180 C 170 180, 170 230, 220 230 L 380 230 C 440 230, 480 180, 540 180" stroke="#db2777" strokeWidth="5.5" strokeDasharray="8 12" opacity="0.15" />
+          {/* Underlay Dark Base Paths */}
+          <path d="M 500 200 L 350 200 L 260 100 L 220 100" stroke="#121326" strokeWidth="2.5" />
+          <path d="M 500 200 L 390 200 L 330 300 L 280 300" stroke="#121326" strokeWidth="2.5" />
+          <path d="M 500 200 L 650 200 L 690 100 L 720 100" stroke="#121326" strokeWidth="2.5" />
+          <path d="M 500 200 L 610 200 L 670 300 L 780 300" stroke="#121326" strokeWidth="2.5" />
+          <path d="M 720 100 L 830 100 L 880 200 L 920 200" stroke="#121326" strokeWidth="1.5" />
+          <path d="M 780 300 L 850 300 L 890 200 L 920 200" stroke="#121326" strokeWidth="1.5" />
 
-          {/* Glowing Branch Dashed Lines (Exactly Matching user screenshot colors & styles) */}
-          <path d="M 60 180 L 120 180" stroke="#3b82f6" strokeWidth="5.5" strokeDasharray="8 12" style={{ filter: 'url(#neon-glow-blue)' }} />
-          
-          {/* Top Branch: Blue dashes */}
+          {/* Active branch lines with purple neon glow */}
           <path 
-            d="M 120 180 C 170 180, 170 130, 220 130 L 600 130 C 620 130, 630 130, 640 130" 
-            stroke="#3b82f6" 
-            strokeWidth="5.5" 
-            strokeDasharray="8 12"
-            className="circuit-branch-path"
-            style={{ filter: 'url(#neon-glow-blue)' }}
+            d="M 500 200 L 350 200 L 260 100 L 220 100" 
+            stroke="url(#purple-trace-grad)" 
+            strokeWidth={hoveredNode === 'seedling' ? "3" : "2"} 
+            className="circuit-active-path"
+            style={{ 
+              filter: hoveredNode === 'seedling' ? 'url(#neon-glow-filter)' : 'none',
+              animationDuration: hoveredNode === 'seedling' ? '0.6s' : '1.5s'
+            }}
           />
-
-          {/* Middle Branch: Purple dashes */}
           <path 
-            d="M 120 180 L 540 180 C 580 180, 600 130, 640 130" 
+            d="M 500 200 L 390 200 L 330 300 L 280 300" 
+            stroke="url(#purple-trace-grad)" 
+            strokeWidth={hoveredNode === 'influencer' ? "3" : "2"} 
+            className="circuit-active-path"
+            style={{ 
+              filter: hoveredNode === 'influencer' ? 'url(#neon-glow-filter)' : 'none',
+              animationDuration: hoveredNode === 'influencer' ? '0.6s' : '1.5s'
+            }}
+          />
+          <path 
+            d="M 500 200 L 650 200 L 690 100 L 720 100" 
+            stroke="url(#purple-trace-grad)" 
+            strokeWidth={hoveredNode === 'contributor' ? "3" : "2"} 
+            className="circuit-active-path"
+            style={{ 
+              filter: hoveredNode === 'contributor' ? 'url(#neon-glow-filter)' : 'none',
+              animationDuration: hoveredNode === 'contributor' ? '0.6s' : '1.5s'
+            }}
+          />
+          <path 
+            d="M 500 200 L 610 200 L 670 300 L 780 300" 
+            stroke="url(#purple-trace-grad)" 
+            strokeWidth={hoveredNode === 'legend' ? "3" : "2"} 
+            className="circuit-active-path"
+            style={{ 
+              filter: hoveredNode === 'legend' ? 'url(#neon-glow-filter)' : 'none',
+              animationDuration: hoveredNode === 'legend' ? '0.6s' : '1.5s'
+            }}
+          />
+          <path 
+            d="M 720 100 L 830 100 L 880 200 L 920 200" 
             stroke="#a855f7" 
-            strokeWidth="5.5" 
-            strokeDasharray="8 12"
-            className="circuit-branch-path"
-            style={{ filter: 'url(#neon-glow-purple)' }}
+            strokeOpacity="0.4"
+            strokeWidth="1.5" 
+            className="circuit-active-path"
+            style={{ animationDuration: '2.5s' }}
           />
-
-          {/* Bottom Branch: Pink dashes */}
           <path 
-            d="M 120 180 C 170 180, 170 230, 220 230 L 380 230 C 440 230, 480 180, 540 180" 
-            stroke="#db2777" 
-            strokeWidth="5.5" 
-            strokeDasharray="8 12"
-            className="circuit-branch-path"
-            style={{ filter: 'url(#neon-glow-pink)' }}
+            d="M 780 300 L 850 300 L 890 200 L 920 200" 
+            stroke="#a855f7" 
+            strokeOpacity="0.4"
+            strokeWidth="1.5" 
+            className="circuit-active-path"
+            style={{ animationDuration: '2.5s' }}
           />
-
-          {/* Start Origin Node */}
-          <circle cx="60" cy="180" r="5" fill="#0d0f1e" stroke="#3b82f6" strokeWidth="2" />
-
-          {/* Root Globe Node Anchor */}
-          <circle cx="120" cy="180" r="9" fill="#3b82f6" opacity="0.15" />
-          <circle cx="120" cy="180" r="7" fill="#3b82f6" style={{ filter: 'url(#neon-glow-blue)' }} />
-
-          {/* Floating Cyan Accent Circle at (340, 195) */}
-          <circle cx="340" cy="195" r="7" fill="#06b6d4" opacity="0.2" className="animate-target-glow" />
-          <circle cx="340" cy="195" r="4.5" fill="#06b6d4" />
-
-          {/* Middle Branch Junction circles (Yellow & Green hollow) */}
-          <circle cx="410" cy="180" r="5" fill="#0d0f1e" stroke="#eab308" strokeWidth="1.5" />
-          <circle cx="480" cy="180" r="5" fill="#0d0f1e" stroke="#10b981" strokeWidth="1.5" />
         </svg>
 
-        {/* Dynamic Glowing Trace Packets */}
-        <div className="absolute w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_12px_#3b82f6,0_0_24px_#3b82f6] pointer-events-none z-10 gliding-dot-top" />
-        <div className="absolute w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_12px_#a855f7,0_0_24px_#a855f7] pointer-events-none z-10 gliding-dot-mid" />
-        <div className="absolute w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_12px_#db2777,0_0_24px_#db2777] pointer-events-none z-10 gliding-dot-bot" />
+        {/* CENTER NODE: RISING WRITER (Equalizer Dome) */}
+        <div 
+          className="absolute z-10" 
+          style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+          onMouseEnter={() => setHoveredNode('rising_writer')}
+          onMouseLeave={() => setHoveredNode(null)}
+        >
+          {/* Tooltip */}
+          <AnimatePresence>
+            {hoveredNode === 'rising_writer' && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute bottom-full left-1/2 -translate-x-1/2 mb-10 w-72 p-4 rounded-2xl bg-gradient-to-br from-bg-card/98 via-bg-base/98 to-bg-card/98 border border-brand-cyan/45 shadow-[0_0_30px_rgba(6,182,212,0.15)] backdrop-blur-xl pointer-events-none z-50 text-left font-sans"
+              >
+                <div className="space-y-3.5">
+                  <div className="flex items-center gap-2 border-b border-white/5 pb-2">
+                    <Pencil className="w-4 h-4 text-brand-cyan" />
+                    <h5 className="text-[11px] font-extrabold text-white tracking-widest">RISING WRITER</h5>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Achieve</span>
+                    <ul className="space-y-1 text-[10px] text-gray-300">
+                      {TIER_DETAILS.rising_writer.requirements.map((req, idx) => (
+                        <li key={idx} className="flex items-start gap-1.5 leading-snug">
+                          <span className="text-brand-cyan mt-0.5">•</span>
+                          <span>{req}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-        {/* Render World icon over the root node */}
-        <div className="absolute z-10 pointer-events-none text-white flex items-center justify-center" style={{ top: '50%', left: '15%', transform: 'translate(-50%, -50%)' }}>
-          <Globe className="w-3 h-3 text-white" />
+                  <div className="space-y-2">
+                    <span className="text-[8px] font-semibold text-brand-cyan uppercase tracking-widest block">Unlocked Privileges</span>
+                    <ul className="space-y-1 text-[10px] text-gray-300">
+                      {TIER_DETAILS.rising_writer.privileges.map((priv, idx) => (
+                        <li key={idx} className="flex items-start gap-1.5 leading-snug">
+                          <span className="text-brand-purple mt-0.5">✓</span>
+                          <span>{priv}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-bg-card/98 pointer-events-none" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Glowing Equalizer Glass Dome */}
+          <div className="relative w-44 h-44 rounded-full flex flex-col items-center justify-center bg-gradient-to-b from-[#06b6d4]/12 to-[#8b5cf6]/5 border border-[#06b6d4]/40 backdrop-blur-xl animate-pulse-glow shadow-[0_0_30px_rgba(6,182,212,0.25)] select-none">
+            
+            {/* Ambient inner sheen reflection */}
+            <div className="absolute inset-2 rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.08),transparent_60%)] pointer-events-none" />
+
+            {/* Pulsing Outer Rings */}
+            <div className="absolute top-1/2 left-1/2 w-56 h-56 rounded-full border border-[#06b6d4]/15 pulse-globe-ring -z-10" />
+            <div className="absolute top-1/2 left-1/2 w-64 h-64 rounded-full border border-[#8b5cf6]/10 pulse-globe-ring -z-10" style={{ animationDelay: '1.5s' }} />
+
+            {/* Glowing Icon Card (matches screenshot rounded square pencil layout) */}
+            <div className="p-3.5 rounded-2xl bg-gradient-to-tr from-[#06b6d4]/20 to-[#8b5cf6]/20 border border-[#06b6d4]/40 flex items-center justify-center text-brand-cyan mb-2 shadow-[0_0_15px_rgba(6,182,212,0.3)] animate-float-badge-icon">
+              <Pencil className="w-5.5 h-5.5" />
+            </div>
+
+            <h3 className="text-[10px] font-extrabold text-white tracking-widest uppercase">Rising Writer</h3>
+            <span className="text-[8px] font-mono font-bold text-[#06b6d4]/85 mt-0.5 tracking-wider">100-500 Reads</span>
+
+            {/* Audio Equalizer Graphics at bottom */}
+            <div className="flex gap-0.5 items-end h-3.5 mt-2.5">
+              {[5, 11, 16, 9, 14, 7, 12, 5].map((height, i) => (
+                <span 
+                  key={i} 
+                  className="w-[1.5px] rounded-full bg-[#06b6d4]/65 audio-eq-bar" 
+                  style={{ 
+                    height: `${height}px`,
+                    animationDelay: `${i * 0.15}s`,
+                    animationDuration: `${0.8 + (i % 3) * 0.2}s`
+                  }} 
+                />
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* MAP PROGRESSION NODES */}
+        {/* PROGRESS MAP TIER NODES: ISOMETRIC PLATFORMS */}
         {NODES.map((node) => {
           const IconComponent = node.icon;
           const isHovered = hoveredNode === node.id;
@@ -322,7 +379,7 @@ const TechProgressionMap = () => {
           return (
             <div
               key={node.id}
-              className="absolute z-20 group flex flex-col items-center justify-center cursor-pointer"
+              className="absolute z-20 group flex flex-col items-center justify-center w-40 h-40"
               style={{ top: node.top, left: node.left, transform: 'translate(-50%, -50%)' }}
               onMouseEnter={() => setHoveredNode(node.id)}
               onMouseLeave={() => setHoveredNode(null)}
@@ -335,13 +392,13 @@ const TechProgressionMap = () => {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
                     transition={{ duration: 0.2 }}
-                    className={`absolute ${details.placement} w-72 p-4 rounded-2xl bg-gradient-to-br from-bg-card/98 via-bg-base/98 to-bg-card/98 border shadow-2xl backdrop-blur-xl pointer-events-none z-50`}
+                    className={`absolute ${details.placement} w-72 p-4 rounded-2xl bg-gradient-to-br from-bg-card/98 via-bg-base/98 to-bg-card/98 border shadow-2xl backdrop-blur-xl pointer-events-none z-50 text-left font-sans`}
                     style={{ 
                       borderColor: `${node.color}50`, 
                       boxShadow: `0 0 25px ${node.color}15, 0 10px 30px rgba(0,0,0,0.5)`
                     }}
                   >
-                    <div className="space-y-3.5 text-left font-sans">
+                    <div className="space-y-3.5">
                       <div className="flex items-center gap-2 border-b border-white/5 pb-2">
                         <IconComponent className="w-4 h-4" style={{ color: node.color }} />
                         <h5 className="text-[11px] font-extrabold text-white tracking-widest">{details.title}</h5>
@@ -381,137 +438,89 @@ const TechProgressionMap = () => {
                 )}
               </AnimatePresence>
 
-              {/* Glowing Branch Junction Badge Circle */}
-              <div 
-                className="w-7.5 h-7.5 rounded-full border bg-[#0d0f1e] flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-115"
-                style={{ 
-                  borderColor: isHovered ? '#fff' : node.color,
-                  boxShadow: isHovered 
-                    ? `0 0 16px ${node.color}cc, inset 0 0 7px ${node.color}50` 
-                    : `0 0 6px ${node.color}35, inset 0 0 3px ${node.color}15`,
-                  color: '#fff'
-                }}
-              >
-                <IconComponent className="w-3.5 h-3.5 text-white" />
+              {/* 3D Isometric Platform Group */}
+              <div className="relative w-28 h-28 flex flex-col items-center justify-center">
+                
+                {/* 3D Platform Base */}
+                <div 
+                  className={`absolute w-20 h-20 bg-gradient-to-br from-[#101124] to-[#080812] border rounded-2xl transition-all duration-300 group-hover:scale-105 iso-platform shadow-[0_15px_30px_rgba(0,0,0,0.65)] ${node.glowClass}`}
+                  style={{
+                    borderColor: isHovered ? node.color : 'rgba(255,255,255,0.06)'
+                  }}
+                />
+
+                {/* Vertical neon projector beam connecting platform and floating sphere */}
+                <div 
+                  className="absolute w-[1.5px] h-12 bg-gradient-to-b from-transparent via-[#ffffff] to-transparent opacity-20 transition-all duration-300 pointer-events-none"
+                  style={{
+                    backgroundImage: `linear-gradient(to bottom, transparent, ${node.color}, transparent)`,
+                    opacity: isHovered ? 0.7 : 0.2,
+                    transform: 'translateY(-6px)'
+                  }}
+                />
+
+                {/* Floating Badge Sphere (Matches bubble layout in screenshot) */}
+                <div 
+                  className="absolute z-10 w-11 h-11 rounded-full border flex items-center justify-center animate-float-badge-icon shadow-lg bg-gradient-to-t from-transparent transition-all duration-300"
+                  style={{ 
+                    top: '-6px',
+                    borderColor: `${node.color}50`,
+                    boxShadow: isHovered 
+                      ? `0 0 25px ${node.color}80, inset 0 0 10px ${node.color}40` 
+                      : `0 0 15px ${node.color}35, inset 0 0 8px ${node.color}20`,
+                    backgroundImage: `radial-gradient(circle at 35% 35%, rgba(255,255,255,0.1), ${node.color}15)`,
+                    color: node.color
+                  }}
+                >
+                  <IconComponent className="w-5 h-5 text-white" />
+                </div>
+              </div>
+
+              {/* Label inside standard text layout below platform */}
+              <div className="text-center mt-3 z-10 select-none pointer-events-none">
+                <h4 className="text-[10px] font-extrabold text-white tracking-widest uppercase">{node.title}</h4>
               </div>
             </div>
           );
         })}
-
-        {/* TERMINAL ULTIMATE NODE: CYAN CONCENTRIC RINGS AT (640, 130) */}
-        <div 
-          className="absolute z-20 group flex flex-col items-center justify-center cursor-pointer"
-          style={{ top: '36.1%', left: '80%', transform: 'translate(-50%, -50%)' }}
-          onMouseEnter={() => setHoveredNode('master')}
-          onMouseLeave={() => setHoveredNode(null)}
-        >
-          {/* Tooltip */}
-          <AnimatePresence>
-            {hoveredNode === 'master' && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                transition={{ duration: 0.2 }}
-                className="absolute bottom-full right-0 mb-5 translate-x-[10%] w-72 p-4 rounded-2xl bg-gradient-to-br from-bg-card/98 via-bg-base/98 to-bg-card/98 border border-[#06b6d4]/50 shadow-2xl backdrop-blur-xl pointer-events-none z-50"
-              >
-                <div className="space-y-3.5 text-left font-sans">
-                  <div className="flex items-center gap-2 border-b border-white/5 pb-2">
-                    <Award className="w-4 h-4 text-[#06b6d4]" />
-                    <h5 className="text-[11px] font-extrabold text-white tracking-widest">ULTIMATE MASTER</h5>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Achieve</span>
-                    <ul className="space-y-1 text-[10px] text-gray-300">
-                      {TIER_DETAILS.master.requirements.map((req, idx) => (
-                        <li key={idx} className="flex items-start gap-1.5 leading-snug">
-                          <span className="text-brand-cyan mt-0.5">•</span>
-                          <span>{req}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="space-y-2">
-                    <span className="text-[8px] font-semibold text-[#06b6d4] uppercase tracking-widest block">Unlocked Privileges</span>
-                    <ul className="space-y-1 text-[10px] text-gray-300">
-                      {TIER_DETAILS.master.privileges.map((priv, idx) => (
-                        <li key={idx} className="flex items-start gap-1.5 leading-snug">
-                          <span className="text-brand-purple mt-0.5">✓</span>
-                          <span>{priv}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-                <div className="absolute top-full right-12 translate-x-1/2 border-8 border-transparent border-t-bg-card/98 pointer-events-none" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Concentric pulsing rings */}
-          <div className="relative w-8 h-8 rounded-full border-2 border-brand-cyan/60 bg-[#0d0f1e] flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110">
-            <div className="absolute inset-0.5 rounded-full border border-brand-cyan/30 animate-target-glow" />
-            <div className="w-3.5 h-3.5 rounded-full bg-brand-cyan/35 flex items-center justify-center">
-              <div className="w-1.5 h-1.5 rounded-full bg-brand-cyan" />
-            </div>
-          </div>
-        </div>
-
-        {/* FLOATING TEXT CALLOUTS / PILL BUBBLES */}
-        {/* 1. "Contributor" pill (below Contributor node at x: 240, y: 230) */}
-        <div 
-          className="absolute z-10 px-2.5 py-1 rounded-xl border border-white/5 bg-[#0b0c16]/75 backdrop-blur-md flex items-center gap-1.5 shadow-md pointer-events-none text-left"
-          style={{ top: '78%', left: '30%', transform: 'translateX(-50%)' }}
-        >
-          <GitBranch className="w-2.5 h-2.5 text-[#a855f7]" />
-          <span className="text-[9px] font-extrabold text-white tracking-wide">Contributor</span>
-        </div>
-
-        {/* 2. "Rising Writer" callout bubble (above Rising Writer node at x: 380, y: 230) */}
-        <div 
-          className="absolute z-10 px-2.5 py-1 rounded-xl border border-white/5 bg-[#0b0c16]/75 backdrop-blur-md flex items-center gap-1.5 shadow-md pointer-events-none text-left"
-          style={{ top: '51%', left: '47.5%', transform: 'translateX(-50%)' }}
-        >
-          <Pencil className="w-2.5 h-2.5 text-[#db2777]" />
-          <span className="text-[9px] font-extrabold text-white tracking-wide">Rising Writer</span>
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#0b0c16]/75 pointer-events-none" />
-        </div>
-
-        {/* 3. "Git Commit Graph" label bubble (above Legend node at x: 440, y: 130) */}
-        <div 
-          className="absolute z-10 px-2.5 py-1 rounded-xl border border-white/5 bg-[#0b0c16]/75 backdrop-blur-md flex items-center gap-1.5 shadow-md pointer-events-none text-left"
-          style={{ top: '21%', left: '55%', transform: 'translateX(-50%)' }}
-        >
-          <GitBranch className="w-2.5 h-2.5 text-[#3b82f6]" />
-          <span className="text-[9px] font-extrabold text-white tracking-wide">Git Commit Graph</span>
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#0b0c16]/75 pointer-events-none" />
-        </div>
-
-        {/* 4. "Git Commit Braph +0" (above Target node at x: 640, y: 130) */}
-        <div 
-          className="absolute z-10 px-2.5 py-1 rounded-xl border border-rose-500/20 bg-rose-500/10 backdrop-blur-md flex items-center gap-1.5 shadow-md pointer-events-none text-left"
-          style={{ top: '19%', left: '80%', transform: 'translateX(-50%)' }}
-        >
-          <Award className="w-2.5 h-2.5 text-rose-500" />
-          <span className="text-[9px] font-extrabold text-rose-500 tracking-wide font-mono">Git Commit Braph +0</span>
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-rose-500/10 pointer-events-none" />
-        </div>
-
-        {/* 5. "Git Commit Map" green pill (to the right of target node) */}
-        <div 
-          className="absolute z-10 px-2.5 py-1.5 rounded-full border border-[#06b6d4] bg-[#06b6d4]/5 backdrop-blur-md flex items-center gap-1.5 shadow-md pointer-events-none text-left"
-          style={{ top: '36.1%', left: '92.5%', transform: 'translateY(-50%)' }}
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-ping" />
-          <span className="text-[9px] font-extrabold text-[#06b6d4] tracking-wider font-mono uppercase">Git Commit Map</span>
-        </div>
-
       </div>
 
       {/* MOBILE / TABLET TIMELINE VERSION */}
       <div className="lg:hidden space-y-6 max-w-md mx-auto text-left">
+        {/* Rising Writer Dome shown at the top */}
+        <div className="flex justify-center mb-8">
+          <div className="relative w-full max-w-sm rounded-2xl flex flex-col p-5 bg-bg-card border border-[#06b6d4]/40 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+            <div className="flex items-center gap-3.5 mb-3.5">
+              <div className="p-3.5 rounded-2xl bg-[#06b6d4]/10 border border-[#06b6d4]/30 text-brand-cyan">
+                <Pencil className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white tracking-widest uppercase">Rising Writer</h3>
+                <span className="text-[10px] font-mono font-bold text-[#06b6d4] tracking-wider block mt-0.5">100-500 Reads</span>
+              </div>
+            </div>
+
+            <div className="pt-3.5 border-t border-white/5 space-y-2.5">
+              <div className="space-y-1">
+                <span className="text-[8px] font-semibold text-gray-500 uppercase tracking-widest block">How to Achieve:</span>
+                <ul className="list-disc pl-3.5 text-[10px] text-gray-300 space-y-1">
+                  {TIER_DETAILS.rising_writer.requirements.map((req, idx) => (
+                    <li key={idx}>{req}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="space-y-1">
+                <span className="text-[8px] font-semibold text-brand-cyan uppercase tracking-widest block">Unlocked Privileges:</span>
+                <ul className="list-disc pl-3.5 text-[10px] text-gray-300 space-y-1">
+                  {TIER_DETAILS.rising_writer.privileges.map((priv, idx) => (
+                    <li key={idx}>{priv}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Stacked progression list */}
         <div className="space-y-4">
           {NODES.map((node) => {
@@ -520,7 +529,7 @@ const TechProgressionMap = () => {
             return (
               <GlassCard 
                 key={node.id} 
-                className={`p-4 border bg-bg-card flex flex-col gap-4`}
+                className={`p-4 border bg-bg-card flex flex-col gap-4 ${node.glowClass}`}
               >
                 <div className="flex items-center gap-4 w-full text-left">
                   <div 
@@ -536,7 +545,6 @@ const TechProgressionMap = () => {
                   <div className="flex-grow">
                     <div className="flex items-baseline justify-between">
                       <h4 className="text-xs font-extrabold text-white tracking-widest">{node.title}</h4>
-                      <span className="text-[9px] font-mono font-bold" style={{ color: node.color }}>{node.subtitle}</span>
                     </div>
                     <p className="text-[10px] text-gray-400 mt-1">{details.requirements[0]}</p>
                   </div>
@@ -571,7 +579,7 @@ const TechProgressionMap = () => {
       {/* Footer Text */}
       <div className="text-center mt-12">
         <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 py-1.5 px-4 bg-border-subtle/20 border border-border-subtle rounded-full inline-block">
-          Interactive Git Commit Graph
+          Tech Progression Map
         </span>
       </div>
     </section>
