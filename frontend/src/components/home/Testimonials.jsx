@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
 import { Star } from 'lucide-react';
 import GlassCard from '../ui/GlassCard';
 
-const TESTIMONIALS_DATA = [
+const ROW1_DATA = [
   {
     name: 'Maria S',
     location: 'California, USA',
@@ -27,7 +26,10 @@ const TESTIMONIALS_DATA = [
     stars: 5,
     title: 'Excellent community of writers',
     text: 'The technical insights and curated feeds make reading a daily habit. The badge progression system keeps me motivated to read regularly and improve my expertise.'
-  },
+  }
+];
+
+const ROW2_DATA = [
   {
     name: 'David L.',
     location: 'London, UK',
@@ -54,59 +56,36 @@ const TESTIMONIALS_DATA = [
   }
 ];
 
+// Double data arrays to allow seamless infinite looping marquee
+const row1Doubled = [...ROW1_DATA, ...ROW1_DATA];
+const row2Doubled = [...ROW2_DATA, ...ROW2_DATA];
+
 const Testimonials = () => {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
-  const [isPaused, setIsPaused] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const getCardsPerPage = () => {
-    if (windowWidth >= 1024) return 3;
-    if (windowWidth >= 768) return 2;
-    return 1;
-  };
-
-  const cardsPerPage = getCardsPerPage();
-  const totalPages = Math.ceil(TESTIMONIALS_DATA.length / cardsPerPage);
-
-  // Clamp current page if width changes
-  useEffect(() => {
-    setCurrentPage(0);
-  }, [windowWidth]);
-
-  // Automatic scrolling interval
-  useEffect(() => {
-    if (isPaused) return;
-
-    const interval = setInterval(() => {
-      setCurrentPage((prev) => (prev + 1) % totalPages);
-    }, 4500); // Scroll page every 4.5 seconds
-
-    return () => clearInterval(interval);
-  }, [totalPages, isPaused]);
-
-  const handleNext = () => {
-    setCurrentPage((prev) => (prev + 1) % totalPages);
-  };
-
-  const handlePrev = () => {
-    setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
-  };
-
-  const displayedCards = TESTIMONIALS_DATA.slice(
-    currentPage * cardsPerPage,
-    (currentPage + 1) * cardsPerPage
-  );
-
   return (
     <section className="max-w-7xl mx-auto px-6 mb-24 overflow-visible relative">
+      {/* Self-contained CSS styles for infinite marquee scrolling & hover-pause */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes marquee-ltr {
+          0% { transform: translate3d(-50%, 0, 0); }
+          100% { transform: translate3d(0, 0, 0); }
+        }
+        @keyframes marquee-rtl {
+          0% { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(-50%, 0, 0); }
+        }
+        .animate-marquee-ltr {
+          animation: marquee-ltr 28s linear infinite;
+        }
+        .animate-marquee-rtl {
+          animation: marquee-rtl 28s linear infinite;
+        }
+        .hover-pause:hover {
+          animation-play-state: paused !important;
+        }
+      `}} />
+
       {/* Header Container */}
-      <div className="text-center mb-12 space-y-3 relative flex flex-col items-center">
+      <div className="text-center mb-16 space-y-3 relative flex flex-col items-center">
         <p className="text-[10px] sm:text-xs font-black tracking-widest text-brand-cyan uppercase">
           Public opinion suggests
         </p>
@@ -166,23 +145,24 @@ const Testimonials = () => {
         </p>
       </div>
 
-      {/* Sliding Grid of testimonials */}
-      <div 
-        className="relative max-w-5xl mx-auto min-h-[260px] md:min-h-[230px]"
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-hidden">
-          <AnimatePresence mode="popLayout" initial={false}>
-            {displayedCards.map((card) => (
-              <motion.div
-                key={card.name}
-                layout
-                initial={{ opacity: 0, scale: 0.95, x: 50 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                exit={{ opacity: 0, scale: 0.95, x: -50 }}
-                transition={{ type: "spring", stiffness: 300, damping: 28 }}
-              >
+      {/* Infinite Marquee Double Rows Wrapper */}
+      <div className="relative w-screen left-1/2 -translate-x-1/2 overflow-hidden flex flex-col gap-8 max-w-[100vw]">
+        {/* Left Gradient Fade Overlay */}
+        <div 
+          className="absolute inset-y-0 left-0 w-24 sm:w-36 z-10 pointer-events-none"
+          style={{ background: 'linear-gradient(to right, var(--color-bg-base, #05050f), transparent)' }}
+        />
+        {/* Right Gradient Fade Overlay */}
+        <div 
+          className="absolute inset-y-0 right-0 w-24 sm:w-36 z-10 pointer-events-none"
+          style={{ background: 'linear-gradient(to left, var(--color-bg-base, #05050f), transparent)' }}
+        />
+
+        {/* Row 1: Scroll Left to Right */}
+        <div className="flex w-full overflow-hidden py-1">
+          <div className="flex gap-6 animate-marquee-ltr hover-pause select-none">
+            {row1Doubled.map((card, idx) => (
+              <div key={`${card.name}-${idx}`} className="w-[280px] sm:w-[360px] shrink-0">
                 <GlassCard className="p-6 flex flex-col justify-between border border-border-subtle bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
                   <div>
                     {/* User profile row */}
@@ -226,46 +206,63 @@ const Testimonials = () => {
                     </p>
                   </div>
                 </GlassCard>
-              </motion.div>
+              </div>
             ))}
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* Navigation controls at the bottom */}
-      <div className="flex justify-center items-center gap-4 mt-8">
-        <button
-          onClick={handlePrev}
-          className="p-3.5 rounded-full border border-border-subtle bg-white/[0.02] hover:bg-white/[0.08] hover:border-brand-purple/30 text-gray-400 hover:text-white transition-all duration-300 cursor-pointer shadow-lg active:scale-90"
-          title="Previous page"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-
-        <div className="flex gap-1.5 items-center">
-          {Array(totalPages).fill(null).map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentPage(idx)}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                currentPage === idx ? 'w-5 bg-brand-purple' : 'w-1.5 bg-gray-600 hover:bg-gray-400'
-              }`}
-              title={`Go to page ${idx + 1}`}
-            />
-          ))}
+          </div>
         </div>
 
-        <button
-          onClick={handleNext}
-          className="p-3.5 rounded-full border border-border-subtle bg-white/[0.02] hover:bg-white/[0.08] hover:border-brand-purple/30 text-gray-400 hover:text-white transition-all duration-300 cursor-pointer shadow-lg active:scale-90"
-          title="Next page"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        {/* Row 2: Scroll Right to Left */}
+        <div className="flex w-full overflow-hidden py-1">
+          <div className="flex gap-6 animate-marquee-rtl hover-pause select-none">
+            {row2Doubled.map((card, idx) => (
+              <div key={`${card.name}-${idx}`} className="w-[280px] sm:w-[360px] shrink-0">
+                <GlassCard className="p-6 flex flex-col justify-between border border-border-subtle bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
+                  <div>
+                    {/* User profile row */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <img
+                        src={card.avatar}
+                        alt={card.name}
+                        className="w-10 h-10 rounded-full object-cover border border-border-subtle shadow-md"
+                      />
+                      <div className="min-w-0">
+                        <h4 className="text-xs sm:text-sm font-bold text-white truncate">
+                          {card.name}
+                        </h4>
+                        <p className="text-[10px] text-gray-500 truncate">
+                          {card.location}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Star Rating */}
+                    <div className="flex items-center gap-1 mb-3">
+                      {Array(5).fill(null).map((_, idx) => (
+                        <Star
+                          key={idx}
+                          className="w-3.5 h-3.5"
+                          fill={idx < card.stars ? "#eab308" : "none"}
+                          stroke={idx < card.stars ? "#eab308" : "var(--color-border-subtle)"}
+                          strokeWidth={2}
+                        />
+                      ))}
+                    </div>
+
+                    {/* Review title */}
+                    <h5 className="text-xs sm:text-sm font-bold text-white mb-2 leading-snug line-clamp-1">
+                      {card.title}
+                    </h5>
+
+                    {/* Review text */}
+                    <p className="text-xs text-gray-400 leading-relaxed line-clamp-4">
+                      {card.text}
+                    </p>
+                  </div>
+                </GlassCard>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
