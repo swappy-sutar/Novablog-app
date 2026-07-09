@@ -395,20 +395,20 @@ const Testimonials = () => {
               <GlassCard className="p-6 sm:p-8 border border-border-subtle bg-bg-card/95 shadow-2xl relative">
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="absolute right-4 top-4 text-gray-400 hover:text-white transition-colors cursor-pointer p-1 rounded-lg hover:bg-white/5"
+                  className="absolute right-4 top-4 text-text-muted hover:text-text-input transition-colors cursor-pointer p-1 rounded-lg hover:bg-white/5"
                 >
                   <X className="w-5 h-5" />
                 </button>
 
-                <h3 className="text-xl font-bold text-white mb-1">Write a Review</h3>
-                <p className="text-xs text-gray-400 mb-6">
+                <h3 className="text-xl font-bold text-text-input mb-1">Write a Review</h3>
+                <p className="text-xs text-text-muted mb-6">
                   Share your experience reading technical insights on NovaBlog.
                 </p>
 
                 <form onSubmit={handleSubmitReview} className="space-y-4 text-left">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1.5">
+                      <label className="block text-[10px] uppercase font-bold text-text-muted tracking-wider mb-1.5">
                         Your Name
                       </label>
                       <input
@@ -417,11 +417,11 @@ const Testimonials = () => {
                         placeholder="John Doe"
                         value={form.name}
                         onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
-                        className="w-full bg-border-subtle/20 border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-purple transition-all"
+                        className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-purple transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1.5">
+                      <label className="block text-[10px] uppercase font-bold text-text-muted tracking-wider mb-1.5">
                         Location
                       </label>
                       <input
@@ -430,13 +430,13 @@ const Testimonials = () => {
                         placeholder="London, UK"
                         value={form.location}
                         onChange={(e) => setForm(prev => ({ ...prev, location: e.target.value }))}
-                        className="w-full bg-border-subtle/20 border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-purple transition-all"
+                        className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-purple transition-all"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1.5">
+                    <label className="block text-[10px] uppercase font-bold text-text-muted tracking-wider mb-1.5">
                       Rating
                     </label>
                     <div className="flex items-center gap-2 py-1">
@@ -447,7 +447,7 @@ const Testimonials = () => {
                             type="button"
                             key={idx}
                             onClick={() => setForm(prev => ({ ...prev, stars: starValue }))}
-                            className="text-gray-400 hover:scale-110 transition-transform cursor-pointer p-0.5"
+                            className="text-text-muted hover:scale-110 transition-transform cursor-pointer p-0.5"
                           >
                             <Star
                               className="w-6 h-6"
@@ -462,7 +462,7 @@ const Testimonials = () => {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1.5">
+                    <label className="block text-[10px] uppercase font-bold text-text-muted tracking-wider mb-1.5">
                       Review Title
                     </label>
                     <input
@@ -471,12 +471,12 @@ const Testimonials = () => {
                       placeholder="e.g., Highly informative and beautifully built!"
                       value={form.title}
                       onChange={(e) => setForm(prev => ({ ...prev, title: e.target.value }))}
-                      className="w-full bg-border-subtle/20 border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-purple transition-all"
+                      className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-purple transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1.5">
+                    <label className="block text-[10px] uppercase font-bold text-text-muted tracking-wider mb-1.5">
                       Your Feedback
                     </label>
                     <textarea
@@ -485,7 +485,7 @@ const Testimonials = () => {
                       placeholder="Write your detailed testimonial here..."
                       value={form.text}
                       onChange={(e) => setForm(prev => ({ ...prev, text: e.target.value }))}
-                      className="w-full bg-border-subtle/20 border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-purple transition-all resize-none"
+                      className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-purple transition-all resize-none"
                     />
                   </div>
 
