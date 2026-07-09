@@ -57,9 +57,84 @@ const ROW2_DATA = [
   }
 ];
 
-// Repeat data arrays 6 times to allow seamless infinite looping marquee without empty space on wide viewports
-const row1Doubled = [...ROW1_DATA, ...ROW1_DATA, ...ROW1_DATA, ...ROW1_DATA, ...ROW1_DATA, ...ROW1_DATA];
-const row2Doubled = [...ROW2_DATA, ...ROW2_DATA, ...ROW2_DATA, ...ROW2_DATA, ...ROW2_DATA, ...ROW2_DATA];
+// Cubic Bezier interpolation for stem curve
+const P0 = { x: 72, y: 92 };
+const P1 = { x: 42, y: 78 };
+const P2 = { x: 30, y: 42 };
+const P3 = { x: 55, y: 12 };
+
+const getBezierPoint = (t) => {
+  const mt = 1 - t;
+  return {
+    x: mt * mt * mt * P0.x + 3 * mt * mt * t * P1.x + 3 * mt * t * t * P2.x + t * t * t * P3.x,
+    y: mt * mt * mt * P0.y + 3 * mt * mt * t * P1.y + 3 * mt * t * t * P2.y + t * t * t * P3.y
+  };
+};
+
+const getBezierTangent = (t) => {
+  const mt = 1 - t;
+  return {
+    x: 3 * mt * mt * (P1.x - P0.x) + 6 * mt * t * (P2.x - P1.x) + 3 * t * t * (P3.x - P2.x),
+    y: 3 * mt * mt * (P1.y - P0.y) + 6 * mt * t * (P2.y - P1.y) + 3 * t * t * (P3.y - P2.y)
+  };
+};
+
+// 11 pairs distributed along the curve length
+const tValues = [0.08, 0.16, 0.24, 0.32, 0.40, 0.48, 0.56, 0.64, 0.72, 0.80, 0.88, 0.96];
+
+const LaurelBranch = ({ shadowId, className }) => {
+  return (
+    <svg className={`w-10 h-10 sm:w-16 sm:h-16 text-brand-purple/95 shrink-0 select-none fill-current overflow-visible ${className || ''}`} viewBox="0 0 100 100">
+      <defs>
+        <filter id={shadowId} x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="-0.8" dy="1.2" stdDeviation="0.8" floodColor="#000000" floodOpacity="0.25" />
+        </filter>
+      </defs>
+
+      {/* Stem */}
+      <path 
+        d={`M ${P0.x},${P0.y} C ${P1.x},${P1.y} ${P2.x},${P2.y} ${P3.x},${P3.y}`} 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="3.2" 
+        strokeLinecap="round" 
+        filter={`url(#${shadowId})`}
+      />
+      
+      {/* Dynamic overlapping leaf pairs with center split vein */}
+      <g filter={`url(#${shadowId})`}>
+        {tValues.map((t, idx) => {
+          const p = getBezierPoint(t);
+          const tangent = getBezierTangent(t);
+          const angleRad = Math.atan2(tangent.y, tangent.x);
+          const angleDeg = angleRad * 180 / Math.PI;
+
+          // Align rotation of leaves to the curve tangent
+          const leftRotate = angleDeg - 90 - (35 + (1 - t) * 15);
+          const rightRotate = angleDeg - 90 + (35 + (1 - t) * 15);
+          
+          // Scale grows in the middle, tapers at ends
+          const scale = (Math.sin(t * Math.PI) * 0.4 + 0.6) * 1.3;
+
+          return (
+            <g key={idx}>
+              {/* Left Leaf of pair */}
+              <g transform={`translate(${p.x}, ${p.y}) rotate(${leftRotate}) scale(${scale})`}>
+                <path d="M 0,0 C -3.5,-5 -6.5,-11 -0.8,-17 C 0.2,-17 0.2,-10 0,0 Z" fill="currentColor" />
+                <path d="M 0,0 C 3.5,-5 6.5,-11 0.8,-17 C -0.2,-17 -0.2,-10 0,0 Z" fill="currentColor" />
+              </g>
+              {/* Right Leaf of pair */}
+              <g transform={`translate(${p.x}, ${p.y}) rotate(${rightRotate}) scale(${scale})`}>
+                <path d="M 0,0 C -3.5,-5 -6.5,-11 -0.8,-17 C 0.2,-17 0.2,-10 0,0 Z" fill="currentColor" />
+                <path d="M 0,0 C 3.5,-5 6.5,-11 0.8,-17 C -0.2,-17 -0.2,-10 0,0 Z" fill="currentColor" />
+              </g>
+            </g>
+          );
+        })}
+      </g>
+    </svg>
+  );
+};
 
 const Testimonials = () => {
   return (
@@ -92,81 +167,15 @@ const Testimonials = () => {
         </p>
         
         <div className="flex items-center justify-center gap-3 sm:gap-5 w-full max-w-lg">
-          {/* Left Laurel Wreath (High-Fidelity Award-Style Branch) */}
-          <svg className="w-10 h-10 sm:w-16 sm:h-16 text-brand-purple/95 shrink-0 select-none fill-current overflow-visible" viewBox="0 0 100 100">
-            <defs>
-              <filter id="laurel-shadow-left" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="-0.8" dy="1.2" stdDeviation="0.8" floodColor="#000000" floodOpacity="0.25" />
-              </filter>
-            </defs>
-            {/* Stem */}
-            <path d="M68,85 C52,75 44,53 50,22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" filter="url(#laurel-shadow-left)" />
-            {/* Leaves Group */}
-            <g filter="url(#laurel-shadow-left)">
-              {/* Top central leaf */}
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(50, 18) rotate(-15) scale(1.3)" />
-              
-              {/* Left-side leaves pointing up-left */}
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(45, 23) rotate(-35) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(40, 31) rotate(-40) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(36, 40) rotate(-45) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(34, 50) rotate(-50) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(34, 60) rotate(-55) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(36, 70) rotate(-60) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(40, 79) rotate(-65) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(46, 87) rotate(-70) scale(1.3)" />
-              
-              {/* Right-side leaves pointing up-right */}
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(55, 25) rotate(15) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(57, 33) rotate(20) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(58, 42) rotate(25) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(57, 52) rotate(30) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(54, 62) rotate(35) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(49, 72) rotate(40) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(43, 81) rotate(45) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(35, 88) rotate(50) scale(1.3)" />
-            </g>
-          </svg>
+          {/* Left Laurel Wreath */}
+          <LaurelBranch shadowId="laurel-shadow-left" />
 
           <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
             Our Happy <span className="text-gradient">Readers</span>
           </h2>
 
-          {/* Right Laurel Wreath (Mirrored High-Fidelity Award-Style Branch) */}
-          <svg className="w-10 h-10 sm:w-16 sm:h-16 text-brand-purple/95 shrink-0 select-none fill-current scale-x-[-1] overflow-visible" viewBox="0 0 100 100">
-            <defs>
-              <filter id="laurel-shadow-right" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="-0.8" dy="1.2" stdDeviation="0.8" floodColor="#000000" floodOpacity="0.25" />
-              </filter>
-            </defs>
-            {/* Stem */}
-            <path d="M68,85 C52,75 44,53 50,22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" filter="url(#laurel-shadow-right)" />
-            {/* Leaves Group */}
-            <g filter="url(#laurel-shadow-right)">
-              {/* Top central leaf */}
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(50, 18) rotate(-15) scale(1.3)" />
-              
-              {/* Left-side leaves pointing up-left */}
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(45, 23) rotate(-35) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(40, 31) rotate(-40) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(36, 40) rotate(-45) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(34, 50) rotate(-50) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(34, 60) rotate(-55) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(36, 70) rotate(-60) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(40, 79) rotate(-65) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(46, 87) rotate(-70) scale(1.3)" />
-              
-              {/* Right-side leaves pointing up-right */}
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(55, 25) rotate(15) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(57, 33) rotate(20) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(58, 42) rotate(25) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(57, 52) rotate(30) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(54, 62) rotate(35) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(49, 72) rotate(40) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(43, 81) rotate(45) scale(1.3)" />
-              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(35, 88) rotate(50) scale(1.3)" />
-            </g>
-          </svg>
+          {/* Right Laurel Wreath (Mirrored) */}
+          <LaurelBranch shadowId="laurel-shadow-right" className="scale-x-[-1]" />
         </div>
 
         <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto leading-relaxed">
