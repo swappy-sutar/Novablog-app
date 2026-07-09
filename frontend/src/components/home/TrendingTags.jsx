@@ -85,13 +85,13 @@ const TrendingTags = () => {
 
       {/* Trending Topics Grid */}
       <div className="max-w-7xl mx-auto px-6 space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
           <h2 className="text-md sm:text-lg font-bold tracking-wider text-white uppercase">
             Trending Technical <span className="text-gradient">Topics</span>
           </h2>
           <Link 
             to="/explore" 
-            className="text-xs font-semibold text-gray-400 hover:text-brand-cyan transition-colors flex items-center gap-1.5 shrink-0 whitespace-nowrap"
+            className="text-xs font-semibold text-gray-400 hover:text-brand-cyan transition-colors flex items-center gap-1.5 shrink-0 whitespace-nowrap self-start sm:self-auto mt-1.5 sm:mt-0"
           >
             View all topics <span>→</span>
           </Link>
