@@ -82,11 +82,11 @@ function formatJoined(iso) {
 
 const getWriterLevel = (reads) => {
   if (typeof reads !== 'number' || reads < 1) return 'Reader';
-  if (reads < 10) return 'Seedling';
-  if (reads < 50) return 'Contributor';
-  if (reads < 100) return 'Influencer';
-  if (reads < 250) return 'Rising Writer';
-  if (reads < 500) return 'Legend';
+  if (reads < 50) return 'Seedling';
+  if (reads < 250) return 'Contributor';
+  if (reads < 1000) return 'Influencer';
+  if (reads < 5000) return 'Rising Writer';
+  if (reads < 10000) return 'Legend';
   return 'Established Voice';
 };
 
@@ -217,14 +217,14 @@ const PublicProfilePage = () => {
     'Legend': '#3b82f6',
     'Established Voice': '#eab308'
   };
-  const levelIcons = {
-    'Reader': Sprout,
-    'Seedling': Sprout,
-    'Contributor': FileText,
-    'Influencer': Flame,
-    'Rising Writer': Pencil,
-    'Legend': Crown,
-    'Established Voice': Award
+  const levelImages = {
+    'Reader': '/badge_seedling.png',
+    'Seedling': '/badge_seedling.png',
+    'Contributor': '/badge_contributor.png',
+    'Influencer': '/badge_influencer.png',
+    'Rising Writer': '/badge_rising_writer.png',
+    'Legend': '/badge_legend.png',
+    'Established Voice': '/badge_established.png'
   };
   const currentLevel = getWriterLevel(profile?.totalViews ?? 0);
   const currentAccent = levelColors[currentLevel] || '#8b5cf6';
@@ -430,29 +430,29 @@ const PublicProfilePage = () => {
         ].map((stat) => {
           const isWriterLevel = stat.label === 'WRITER LEVEL';
           if (isWriterLevel) {
-            const IconComponent = levelIcons[currentLevel] || Sprout;
+            const currentImage = levelImages[currentLevel] || '/badge_seedling.png';
             return (
-              <GlassCard
-                key={stat.label}
-                hoverEffect={true}
-                className="!rounded-[10px] p-4 border transition-all duration-300 relative flex items-center gap-3 md:gap-4 text-left"
-                style={{
-                  borderColor: `${currentAccent}35`,
-                  background: `linear-gradient(to bottom right, ${currentAccent}03, var(--color-bg-card))`,
-                  boxShadow: `0 0 20px ${currentAccent}12`
-                }}
-              >
-                {/* Glowing Level Badge Icon (exactly like the NASA space apps card) */}
-                <div 
-                  className="p-2.5 rounded-lg flex items-center justify-center shrink-0 border"
-                  style={{
-                    borderColor: `${currentAccent}40`,
-                    backgroundColor: `${currentAccent}10`,
-                    boxShadow: `0 0 15px ${currentAccent}20`
-                  }}
-                >
-                  <IconComponent className="w-5 h-5" style={{ color: currentAccent }} />
-                </div>
+               <GlassCard
+                 key={stat.label}
+                 hoverEffect={true}
+                 className="!rounded-[10px] p-4 border transition-all duration-300 relative flex items-center gap-3 md:gap-4 text-left"
+                 style={{
+                   borderColor: `${currentAccent}35`,
+                   background: `linear-gradient(to bottom right, ${currentAccent}03, var(--color-bg-card))`,
+                   boxShadow: `0 0 20px ${currentAccent}12`
+                 }}
+               >
+                 {/* Glowing Level Badge Icon (exactly like the NASA space apps card) */}
+                 <div 
+                   className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 border overflow-hidden"
+                   style={{
+                     borderColor: `${currentAccent}40`,
+                     backgroundColor: `${currentAccent}10`,
+                     boxShadow: `0 0 15px ${currentAccent}20`
+                   }}
+                 >
+                   <img src={currentImage} alt={currentLevel} className="w-full h-full object-cover rounded-full" />
+                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[10px] md:text-xs font-semibold text-gray-500 tracking-wider mb-1">
                     {stat.label}
