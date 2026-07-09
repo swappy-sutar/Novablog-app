@@ -189,7 +189,7 @@ const Testimonials = () => {
           />
         </div>
 
-        <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto leading-relaxed">
+        <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto leading-relaxed !mt-1">
           See how our readers are talking about our blogs
         </p>
       </div>
