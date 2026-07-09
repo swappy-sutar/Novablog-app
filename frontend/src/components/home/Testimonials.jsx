@@ -417,7 +417,7 @@ const Testimonials = () => {
                         placeholder="John Doe"
                         value={form.name}
                         onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
-                        className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-purple transition-all"
+                        className="w-full bg-white dark:bg-bg-input border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-purple transition-all"
                       />
                     </div>
                     <div>
@@ -430,7 +430,7 @@ const Testimonials = () => {
                         placeholder="London, UK"
                         value={form.location}
                         onChange={(e) => setForm(prev => ({ ...prev, location: e.target.value }))}
-                        className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-purple transition-all"
+                        className="w-full bg-white dark:bg-bg-input border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-purple transition-all"
                       />
                     </div>
                   </div>
@@ -471,7 +471,7 @@ const Testimonials = () => {
                       placeholder="e.g., Highly informative and beautifully built!"
                       value={form.title}
                       onChange={(e) => setForm(prev => ({ ...prev, title: e.target.value }))}
-                      className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-purple transition-all"
+                      className="w-full bg-white dark:bg-bg-input border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-purple transition-all"
                     />
                   </div>
 
@@ -485,7 +485,7 @@ const Testimonials = () => {
                       placeholder="Write your detailed testimonial here..."
                       value={form.text}
                       onChange={(e) => setForm(prev => ({ ...prev, text: e.target.value }))}
-                      className="w-full bg-bg-input border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-purple transition-all resize-none"
+                      className="w-full bg-white dark:bg-bg-input border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-purple transition-all resize-none"
                     />
                   </div>
 
