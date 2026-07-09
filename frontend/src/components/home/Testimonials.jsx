@@ -140,7 +140,7 @@ const Testimonials = () => {
   const [form, setForm] = useState({
     name: '',
     location: '',
-    stars: 5,
+    stars: 0,
     title: '',
     text: '',
   });
@@ -162,6 +162,10 @@ const Testimonials = () => {
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
+    if (form.stars < 1 || form.stars > 5) {
+      toast.error('Please select a rating star.');
+      return;
+    }
     setSubmitting(true);
     try {
       const payload = {
@@ -175,7 +179,7 @@ const Testimonials = () => {
         setForm({
           name: '',
           location: '',
-          stars: 5,
+          stars: 0,
           title: '',
           text: '',
         });
