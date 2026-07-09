@@ -130,7 +130,52 @@ const TechProgressionMap = () => {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-6 mb-24 overflow-visible relative">
+    <section className="max-w-7xl mx-auto px-6 mb-24 overflow-visible relative pt-12">
+      {/* Wavy Divider Transition */}
+      <div className="relative w-screen left-1/2 -translate-x-1/2 h-20 md:h-28 overflow-visible pointer-events-none mb-16 -mt-16 z-10">
+
+        {/* Glow backdrop mesh */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-12 bg-gradient-to-r from-brand-purple/10 via-brand-cyan/10 to-transparent blur-3xl rounded-full pointer-events-none -z-10" />
+        
+        {/* Curved boundary line with layered neon glow */}
+        <svg className="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 1440 120" preserveAspectRatio="none">
+          {/* Layer 1: Outer Soft Glow */}
+          <path 
+            d="M0,50 C240,10 480,90 720,40 C960,-10 1200,70 1440,30" 
+            fill="none" 
+            stroke="url(#divider-line-grad)" 
+            strokeWidth="6"
+            className="opacity-25 blur-[3px]"
+          />
+          {/* Layer 2: Inner Crisp Laser Line */}
+          <path 
+            d="M0,50 C240,10 480,90 720,40 C960,-10 1200,70 1440,30" 
+            fill="none" 
+            stroke="url(#divider-line-grad)" 
+            strokeWidth="2"
+            className="opacity-80"
+          />
+          <defs>
+            <linearGradient id="divider-line-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="var(--color-brand-purple)" stopOpacity="0" />
+              <stop offset="25%" stopColor="var(--color-brand-purple)" stopOpacity="0.9" />
+              <stop offset="75%" stopColor="var(--color-brand-cyan)" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="var(--color-brand-cyan)" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      {/* Full-bleed Cinematic Dotted Grid Background */}
+      <div 
+        className="absolute inset-y-0 w-screen left-1/2 -translate-x-1/2 pointer-events-none cinematic-dots -z-10"
+        style={{
+          backgroundSize: '24px 24px',
+          maskImage: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.15) 12%, rgba(0,0,0,0.6) 24%, black 36%, black 85%, transparent)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.15) 12%, rgba(0,0,0,0.6) 24%, black 36%, black 85%, transparent)'
+        }}
+      />
+
       {/* SVG ClipPath Definition for Rounded Chevrons */}
       <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
         <defs>
@@ -156,6 +201,13 @@ const TechProgressionMap = () => {
         }
         .cinematic-chevron-inner {
           clip-path: url(#rounded-chevron-clip);
+        }
+        
+        .cinematic-dots {
+          background-image: radial-gradient(rgba(15, 23, 42, 0.16) 1.5px, transparent 1.5px);
+        }
+        :root:not(.light-mode) .cinematic-dots {
+          background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px) !important;
         }
         
         /* Dark mode overrides aligned with website theme state */
