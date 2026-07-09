@@ -146,7 +146,7 @@ const Testimonials = () => {
       </div>
 
       {/* Infinite Marquee Double Rows Wrapper */}
-      <div className="relative w-screen left-1/2 -translate-x-1/2 overflow-hidden flex flex-col gap-8 max-w-[100vw]">
+      <div className="relative w-screen left-1/2 -translate-x-1/2 overflow-hidden flex flex-col gap-5 max-w-[100vw]">
         {/* Left Gradient Fade Overlay */}
         <div 
           className="absolute inset-y-0 left-0 w-24 sm:w-36 z-10 pointer-events-none"
@@ -162,32 +162,32 @@ const Testimonials = () => {
         <div className="flex w-full overflow-hidden py-1">
           <div className="flex gap-6 animate-marquee-ltr hover-pause select-none">
             {row1Doubled.map((card, idx) => (
-              <div key={`${card.name}-${idx}`} className="w-[280px] sm:w-[360px] shrink-0">
-                <GlassCard className="p-6 flex flex-col justify-between border border-border-subtle bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
+              <div key={`${card.name}-${idx}`} className="w-[260px] sm:w-[320px] shrink-0">
+                <GlassCard className="p-4 flex flex-col justify-between border border-border-subtle bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
                   <div>
                     {/* User profile row */}
-                    <div className="flex items-center gap-3 mb-4">
+                    <div className="flex items-center gap-2 mb-2">
                       <img
                         src={card.avatar}
                         alt={card.name}
-                        className="w-10 h-10 rounded-full object-cover border border-border-subtle shadow-md"
+                        className="w-8 h-8 rounded-full object-cover border border-border-subtle shadow-sm"
                       />
                       <div className="min-w-0">
-                        <h4 className="text-xs sm:text-sm font-bold text-white truncate">
+                        <h4 className="text-xs font-bold text-white truncate">
                           {card.name}
                         </h4>
-                        <p className="text-[10px] text-gray-500 truncate">
+                        <p className="text-[9px] text-gray-500 truncate">
                           {card.location}
                         </p>
                       </div>
                     </div>
 
                     {/* Star Rating */}
-                    <div className="flex items-center gap-1 mb-3">
+                    <div className="flex items-center gap-1 mb-2">
                       {Array(5).fill(null).map((_, idx) => (
                         <Star
                           key={idx}
-                          className="w-3.5 h-3.5"
+                          className="w-3 h-3"
                           fill={idx < card.stars ? "#eab308" : "none"}
                           stroke={idx < card.stars ? "#eab308" : "var(--color-border-subtle)"}
                           strokeWidth={2}
@@ -196,12 +196,12 @@ const Testimonials = () => {
                     </div>
 
                     {/* Review title */}
-                    <h5 className="text-xs sm:text-sm font-bold text-white mb-2 leading-snug line-clamp-1">
+                    <h5 className="text-xs font-bold text-white mb-1 leading-snug line-clamp-1">
                       {card.title}
                     </h5>
 
                     {/* Review text */}
-                    <p className="text-xs text-gray-400 leading-relaxed line-clamp-4">
+                    <p className="text-[11px] text-gray-400 leading-relaxed line-clamp-2">
                       {card.text}
                     </p>
                   </div>
@@ -215,32 +215,32 @@ const Testimonials = () => {
         <div className="flex w-full overflow-hidden py-1">
           <div className="flex gap-6 animate-marquee-rtl hover-pause select-none">
             {row2Doubled.map((card, idx) => (
-              <div key={`${card.name}-${idx}`} className="w-[280px] sm:w-[360px] shrink-0">
-                <GlassCard className="p-6 flex flex-col justify-between border border-border-subtle bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
+              <div key={`${card.name}-${idx}`} className="w-[280px] sm:w-[320px] shrink-0">
+                <GlassCard className="p-4 flex flex-col justify-between border border-border-subtle bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
                   <div>
                     {/* User profile row */}
-                    <div className="flex items-center gap-3 mb-4">
+                    <div className="flex items-center gap-2 mb-2">
                       <img
                         src={card.avatar}
                         alt={card.name}
-                        className="w-10 h-10 rounded-full object-cover border border-border-subtle shadow-md"
+                        className="w-8 h-8 rounded-full object-cover border border-border-subtle shadow-md"
                       />
                       <div className="min-w-0">
-                        <h4 className="text-xs sm:text-sm font-bold text-white truncate">
+                        <h4 className="text-xs font-bold text-white truncate">
                           {card.name}
                         </h4>
-                        <p className="text-[10px] text-gray-500 truncate">
+                        <p className="text-[9px] text-gray-500 truncate">
                           {card.location}
                         </p>
                       </div>
                     </div>
 
                     {/* Star Rating */}
-                    <div className="flex items-center gap-1 mb-3">
+                    <div className="flex items-center gap-1 mb-2">
                       {Array(5).fill(null).map((_, idx) => (
                         <Star
                           key={idx}
-                          className="w-3.5 h-3.5"
+                          className="w-3 h-3"
                           fill={idx < card.stars ? "#eab308" : "none"}
                           stroke={idx < card.stars ? "#eab308" : "var(--color-border-subtle)"}
                           strokeWidth={2}
@@ -249,12 +249,12 @@ const Testimonials = () => {
                     </div>
 
                     {/* Review title */}
-                    <h5 className="text-xs sm:text-sm font-bold text-white mb-2 leading-snug line-clamp-1">
+                    <h5 className="text-xs font-bold text-white mb-1 leading-snug line-clamp-1">
                       {card.title}
                     </h5>
 
                     {/* Review text */}
-                    <p className="text-xs text-gray-400 leading-relaxed line-clamp-4">
+                    <p className="text-[11px] text-gray-400 leading-relaxed line-clamp-2">
                       {card.text}
                     </p>
                   </div>
