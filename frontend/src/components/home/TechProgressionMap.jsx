@@ -86,11 +86,16 @@ const TechProgressionMap = () => {
     <section className="max-w-7xl mx-auto px-6 mb-24 overflow-visible relative">
       {/* Self-contained CSS styles for cinematic glass chevrons */}
       <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes border-sweep {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
         .cinematic-chevron-border {
           clip-path: polygon(0 24px, 50% 0, 100% 24px, 100% 100%, 0 100%);
-          transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-          will-change: transform;
-          filter: drop-shadow(0 8px 12px rgba(0,0,0,0.12));
+          transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+          will-change: transform, filter;
+          background-size: 200% 200% !important;
         }
         .cinematic-chevron-inner {
           clip-path: polygon(0 23px, 50% 0, 100% 23px, 100% 100%, 0 100%);
@@ -98,7 +103,6 @@ const TechProgressionMap = () => {
         @media (min-width: 640px) {
           .cinematic-group:hover .cinematic-chevron-border {
             transform: translateY(-8px);
-            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.3));
           }
         }
         @media (min-width: 1280px) {
@@ -185,11 +189,17 @@ const TechProgressionMap = () => {
 
               {/* 1px Gradient Border Chevron Container */}
               <div 
-                className="flex-grow p-[1px] bg-white/10 cinematic-chevron-border z-10"
+                className="flex-grow p-[1px] cinematic-chevron-border z-10"
                 style={{
                   background: (isHovered || isExpanded)
-                    ? `linear-gradient(to bottom, ${lvl.accentColor}, ${lvl.accentColor}10)`
-                    : `linear-gradient(to bottom, var(--color-border-subtle), transparent)`
+                    ? `linear-gradient(135deg, ${lvl.accentColor} 0%, #ffffff 35%, ${lvl.accentColor} 70%, ${lvl.accentColor}15 100%)`
+                    : `linear-gradient(to bottom, var(--color-border-subtle) 0%, transparent 100%)`,
+                  animation: (isHovered || isExpanded)
+                    ? 'border-sweep 2.5s ease infinite'
+                    : 'none',
+                  filter: (isHovered || isExpanded)
+                    ? `drop-shadow(0 0 14px ${lvl.accentColor}55) drop-shadow(0 12px 28px rgba(0, 0, 0, 0.55))`
+                    : `drop-shadow(0 8px 12px rgba(0, 0, 0, 0.2))`
                 }}
               >
                 
@@ -217,7 +227,11 @@ const TechProgressionMap = () => {
 
                   {/* Level Name */}
                   <h3 
-                    className="text-xs font-black tracking-widest mb-4 transition-colors duration-300 text-white"
+                    className="text-xs font-black tracking-widest mb-4 transition-all duration-300"
+                    style={{
+                      textShadow: (isHovered || isExpanded) ? `0 0 10px ${lvl.accentColor}95` : 'none',
+                      color: (isHovered || isExpanded) ? '#ffffff' : '#e5e7eb'
+                    }}
                   >
                     {lvl.title}
                   </h3>
