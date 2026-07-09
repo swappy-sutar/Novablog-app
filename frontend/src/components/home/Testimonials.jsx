@@ -392,7 +392,7 @@ const Testimonials = () => {
               transition={{ type: 'spring', duration: 0.5 }}
               className="relative w-full max-w-lg z-10 overflow-hidden"
             >
-              <GlassCard className="p-6 sm:p-8 border border-border-subtle bg-bg-card/95 shadow-2xl relative">
+              <GlassCard className="p-6 sm:p-8 border border-border-subtle bg-white dark:bg-bg-card/95 shadow-2xl relative">
                 <button
                   onClick={() => setIsModalOpen(false)}
                   className="absolute right-4 top-4 text-text-muted hover:text-text-input transition-colors cursor-pointer p-1 rounded-lg hover:bg-white/5"
