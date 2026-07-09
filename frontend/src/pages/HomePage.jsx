@@ -3,6 +3,7 @@ import Hero from '../components/home/Hero';
 import TrendingTags from '../components/home/TrendingTags';
 import CuratedInsights from '../components/home/CuratedInsights';
 import TopContributors from '../components/home/TopContributors';
+import Testimonials from '../components/home/Testimonials';
 import TechProgressionMap from '../components/home/TechProgressionMap';
 import Newsletter from '../components/home/Newsletter';
 import useDocumentTitle from '../hooks/useDocumentTitle';
@@ -22,6 +23,7 @@ const HomePage = () => {
       <CuratedInsights />
       <TechProgressionMap />
       <TopContributors />
+      <Testimonials />
       <Newsletter />
     </motion.div>
   );
