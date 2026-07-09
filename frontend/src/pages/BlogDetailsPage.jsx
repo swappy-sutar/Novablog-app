@@ -68,37 +68,37 @@ const BlogDetailsPage = () => {
       if (res.success && res.data) {
         setBlog(res.data);
         setLikeCount(res.data._count?.likes || 0);
+        // Hide full page loader immediately now that we have the article details
+        setLoading(false);
         
-        // Check if current user liked this blog
-        // We can fetch the like count explicitly to sync
-        const countRes = await likeAPI.getLikeCount(id);
-        if (countRes.success && countRes.data) {
-          setLikeCount(countRes.data.count);
-        }
-
+        // Fetch like count, check like, and check bookmark status in parallel in background
         const token = localStorage.getItem('accessToken');
+        const promises = [likeAPI.getLikeCount(id)];
         if (token) {
-          try {
-            const statusRes = await likeAPI.checkLikeStatus(id);
-            if (statusRes.success && statusRes.data) {
-              setUserLiked(statusRes.data.liked);
-            }
-
-            const bookmarkRes = await bookmarkAPI.checkBookmarkStatus(id);
-            if (bookmarkRes.success && bookmarkRes.data) {
-              setUserBookmarked(bookmarkRes.data.bookmarked);
-            }
-          } catch (err) {
-            console.error("Failed to check like/bookmark status:", err);
-          }
+          promises.push(likeAPI.checkLikeStatus(id));
+          promises.push(bookmarkAPI.checkBookmarkStatus(id));
         }
+
+        Promise.allSettled(promises).then(([countResult, likeResult, bookmarkResult]) => {
+          if (countResult && countResult.status === 'fulfilled' && countResult.value.success) {
+            setLikeCount(countResult.value.data.count);
+          }
+          if (likeResult && likeResult.status === 'fulfilled' && likeResult.value.success) {
+            setUserLiked(likeResult.value.data.liked);
+          }
+          if (bookmarkResult && bookmarkResult.status === 'fulfilled' && bookmarkResult.value.success) {
+            setUserBookmarked(bookmarkResult.value.data.bookmarked);
+          }
+        }).catch(err => {
+          console.error("Failed to load background blog interactive metadata:", err);
+        });
       } else {
         setError("Post not found.");
+        setLoading(false);
       }
     } catch (e) {
       console.error(e);
       setError(e.response?.data?.message || e.message || "Failed to load post.");
-    } finally {
       setLoading(false);
     }
   }, [id]);
