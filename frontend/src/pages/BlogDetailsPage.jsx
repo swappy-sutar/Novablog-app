@@ -198,9 +198,76 @@ const BlogDetailsPage = () => {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-center min-h-[60vh] pt-24">
-        <Loader message="Retrieving article details..." size="md" />
-      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.5 }}
+        className="pb-20 relative select-none"
+      >
+        {/* Widescreen Hero Section Skeleton */}
+        <div className="relative w-full h-[360px] sm:h-[420px] bg-white/[0.01] border-b border-border-subtle/20 flex flex-col justify-end overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-t from-[#04040c] via-transparent to-transparent z-10" />
+          <div className="max-w-7xl mx-auto px-6 w-full pb-10 z-20 space-y-4">
+            {/* Category tag */}
+            <div className="h-5 w-16 bg-white/[0.04] border border-white/[0.05] animate-pulse rounded-lg" />
+            
+            {/* Article Title */}
+            <div className="space-y-3">
+              <div className="h-10 w-3/4 sm:w-2/3 bg-white/[0.04] animate-pulse rounded-md" />
+              <div className="h-10 w-1/2 sm:w-1/3 bg-white/[0.04] animate-pulse rounded-md" />
+            </div>
+
+            {/* Author Meta Details */}
+            <div className="flex items-center gap-3 pt-2">
+              <div className="w-8 h-8 rounded-full bg-white/[0.04] animate-pulse" />
+              <div className="h-4 w-24 bg-white/[0.03] animate-pulse rounded" />
+              <div className="w-1.5 h-1.5 rounded-full bg-white/[0.02] animate-pulse" />
+              <div className="h-4 w-16 bg-white/[0.03] animate-pulse rounded" />
+            </div>
+          </div>
+        </div>
+
+        {/* Share/Actions Toolbar Skeleton */}
+        <div className="sticky top-[64px] z-30 w-full h-14 bg-bg-card/75 backdrop-blur-md border-b border-border-subtle/20 flex items-center justify-center gap-8">
+          {Array(4).fill(null).map((_, idx) => (
+            <div key={idx} className="w-5 h-5 rounded-full bg-white/[0.04] animate-pulse" />
+          ))}
+        </div>
+
+        {/* Content & Sidebar Grid Skeleton */}
+        <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-start gap-12 lg:gap-16 pt-12 relative">
+          {/* Left/Sidebar meta placeholder */}
+          <div className="hidden lg:block w-64 shrink-0 space-y-6">
+            <div className="h-4 w-24 bg-white/[0.03] animate-pulse rounded" />
+            <div className="space-y-2">
+              <div className="h-4 w-5/6 bg-white/[0.02] animate-pulse rounded" />
+              <div className="h-4 w-4/5 bg-white/[0.02] animate-pulse rounded" />
+            </div>
+            <div className="h-px w-full bg-white/[0.05]" />
+            <div className="h-4 w-32 bg-white/[0.03] animate-pulse rounded" />
+          </div>
+
+          {/* Main article lines placeholder */}
+          <div className="flex-grow w-full max-w-3xl space-y-8">
+            <div className="space-y-3">
+              <div className="h-4 w-full bg-white/[0.02] animate-pulse rounded" />
+              <div className="h-4 w-full bg-white/[0.02] animate-pulse rounded" />
+              <div className="h-4 w-11/12 bg-white/[0.02] animate-pulse rounded" />
+              <div className="h-4 w-4/5 bg-white/[0.02] animate-pulse rounded" />
+            </div>
+            <div className="space-y-3 pt-4">
+              <div className="h-4 w-full bg-white/[0.02] animate-pulse rounded" />
+              <div className="h-4 w-full bg-white/[0.02] animate-pulse rounded" />
+              <div className="h-4 w-5/6 bg-white/[0.02] animate-pulse rounded" />
+            </div>
+            <div className="space-y-3 pt-4">
+              <div className="h-4 w-full bg-white/[0.02] animate-pulse rounded" />
+              <div className="h-4 w-11/12 bg-white/[0.02] animate-pulse rounded" />
+            </div>
+          </div>
+        </div>
+      </motion.div>
     );
   }
 
