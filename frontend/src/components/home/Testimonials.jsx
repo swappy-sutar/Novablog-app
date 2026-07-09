@@ -166,30 +166,30 @@ const Testimonials = () => {
         }}
       />
 
-      <div className="text-center mb-16 space-y-4 relative flex flex-col items-center">
+      <div className="text-center mb-16 space-y-3 relative flex flex-col items-center">
         <p className="text-xs sm:text-sm font-black tracking-widest text-brand-cyan uppercase">
           Public opinion suggests
         </p>
         
-        <div className="flex items-center justify-center gap-4 sm:gap-6 w-full max-w-3xl">
+        <div className="flex items-center justify-center gap-3 sm:gap-5 w-full max-w-2xl">
           <img 
             src="/Purple_crescent_laurel_branch.png" 
             alt="Laurel branch left" 
-            className="w-14 h-14 sm:w-24 sm:h-24 shrink-0 select-none object-contain" 
+            className="w-10 h-10 sm:w-16 sm:h-16 shrink-0 select-none object-contain" 
           />
 
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
+          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-text-input leading-tight whitespace-nowrap">
             Our Happy <span className="text-gradient">Readers</span>
           </h2>
 
           <img 
             src="/Purple_crescent_laurel_branch.png" 
             alt="Laurel branch right" 
-            className="w-14 h-14 sm:w-24 sm:h-24 shrink-0 select-none object-contain scale-x-[-1]" 
+            className="w-10 h-10 sm:w-16 sm:h-16 shrink-0 select-none object-contain scale-x-[-1]" 
           />
         </div>
 
-        <p className="text-sm sm:text-base md:text-lg text-gray-400 max-w-lg sm:max-w-2xl mx-auto leading-relaxed">
+        <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto leading-relaxed">
           See how our readers are talking about our blogs
         </p>
       </div>
