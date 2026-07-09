@@ -271,7 +271,7 @@ const Testimonials = () => {
           <div className="flex gap-6 animate-marquee-ltr hover-pause select-none">
             {row1Doubled.map((card, idx) => (
               <div key={`${card.name}-${idx}`} className="w-[260px] sm:w-[320px] shrink-0">
-                <GlassCard className="p-4 flex flex-col justify-between border border-border-subtle bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
+                <GlassCard className="p-4 flex flex-col justify-between border border-border-subtle bg-white dark:bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <img
@@ -280,10 +280,10 @@ const Testimonials = () => {
                         className="w-8 h-8 rounded-full object-cover border border-border-subtle shadow-sm"
                       />
                       <div className="min-w-0">
-                        <h4 className="text-xs font-bold text-white truncate">
+                        <h4 className="text-xs font-bold text-text-input truncate">
                           {card.name}
                         </h4>
-                        <p className="text-[9px] text-gray-500 truncate">
+                        <p className="text-[9px] text-text-muted truncate">
                           {card.location}
                         </p>
                       </div>
@@ -301,11 +301,11 @@ const Testimonials = () => {
                       ))}
                     </div>
 
-                    <h5 className="text-xs font-bold text-white mb-1 leading-snug line-clamp-1">
+                    <h5 className="text-xs font-bold text-text-input mb-1 leading-snug line-clamp-1">
                       {card.title}
                     </h5>
 
-                    <p className="text-[11px] text-gray-400 leading-relaxed line-clamp-2">
+                    <p className="text-[11px] text-text-muted leading-relaxed line-clamp-2">
                       {card.text}
                     </p>
                   </div>
@@ -319,7 +319,7 @@ const Testimonials = () => {
           <div className="flex gap-6 animate-marquee-rtl hover-pause select-none">
             {row2Doubled.map((card, idx) => (
               <div key={`${card.name}-${idx}`} className="w-[280px] sm:w-[320px] shrink-0">
-                <GlassCard className="p-4 flex flex-col justify-between border border-border-subtle bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
+                <GlassCard className="p-4 flex flex-col justify-between border border-border-subtle bg-white dark:bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <img
@@ -328,10 +328,10 @@ const Testimonials = () => {
                         className="w-8 h-8 rounded-full object-cover border border-border-subtle shadow-md"
                       />
                       <div className="min-w-0">
-                        <h4 className="text-xs font-bold text-white truncate">
+                        <h4 className="text-xs font-bold text-text-input truncate">
                           {card.name}
                         </h4>
-                        <p className="text-[9px] text-gray-500 truncate">
+                        <p className="text-[9px] text-text-muted truncate">
                           {card.location}
                         </p>
                       </div>
@@ -349,11 +349,11 @@ const Testimonials = () => {
                       ))}
                     </div>
 
-                    <h5 className="text-xs font-bold text-white mb-1 leading-snug line-clamp-1">
+                    <h5 className="text-xs font-bold text-text-input mb-1 leading-snug line-clamp-1">
                       {card.title}
                     </h5>
 
-                    <p className="text-[11px] text-gray-400 leading-relaxed line-clamp-2">
+                    <p className="text-[11px] text-text-muted leading-relaxed line-clamp-2">
                       {card.text}
                     </p>
                   </div>

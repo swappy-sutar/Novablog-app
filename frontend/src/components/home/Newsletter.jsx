@@ -33,16 +33,16 @@ const Newsletter = () => {
 
   return (
     <section className="max-w-5xl mx-auto px-6 mb-16">
-      <GlassCard className="p-8 sm:p-12 border border-border-subtle bg-bg-card/80 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 relative overflow-hidden shadow-2xl">
+      <GlassCard className="p-8 sm:p-12 border border-border-subtle bg-white dark:bg-bg-card/80 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 relative overflow-hidden shadow-2xl">
         {/* Glow Background */}
         <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-brand-purple/10 rounded-full blur-[80px] -z-10" />
 
         {/* Copy */}
         <div className="max-w-md space-y-3 text-left">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-text-input tracking-tight">
             The Weekly Compile
           </h2>
-          <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">
+          <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
             Zero fluff. Just pure technical insights, architectural breakdowns, and code delivered straight to your terminal.
           </p>
         </div>
@@ -55,7 +55,7 @@ const Newsletter = () => {
               placeholder="Developer network email..." 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-border-subtle/20 border border-border-subtle rounded-xl px-5 py-3 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-brand-cyan transition-colors"
+              className="w-full bg-white dark:bg-bg-input border border-border-subtle rounded-xl px-5 py-3 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-cyan transition-colors"
               required
               disabled={submitting}
             />
@@ -68,8 +68,8 @@ const Newsletter = () => {
               {submitting ? 'Subscribing...' : 'Subscribe'}
             </Button>
           </form>
-          <p className="text-[10px] text-gray-500 pl-2 text-left">
-            by subscribing, you agree to our <Link to="/privacy" className="underline hover:text-white transition-colors">privacy protocol</Link>
+          <p className="text-[10px] text-text-muted pl-2 text-left">
+            by subscribing, you agree to our <Link to="/privacy" className="underline hover:text-text-input transition-colors">privacy protocol</Link>
           </p>
         </div>
       </GlassCard>
