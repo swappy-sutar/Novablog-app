@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import GlassCard from '../ui/GlassCard';
 import toast from 'react-hot-toast';
 
 const Sidebar = ({ blog }) => {
   const [activeId, setActiveId] = useState('');
+  const navContainerRef = useRef(null);
 
   const headings = React.useMemo(() => {
     if (!blog?.content) return [];
@@ -51,6 +52,17 @@ const Sidebar = ({ blog }) => {
     };
   }, [headings]);
 
+  useEffect(() => {
+    if (!activeId || !navContainerRef.current) return;
+    const activeEl = navContainerRef.current.querySelector(`[data-id="${activeId}"]`);
+    if (activeEl) {
+      activeEl.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest'
+      });
+    }
+  }, [activeId]);
+
   const scrollToHeading = (e, id) => {
     e.preventDefault();
     const el = document.getElementById(id);
@@ -74,12 +86,12 @@ const Sidebar = ({ blog }) => {
       {headings.length > 0 && (
         <div className="mb-8">
           <span className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4 block">Navigation</span>
-          <div className="max-h-[340px] overflow-y-auto pr-2 custom-scrollbar">
+          <div ref={navContainerRef} className="max-h-[340px] overflow-y-auto pr-2 custom-scrollbar">
             <ul className="space-y-3 text-sm">
               {headings.map((heading) => {
                 const isActive = heading.id === activeId;
                 return (
-                  <li key={heading.id} className={heading.tag === 'h2' ? 'ml-3' : ''}>
+                  <li key={heading.id} data-id={heading.id} className={heading.tag === 'h2' ? 'ml-3' : ''}>
                     <a 
                       href={`#${heading.id}`}
                       onClick={(e) => scrollToHeading(e, heading.id)}
