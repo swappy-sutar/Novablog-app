@@ -259,7 +259,11 @@ const TechProgressionMap = () => {
       </div>
 
       {/* Dynamic Laser Connection Path representing Evolution Path */}
-      <svg className="hidden xl:block absolute left-0 right-0 top-36 w-full h-[calc(100%-120px)] pointer-events-none z-0 overflow-visible">
+      <svg 
+        viewBox="0 0 100 100" 
+        preserveAspectRatio="none"
+        className="hidden xl:block absolute left-0 right-0 top-36 w-full h-[calc(100%-120px)] pointer-events-none z-0 overflow-visible"
+      >
         <defs>
           <linearGradient id="laser-path-grad" x1="0%" y1="50%" x2="100%" y2="50%">
             <stop offset="0%" stopColor="#00b4db" />
@@ -275,7 +279,7 @@ const TechProgressionMap = () => {
         </defs>
         {/* Ambient Glow path */}
         <path 
-          d="M 8.3% 80% C 16.6% 80%, 16.6% 70%, 25% 68% C 33.3% 66%, 33.3% 58%, 41.6% 56% C 50% 54%, 50% 46%, 58.3% 44% C 66.6% 42%, 66.6% 34%, 75% 32% C 83.3% 30%, 83.3% 22%, 91.6% 20%" 
+          d="M 8.3 80 C 16.6 80, 16.6 70, 25 68 C 33.3 66, 33.3 58, 41.6 56 C 50 54, 50 46, 58.3 44 C 66.6 42, 66.6 34, 75 32 C 83.3 30, 83.3 22, 91.6 20" 
           fill="none" 
           stroke="url(#laser-path-grad)" 
           strokeWidth="6" 
@@ -284,7 +288,7 @@ const TechProgressionMap = () => {
         />
         {/* Foreground sharp sweeping path */}
         <path 
-          d="M 8.3% 80% C 16.6% 80%, 16.6% 70%, 25% 68% C 33.3% 66%, 33.3% 58%, 41.6% 56% C 50% 54%, 50% 46%, 58.3% 44% C 66.6% 42%, 66.6% 34%, 75% 32% C 83.3% 30%, 83.3% 22%, 91.6% 20%" 
+          d="M 8.3 80 C 16.6 80, 16.6 70, 25 68 C 33.3 66, 33.3 58, 41.6 56 C 50 54, 50 46, 58.3 44 C 66.6 42, 66.6 34, 75 32 C 83.3 30, 83.3 22, 91.6 20" 
           fill="none" 
           stroke="url(#laser-path-grad)" 
           strokeWidth="2.5" 

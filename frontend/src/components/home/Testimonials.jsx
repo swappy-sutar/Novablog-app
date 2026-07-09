@@ -57,6 +57,10 @@ const ROW2_DATA = [
   }
 ];
 
+// Repeat data arrays 6 times to allow seamless infinite looping marquee without empty space on wide viewports
+const row1Doubled = [...ROW1_DATA, ...ROW1_DATA, ...ROW1_DATA, ...ROW1_DATA, ...ROW1_DATA, ...ROW1_DATA];
+const row2Doubled = [...ROW2_DATA, ...ROW2_DATA, ...ROW2_DATA, ...ROW2_DATA, ...ROW2_DATA, ...ROW2_DATA];
+
 // Cubic Bezier interpolation for stem curve
 const P0 = { x: 72, y: 92 };
 const P1 = { x: 42, y: 78 };
