@@ -56,9 +56,7 @@ const Sidebar = ({ blog }) => {
     const el = document.getElementById(id);
     if (el) {
       const offset = 100;
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = el.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
+      const elementPosition = el.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({
         top: elementPosition - offset,
         behavior: 'smooth'
