@@ -69,7 +69,7 @@ const TopContributors = () => {
       {/* Title & Subtitle */}
       <div className="text-center mb-12 space-y-2">
         <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-          The Collective Intelligence
+          The Collective <span className="text-gradient">Intelligence</span>
         </h2>
         <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto leading-relaxed">
           Meet the top technical minds driving the conversation at NovaBlog.
