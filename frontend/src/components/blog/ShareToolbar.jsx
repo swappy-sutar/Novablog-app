@@ -6,6 +6,7 @@ import { Heart, MessageCircle, Share2, Link2, Bookmark } from 'lucide-react';
 const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked, onToggleBookmark }) => {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const shareMenuRef = useRef(null);
+  const isLoggedIn = !!localStorage.getItem('token');
 
   const scrollToComments = () => {
     document.getElementById("discussion-section")?.scrollIntoView({ behavior: "smooth" });
@@ -62,29 +63,30 @@ const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked
       <div className="glass-panel w-full xl:w-auto p-2.5 flex flex-row xl:flex-col gap-4.5 rounded-full border-border-subtle/50 shadow-2xl items-center justify-around bg-bg-card backdrop-blur-md">
         {/* Like Button */}
         <button
-          onClick={onToggleLike}
-          className="group flex flex-col items-center focus:outline-none cursor-pointer"
-          title="Like post"
+          onClick={isLoggedIn ? onToggleLike : undefined}
+          disabled={!isLoggedIn}
+          className={`group flex flex-col items-center focus:outline-none ${isLoggedIn ? 'cursor-pointer' : 'cursor-not-allowed opacity-40'}`}
+          title={isLoggedIn ? "Like post" : "Log in to like this post"}
         >
           <motion.div
-            whileHover={{ scale: 1.12 }}
-            whileTap={{ scale: 0.88 }}
+            whileHover={isLoggedIn ? { scale: 1.12 } : {}}
+            whileTap={isLoggedIn ? { scale: 0.88 } : {}}
             animate={{
-              scale: userLiked ? [1, 1.25, 1] : 1,
+              scale: userLiked && isLoggedIn ? [1, 1.25, 1] : 1,
             }}
             transition={{ type: "spring", stiffness: 450, damping: 15 }}
-            className={`p-3 rounded-full transition-colors duration-300 ${userLiked
+            className={`p-3 rounded-full transition-colors duration-300 ${userLiked && isLoggedIn
               ? 'bg-red-500/10 text-red-500'
-              : 'bg-border-subtle/30 text-gray-400 hover:text-red-500 hover:bg-red-500/10'
-              }`}
+              : 'bg-border-subtle/30 text-gray-400'
+              } ${isLoggedIn ? 'hover:text-red-500 hover:bg-red-500/10' : ''}`}
           >
             <Heart
               className="w-5 h-5 transition-transform duration-300"
-              fill={userLiked ? "#ef4444" : "none"}
+              fill={userLiked && isLoggedIn ? "#ef4444" : "none"}
               strokeWidth={2}
             />
           </motion.div>
-          <span className={`text-[10px] font-bold mt-1 transition-colors duration-300 ${userLiked ? 'text-red-500' : 'text-gray-400'}`}>
+          <span className={`text-[10px] font-bold mt-1 transition-colors duration-300 ${userLiked && isLoggedIn ? 'text-red-500' : 'text-gray-400'}`}>
             {likeCount || 0}
           </span>
         </button>
@@ -109,30 +111,31 @@ const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked
 
         {/* Bookmark Button */}
         <button
-          onClick={onToggleBookmark}
-          className="group flex flex-col items-center focus:outline-none cursor-pointer"
-          title="Bookmark post"
+          onClick={isLoggedIn ? onToggleBookmark : undefined}
+          disabled={!isLoggedIn}
+          className={`group flex flex-col items-center focus:outline-none ${isLoggedIn ? 'cursor-pointer' : 'cursor-not-allowed opacity-40'}`}
+          title={isLoggedIn ? "Bookmark post" : "Log in to bookmark this post"}
         >
           <motion.div
-            whileHover={{ scale: 1.12 }}
-            whileTap={{ scale: 0.88 }}
+            whileHover={isLoggedIn ? { scale: 1.12 } : {}}
+            whileTap={isLoggedIn ? { scale: 0.88 } : {}}
             animate={{
-              scale: userBookmarked ? [1, 1.25, 1] : 1,
+              scale: userBookmarked && isLoggedIn ? [1, 1.25, 1] : 1,
             }}
             transition={{ type: "spring", stiffness: 450, damping: 15 }}
-            className={`p-3 rounded-full transition-colors duration-300 ${userBookmarked
+            className={`p-3 rounded-full transition-colors duration-300 ${userBookmarked && isLoggedIn
               ? 'bg-brand-purple/10 text-brand-purple'
-              : 'bg-border-subtle/30 text-gray-400 hover:text-brand-purple hover:bg-brand-purple/10'
-              }`}
+              : 'bg-border-subtle/30 text-gray-400'
+              } ${isLoggedIn ? 'hover:text-brand-purple hover:bg-brand-purple/10' : ''}`}
           >
             <Bookmark
               className="w-5 h-5 transition-transform duration-300"
-              fill={userBookmarked ? "#8b5cf6" : "none"}
+              fill={userBookmarked && isLoggedIn ? "#8b5cf6" : "none"}
               strokeWidth={2}
             />
           </motion.div>
-          <span className={`text-[9px] font-bold mt-1 uppercase tracking-wider transition-colors duration-300 ${userBookmarked ? 'text-brand-purple' : 'text-gray-500 group-hover:text-brand-purple'}`}>
-            {userBookmarked ? 'Saved' : 'Save'}
+          <span className={`text-[9px] font-bold mt-1 uppercase tracking-wider transition-colors duration-300 ${userBookmarked && isLoggedIn ? 'text-brand-purple' : 'text-gray-500'}`}>
+            {userBookmarked && isLoggedIn ? 'Saved' : 'Save'}
           </span>
         </button>
 
