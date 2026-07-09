@@ -206,9 +206,8 @@ const BlogDetailsPage = () => {
         className="pb-20 relative select-none"
       >
         {/* Widescreen Hero Section Skeleton */}
-        <div className="relative w-full h-[360px] sm:h-[420px] bg-slate-100/50 dark:bg-white/[0.01] border-b border-gray-200/30 dark:border-border-subtle/20 flex flex-col justify-end overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-t from-[#04040c] via-transparent to-transparent z-10 hidden dark:block" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#ffffff] via-transparent to-transparent z-10 dark:hidden" />
+        <div className="relative w-full h-[360px] sm:h-[420px] bg-slate-200/30 dark:bg-white/[0.01] border-b border-gray-200/30 dark:border-border-subtle/20 flex flex-col justify-end overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/80 to-transparent z-10" />
           <div className="max-w-7xl mx-auto px-6 w-full pb-10 z-20 space-y-4">
             {/* Category tag */}
             <div className="h-5 w-16 bg-slate-200/70 dark:bg-white/[0.04] border border-slate-300/30 dark:border-white/[0.05] animate-pulse rounded-lg" />
