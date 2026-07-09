@@ -226,7 +226,7 @@
   }
 
   .bg-gradient-premium {
-    @apply bg-brand-purple;
+    @apply bg-gradient-to-r from-brand-purple to-brand-blue;
   }
 
   .scrollbar-hide::-webkit-scrollbar {
