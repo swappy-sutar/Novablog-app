@@ -20,8 +20,8 @@ const HomePage = () => {
       <Hero />
       <TrendingTags />
       <CuratedInsights />
-      <TopContributors />
       <TechProgressionMap />
+      <TopContributors />
       <Newsletter />
     </motion.div>
   );
