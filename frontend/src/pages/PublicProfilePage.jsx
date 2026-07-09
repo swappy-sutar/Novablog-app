@@ -496,8 +496,8 @@ const PublicProfilePage = () => {
         })}
       </div>
 
-      <div className="relative">
-        <div className={`grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 items-stretch transition-all duration-500 ${!currentUser ? 'blur-[8px] pointer-events-none select-none opacity-40' : ''}`}>
+      <div className={`relative ${!currentUser ? 'min-h-[360px] md:min-h-[400px] flex flex-col justify-center' : ''}`}>
+        <div className={`grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 items-stretch transition-all duration-500 w-full ${!currentUser ? 'blur-[8px] pointer-events-none select-none opacity-40' : ''}`}>
           <GlassCard hoverEffect={false} className="!rounded-xl p-6 flex flex-col h-full">
             <h2 className="text-lg font-semibold text-white mb-4">About</h2>
             <p className="text-sm text-gray-400 leading-relaxed flex-1">
@@ -643,16 +643,16 @@ const PublicProfilePage = () => {
         </div>
 
         {!currentUser && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-20">
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-4 md:p-6 text-center z-20">
             {/* Glowing Backdrop Orbs */}
             <div className="absolute w-60 h-60 rounded-full bg-brand-cyan/15 blur-[80px] pointer-events-none -z-10 animate-pulse duration-3000" />
             <div className="absolute w-40 h-40 rounded-full bg-brand-purple/15 blur-[60px] pointer-events-none -z-10 translate-x-12 translate-y-12" />
 
             {/* Glassmorphic Popover Card */}
-            <div className="max-w-md w-full p-8 md:p-10 rounded-2xl bg-bg-dropdown/80 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-2xl flex flex-col items-center space-y-6 relative overflow-hidden">
+            <div className="max-w-md w-full p-6 md:p-8 rounded-2xl bg-bg-card border border-border-subtle shadow-2xl backdrop-blur-2xl flex flex-col items-center space-y-5 relative">
               
               {/* Top Lock Icon Shield */}
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-white/10 to-white/[0.02] border border-white/15 flex items-center justify-center shadow-[inset_0_1px_2px_rgba(255,255,255,0.1)]">
+              <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-border-subtle flex items-center justify-center shadow-[inset_0_1px_2px_rgba(255,255,255,0.05)]">
                 <div className="w-10 h-10 rounded-xl bg-brand-cyan/10 flex items-center justify-center border border-brand-cyan/35 shadow-[0_0_15px_rgba(6,182,212,0.15)]">
                   <svg className="w-5 h-5 text-brand-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -673,14 +673,14 @@ const PublicProfilePage = () => {
               {/* Dynamic Styled Action Buttons */}
               <div className="flex flex-row items-center justify-center gap-4 w-full pt-2">
                 <Link to="/signin" className="flex-1">
-                  <button className="w-full py-2.5 px-5 rounded-xl text-xs font-black tracking-widest uppercase bg-gradient-to-r from-brand-cyan to-brand-blue hover:from-brand-cyan/95 hover:to-brand-blue/95 text-white shadow-[0_4px_20px_rgba(6,182,212,0.25),inset_0_1px_1px_rgba(255,255,255,0.2)] border border-brand-cyan/20 active:scale-95 transition-all duration-300">
+                  <Button variant="primary" className="w-full py-2.5 text-xs font-black tracking-widest uppercase rounded-xl">
                     Sign In
-                  </button>
+                  </Button>
                 </Link>
                 <Link to="/signup" className="flex-1">
-                  <button className="w-full py-2.5 px-5 rounded-xl text-xs font-black tracking-widest uppercase bg-white/[0.04] hover:bg-white/[0.08] text-white border border-white/10 hover:border-white/20 active:scale-95 transition-all duration-300">
+                  <Button variant="secondary" className="w-full py-2.5 text-xs font-black tracking-widest uppercase rounded-xl">
                     Sign Up
-                  </button>
+                  </Button>
                 </Link>
               </div>
 
