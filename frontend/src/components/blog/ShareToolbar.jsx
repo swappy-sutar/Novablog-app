@@ -179,7 +179,7 @@ const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked
                     shareOnX();
                     setShowShareMenu(false);
                   }}
-                  className="p-2.5 rounded-xl bg-black hover:bg-neutral-900 text-white border border-white/10 transition-all duration-300 cursor-pointer flex items-center justify-center hover:scale-110 active:scale-95"
+                  className="p-2.5 rounded-xl bg-[#000000] hover:bg-[#1f1f1f] text-white border border-white/10 transition-all duration-300 cursor-pointer flex items-center justify-center hover:scale-110 active:scale-95"
                   title="Share on X"
                 >
                   <svg className="w-4 h-4" fill="#ffffff" viewBox="0 0 24 24">
