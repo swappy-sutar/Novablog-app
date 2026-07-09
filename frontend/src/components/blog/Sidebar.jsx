@@ -74,28 +74,30 @@ const Sidebar = ({ blog }) => {
       {headings.length > 0 && (
         <div className="mb-8">
           <span className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4 block">Navigation</span>
-          <ul className="space-y-3 text-sm">
-            {headings.map((heading) => {
-              const isActive = heading.id === activeId;
-              return (
-                <li key={heading.id} className={heading.tag === 'h2' ? 'ml-3' : ''}>
-                  <a 
-                    href={`#${heading.id}`}
-                    onClick={(e) => scrollToHeading(e, heading.id)}
-                    className={`transition-all duration-200 block border-l-2 pl-3 truncate ${
-                      isActive 
-                        ? 'text-brand-cyan border-brand-cyan font-bold scale-[1.01] origin-left' 
-                        : 'text-gray-400 border-transparent hover:text-white hover:border-brand-cyan/50'
-                    } ${
-                      heading.tag === 'h2' ? 'text-xs' : 'font-medium'
-                    }`}
-                  >
-                    {heading.text}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
+          <div className="max-h-[340px] overflow-y-auto pr-2 custom-scrollbar">
+            <ul className="space-y-3 text-sm">
+              {headings.map((heading) => {
+                const isActive = heading.id === activeId;
+                return (
+                  <li key={heading.id} className={heading.tag === 'h2' ? 'ml-3' : ''}>
+                    <a 
+                      href={`#${heading.id}`}
+                      onClick={(e) => scrollToHeading(e, heading.id)}
+                      className={`transition-all duration-200 block border-l-2 pl-3 truncate ${
+                        isActive 
+                          ? 'text-brand-cyan border-brand-cyan font-bold scale-[1.01] origin-left' 
+                          : 'text-gray-400 border-transparent hover:text-white hover:border-brand-cyan/50'
+                      } ${
+                        heading.tag === 'h2' ? 'text-xs' : 'font-medium'
+                      }`}
+                    >
+                      {heading.text}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </div>
       )}
 
