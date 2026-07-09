@@ -1,6 +1,7 @@
 import React from 'react';
 import { Star } from 'lucide-react';
 import GlassCard from '../ui/GlassCard';
+import Button from '../ui/Button';
 
 const ROW1_DATA = [
   {
@@ -56,9 +57,9 @@ const ROW2_DATA = [
   }
 ];
 
-// Double data arrays to allow seamless infinite looping marquee
-const row1Doubled = [...ROW1_DATA, ...ROW1_DATA];
-const row2Doubled = [...ROW2_DATA, ...ROW2_DATA];
+// Repeat data arrays 6 times to allow seamless infinite looping marquee without empty space on wide viewports
+const row1Doubled = [...ROW1_DATA, ...ROW1_DATA, ...ROW1_DATA, ...ROW1_DATA, ...ROW1_DATA, ...ROW1_DATA];
+const row2Doubled = [...ROW2_DATA, ...ROW2_DATA, ...ROW2_DATA, ...ROW2_DATA, ...ROW2_DATA, ...ROW2_DATA];
 
 const Testimonials = () => {
   return (
@@ -263,6 +264,16 @@ const Testimonials = () => {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Write a Review Button */}
+      <div className="flex justify-center mt-12">
+        <Button 
+          variant="primary" 
+          className="shadow-[0_0_20px_rgba(139,92,246,0.25)] hover:shadow-[0_0_25px_rgba(139,92,246,0.45)] transition-all duration-300 transform active:scale-95"
+        >
+          Write a Review
+        </Button>
       </div>
     </section>
   );
