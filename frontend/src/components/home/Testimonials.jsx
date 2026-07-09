@@ -62,77 +62,6 @@ const ROW2_DATA = [
   }
 ];
 
-const P0 = { x: 72, y: 92 };
-const P1 = { x: 42, y: 78 };
-const P2 = { x: 30, y: 42 };
-const P3 = { x: 55, y: 12 };
-
-const getBezierPoint = (t) => {
-  const mt = 1 - t;
-  return {
-    x: mt * mt * mt * P0.x + 3 * mt * mt * t * P1.x + 3 * mt * t * t * P2.x + t * t * t * P3.x,
-    y: mt * mt * mt * P0.y + 3 * mt * mt * t * P1.y + 3 * mt * t * t * P2.y + t * t * t * P3.y
-  };
-};
-
-const getBezierTangent = (t) => {
-  const mt = 1 - t;
-  return {
-    x: 3 * mt * mt * (P1.x - P0.x) + 6 * mt * t * (P2.x - P1.x) + 3 * t * t * (P3.x - P2.x),
-    y: 3 * mt * mt * (P1.y - P0.y) + 6 * mt * t * (P2.y - P1.y) + 3 * t * t * (P3.y - P2.y)
-  };
-};
-
-const tValues = [0.08, 0.16, 0.24, 0.32, 0.40, 0.48, 0.56, 0.64, 0.72, 0.80, 0.88, 0.96];
-
-const LaurelBranch = ({ shadowId, className }) => {
-  return (
-    <svg className={`w-10 h-10 sm:w-16 sm:h-16 text-brand-purple/95 shrink-0 select-none fill-current overflow-visible ${className || ''}`} viewBox="0 0 100 100">
-      <defs>
-        <filter id={shadowId} x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="-0.8" dy="1.2" stdDeviation="0.8" floodColor="#000000" floodOpacity="0.25" />
-        </filter>
-      </defs>
-
-      <path 
-        d={`M ${P0.x},${P0.y} C ${P1.x},${P1.y} ${P2.x},${P2.y} ${P3.x},${P3.y}`} 
-        fill="none" 
-        stroke="currentColor" 
-        strokeWidth="3.2" 
-        strokeLinecap="round" 
-        filter={`url(#${shadowId})`}
-      />
-      
-      <g filter={`url(#${shadowId})`}>
-        {tValues.map((t, idx) => {
-          const p = getBezierPoint(t);
-          const tangent = getBezierTangent(t);
-          const angleRad = Math.atan2(tangent.y, tangent.x);
-          const angleDeg = angleRad * 180 / Math.PI;
-
-          const leftRotate = angleDeg - 90 - (35 + (1 - t) * 15);
-          const rightRotate = angleDeg - 90 + (35 + (1 - t) * 15);
-          
-          const scale = (Math.sin(t * Math.PI) * 0.4 + 0.6) * 1.3;
-
-          return (
-            <g key={idx}>
-              <g transform={`translate(${p.x}, ${p.y}) rotate(${leftRotate}) scale(${scale})`}>
-                <path d="M 0,0 C -3.5,-5 -6.5,-11 -0.8,-17 C 0.2,-17 0.2,-10 0,0 Z" fill="currentColor" />
-                <path d="M 0,0 C 3.5,-5 6.5,-11 0.8,-17 C -0.2,-17 -0.2,-10 0,0 Z" fill="currentColor" />
-              </g>
-              <g transform={`translate(${p.x}, ${p.y}) rotate(${rightRotate}) scale(${scale})`}>
-                <path d="M 0,0 C -3.5,-5 -6.5,-11 -0.8,-17 C 0.2,-17 0.2,-10 0,0 Z" fill="currentColor" />
-                <path d="M 0,0 C 3.5,-5 6.5,-11 0.8,-17 C -0.2,-17 -0.2,-10 0,0 Z" fill="currentColor" />
-              </g>
-            </g>
-          );
-        })}
-      </g>
-    </svg>
-  );
-};
-
 const Testimonials = () => {
   const [dbReviews, setDbReviews] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -243,13 +172,21 @@ const Testimonials = () => {
         </p>
         
         <div className="flex items-center justify-center gap-3 sm:gap-5 w-full max-w-lg">
-          <LaurelBranch shadowId="laurel-shadow-left" />
+          <img 
+            src="/Purple_crescent_laurel_branch.png" 
+            alt="Laurel branch left" 
+            className="w-10 h-10 sm:w-16 sm:h-16 shrink-0 select-none object-contain" 
+          />
 
           <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
             Our Happy <span className="text-gradient">Readers</span>
           </h2>
 
-          <LaurelBranch shadowId="laurel-shadow-right" className="scale-x-[-1]" />
+          <img 
+            src="/Purple_crescent_laurel_branch.png" 
+            alt="Laurel branch right" 
+            className="w-10 h-10 sm:w-16 sm:h-16 shrink-0 select-none object-contain scale-x-[-1]" 
+          />
         </div>
 
         <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto leading-relaxed">
