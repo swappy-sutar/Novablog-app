@@ -92,52 +92,73 @@ const Testimonials = () => {
         </p>
         
         <div className="flex items-center justify-center gap-3 sm:gap-5 w-full max-w-lg">
-          {/* Left Laurel Wreath (Lush Leaf Branch) */}
-          <svg className="w-10 h-10 sm:w-16 sm:h-16 text-brand-purple/90 shrink-0 select-none fill-current" viewBox="0 0 100 100">
+          {/* Left Laurel Wreath (High-Fidelity Lush Leaf Branch) */}
+          <svg className="w-10 h-10 sm:w-16 sm:h-16 text-brand-purple/95 shrink-0 select-none fill-current overflow-visible" viewBox="0 0 100 100">
+            <defs>
+              <filter id="laurel-shadow-left" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="-0.8" dy="1.2" stdDeviation="0.8" floodColor="#000000" floodOpacity="0.25" />
+              </filter>
+            </defs>
             {/* Stem */}
-            <path d="M70,85 C50,75 40,55 55,20" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-            {/* Top Leaf */}
-            <path d="M55,20 C52,12 48,15 48,15 C48,15 54,23 55,20 Z" />
-            <path d="M55,20 C60,14 62,18 62,18 C62,18 57,24 55,20 Z" />
-            {/* Leaf Pairs */}
-            <path d="M52,28 C45,21 41,25 41,25 C41,25 49,31 52,28 Z" />
-            <path d="M54,26 C61,19 65,23 65,23 C65,23 57,29 54,26 Z" />
-            <path d="M49,38 C41,31 37,35 37,35 C37,35 46,42 49,38 Z" />
-            <path d="M51,36 C59,29 63,33 63,33 C63,33 55,40 51,36 Z" />
-            <path d="M47,49 C38,43 34,47 34,47 C34,47 43,53 47,49 Z" />
-            <path d="M49,47 C58,40 61,44 61,44 C61,44 53,51 49,47 Z" />
-            <path d="M46,61 C37,56 33,60 33,60 C33,60 42,66 46,61 Z" />
-            <path d="M48,59 C57,53 60,57 60,57 C60,57 52,63 48,59 Z" />
-            <path d="M47,73 C38,69 34,73 34,73 C34,73 42,78 47,73 Z" />
-            <path d="M49,71 C58,66 61,70 61,70 C61,70 53,75 49,71 Z" />
-            <path d="M51,84 C42,81 38,85 38,85 C38,85 46,89 51,84 Z" />
-            <path d="M53,82 C61,78 64,82 64,82 C64,82 56,86 53,82 Z" />
+            <path d="M68,85 C52,75 44,53 50,22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" filter="url(#laurel-shadow-left)" />
+            {/* Overlapping Leaf Pairs */}
+            <g filter="url(#laurel-shadow-left)">
+              {/* Pair 1 - top */}
+              <path d="M52,22 C42,16 36,6 40,4 C44,2 50,12 53,18 Z" />
+              <path d="M54,22 C64,16 70,6 66,4 C62,2 56,12 53,18 Z" />
+              {/* Pair 2 */}
+              <path d="M50,33 C38,27 30,18 34,16 C38,14 46,23 49,29 Z" />
+              <path d="M53,33 C65,27 73,18 69,16 C65,14 57,23 54,29 Z" />
+              {/* Pair 3 */}
+              <path d="M47,45 C33,40 25,31 29,29 C33,27 41,36 45,41 Z" />
+              <path d="M52,45 C66,40 74,31 70,29 C66,27 58,36 54,41 Z" />
+              {/* Pair 4 */}
+              <path d="M45,57 C29,52 21,44 25,42 C29,40 38,48 42,53 Z" />
+              <path d="M51,57 C67,52 75,44 71,42 C67,40 58,48 54,53 Z" />
+              {/* Pair 5 */}
+              <path d="M44,69 C27,65 18,57 22,55 C26,53 36,60 40,65 Z" />
+              <path d="M52,69 C69,65 78,57 74,55 C70,53 60,60 56,65 Z" />
+              {/* Pair 6 */}
+              <path d="M46,81 C29,78 20,70 24,68 C28,66 38,72 42,77 Z" />
+              <path d="M54,81 C71,78 80,70 76,68 C72,66 62,72 58,77 Z" />
+            </g>
           </svg>
 
           <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
             Our Happy <span className="text-gradient">Readers</span>
           </h2>
 
-          {/* Right Laurel Wreath (Mirrored Lush Leaf Branch) */}
-          <svg className="w-10 h-10 sm:w-16 sm:h-16 text-brand-purple/90 shrink-0 select-none fill-current scale-x-[-1]" viewBox="0 0 100 100">
+          {/* Right Laurel Wreath (Mirrored High-Fidelity Lush Leaf Branch) */}
+          <svg className="w-10 h-10 sm:w-16 sm:h-16 text-brand-purple/95 shrink-0 select-none fill-current scale-x-[-1] overflow-visible" viewBox="0 0 100 100">
+            <defs>
+              <filter id="laurel-shadow-right" x="-20%" y="-20%" width="140%" height="140%">
+                {/* Mirror shadow offset horizontally */}
+                <feDropShadow dx="-0.8" dy="1.2" stdDeviation="0.8" floodColor="#000000" floodOpacity="0.25" />
+              </filter>
+            </defs>
             {/* Stem */}
-            <path d="M70,85 C50,75 40,55 55,20" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-            {/* Top Leaf */}
-            <path d="M55,20 C52,12 48,15 48,15 C48,15 54,23 55,20 Z" />
-            <path d="M55,20 C60,14 62,18 62,18 C62,18 57,24 55,20 Z" />
-            {/* Leaf Pairs */}
-            <path d="M52,28 C45,21 41,25 41,25 C41,25 49,31 52,28 Z" />
-            <path d="M54,26 C61,19 65,23 65,23 C65,23 57,29 54,26 Z" />
-            <path d="M49,38 C41,31 37,35 37,35 C37,35 46,42 49,38 Z" />
-            <path d="M51,36 C59,29 63,33 63,33 C63,33 55,40 51,36 Z" />
-            <path d="M47,49 C38,43 34,47 34,47 C34,47 43,53 47,49 Z" />
-            <path d="M49,47 C58,40 61,44 61,44 C61,44 53,51 49,47 Z" />
-            <path d="M46,61 C37,56 33,60 33,60 C33,60 42,66 46,61 Z" />
-            <path d="M48,59 C57,53 60,57 60,57 C60,57 52,63 48,59 Z" />
-            <path d="M47,73 C38,69 34,73 34,73 C34,73 42,78 47,73 Z" />
-            <path d="M49,71 C58,66 61,70 61,70 C61,70 53,75 49,71 Z" />
-            <path d="M51,84 C42,81 38,85 38,85 C38,85 46,89 51,84 Z" />
-            <path d="M53,82 C61,78 64,82 64,82 C64,82 56,86 53,82 Z" />
+            <path d="M68,85 C52,75 44,53 50,22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" filter="url(#laurel-shadow-right)" />
+            {/* Overlapping Leaf Pairs */}
+            <g filter="url(#laurel-shadow-right)">
+              {/* Pair 1 - top */}
+              <path d="M52,22 C42,16 36,6 40,4 C44,2 50,12 53,18 Z" />
+              <path d="M54,22 C64,16 70,6 66,4 C62,2 56,12 53,18 Z" />
+              {/* Pair 2 */}
+              <path d="M50,33 C38,27 30,18 34,16 C38,14 46,23 49,29 Z" />
+              <path d="M53,33 C65,27 73,18 69,16 C65,14 57,23 54,29 Z" />
+              {/* Pair 3 */}
+              <path d="M47,45 C33,40 25,31 29,29 C33,27 41,36 45,41 Z" />
+              <path d="M52,45 C66,40 74,31 70,29 C66,27 58,36 54,41 Z" />
+              {/* Pair 4 */}
+              <path d="M45,57 C29,52 21,44 25,42 C29,40 38,48 42,53 Z" />
+              <path d="M51,57 C67,52 75,44 71,42 C67,40 58,48 54,53 Z" />
+              {/* Pair 5 */}
+              <path d="M44,69 C27,65 18,57 22,55 C26,53 36,60 40,65 Z" />
+              <path d="M52,69 C69,65 78,57 74,55 C70,53 60,60 56,65 Z" />
+              {/* Pair 6 */}
+              <path d="M46,81 C29,78 20,70 24,68 C28,66 38,72 42,77 Z" />
+              <path d="M54,81 C71,78 80,70 76,68 C72,66 62,72 58,77 Z" />
+            </g>
           </svg>
         </div>
 
