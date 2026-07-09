@@ -171,7 +171,7 @@ const Testimonials = () => {
           Public opinion suggests
         </p>
         
-        <div className="flex items-center justify-center gap-3 sm:gap-5 w-full max-w-2xl">
+        <div className="flex items-center justify-center gap-1 sm:gap-1.5 w-full max-w-xl">
           <img 
             src="/Purple_crescent_laurel_branch.png" 
             alt="Laurel branch left" 
@@ -189,7 +189,7 @@ const Testimonials = () => {
           />
         </div>
 
-        <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto leading-relaxed !mt-1">
+        <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto leading-relaxed !-mt-1 sm:!-mt-2">
           See how our readers are talking about our blogs
         </p>
       </div>
