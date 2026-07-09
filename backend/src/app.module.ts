@@ -18,6 +18,8 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
 import { APP_GUARD } from '@nestjs/core';
 import Redis from 'ioredis';
+import { NewsletterModule } from './modules/newsletter/newsletter.module';
+import { ReviewModule } from './modules/review/review.module';
 
 @Module({
   imports: [
@@ -63,6 +65,8 @@ import Redis from 'ioredis';
     ResendModule,
     NotificationsModule,
     AdminModule,
+    NewsletterModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [

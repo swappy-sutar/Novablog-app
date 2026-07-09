@@ -383,6 +383,24 @@ api.interceptors.response.use(
   },
 );
 
+export const newsletterAPI = {
+  subscribe: async (email) => {
+    const response = await api.post('/newsletter/subscribe', { email });
+    return response.data;
+  },
+};
+
+export const reviewAPI = {
+  createReview: async (reviewData) => {
+    const response = await api.post('/reviews', reviewData);
+    return response.data;
+  },
+  getReviews: async () => {
+    const response = await api.get('/reviews');
+    return response.data;
+  },
+};
+
 export const getErrorMessage = (error, fallback = 'Something went wrong') => {
   const msg = error.response?.data?.message;
   if (Array.isArray(msg)) {

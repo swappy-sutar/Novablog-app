@@ -1,7 +1,12 @@
-import React from 'react';
-import { Star } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Star, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '../ui/GlassCard';
 import Button from '../ui/Button';
+import toast from 'react-hot-toast';
+import { reviewAPI, getErrorMessage } from '../../lib/api';
+
+const defaultAvatar = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120&h=120";
 
 const ROW1_DATA = [
   {
@@ -57,11 +62,6 @@ const ROW2_DATA = [
   }
 ];
 
-// Repeat data arrays 6 times to allow seamless infinite looping marquee without empty space on wide viewports
-const row1Doubled = [...ROW1_DATA, ...ROW1_DATA, ...ROW1_DATA, ...ROW1_DATA, ...ROW1_DATA, ...ROW1_DATA];
-const row2Doubled = [...ROW2_DATA, ...ROW2_DATA, ...ROW2_DATA, ...ROW2_DATA, ...ROW2_DATA, ...ROW2_DATA];
-
-// Cubic Bezier interpolation for stem curve
 const P0 = { x: 72, y: 92 };
 const P1 = { x: 42, y: 78 };
 const P2 = { x: 30, y: 42 };
@@ -83,7 +83,6 @@ const getBezierTangent = (t) => {
   };
 };
 
-// 11 pairs distributed along the curve length
 const tValues = [0.08, 0.16, 0.24, 0.32, 0.40, 0.48, 0.56, 0.64, 0.72, 0.80, 0.88, 0.96];
 
 const LaurelBranch = ({ shadowId, className }) => {
@@ -95,7 +94,6 @@ const LaurelBranch = ({ shadowId, className }) => {
         </filter>
       </defs>
 
-      {/* Stem */}
       <path 
         d={`M ${P0.x},${P0.y} C ${P1.x},${P1.y} ${P2.x},${P2.y} ${P3.x},${P3.y}`} 
         fill="none" 
@@ -105,7 +103,6 @@ const LaurelBranch = ({ shadowId, className }) => {
         filter={`url(#${shadowId})`}
       />
       
-      {/* Dynamic overlapping leaf pairs with center split vein */}
       <g filter={`url(#${shadowId})`}>
         {tValues.map((t, idx) => {
           const p = getBezierPoint(t);
@@ -113,21 +110,17 @@ const LaurelBranch = ({ shadowId, className }) => {
           const angleRad = Math.atan2(tangent.y, tangent.x);
           const angleDeg = angleRad * 180 / Math.PI;
 
-          // Align rotation of leaves to the curve tangent
           const leftRotate = angleDeg - 90 - (35 + (1 - t) * 15);
           const rightRotate = angleDeg - 90 + (35 + (1 - t) * 15);
           
-          // Scale grows in the middle, tapers at ends
           const scale = (Math.sin(t * Math.PI) * 0.4 + 0.6) * 1.3;
 
           return (
             <g key={idx}>
-              {/* Left Leaf of pair */}
               <g transform={`translate(${p.x}, ${p.y}) rotate(${leftRotate}) scale(${scale})`}>
                 <path d="M 0,0 C -3.5,-5 -6.5,-11 -0.8,-17 C 0.2,-17 0.2,-10 0,0 Z" fill="currentColor" />
                 <path d="M 0,0 C 3.5,-5 6.5,-11 0.8,-17 C -0.2,-17 -0.2,-10 0,0 Z" fill="currentColor" />
               </g>
-              {/* Right Leaf of pair */}
               <g transform={`translate(${p.x}, ${p.y}) rotate(${rightRotate}) scale(${scale})`}>
                 <path d="M 0,0 C -3.5,-5 -6.5,-11 -0.8,-17 C 0.2,-17 0.2,-10 0,0 Z" fill="currentColor" />
                 <path d="M 0,0 C 3.5,-5 6.5,-11 0.8,-17 C -0.2,-17 -0.2,-10 0,0 Z" fill="currentColor" />
@@ -141,9 +134,70 @@ const LaurelBranch = ({ shadowId, className }) => {
 };
 
 const Testimonials = () => {
+  const [dbReviews, setDbReviews] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({
+    name: '',
+    location: '',
+    stars: 5,
+    title: '',
+    text: '',
+  });
+
+  const loadReviews = async () => {
+    try {
+      const res = await reviewAPI.getReviews();
+      if (res.success && res.data) {
+        setDbReviews(res.data);
+      }
+    } catch (err) {
+      console.error('Failed to load reviews:', err);
+    }
+  };
+
+  useEffect(() => {
+    loadReviews();
+  }, []);
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const payload = {
+        ...form,
+        avatar: defaultAvatar,
+      };
+      const res = await reviewAPI.createReview(payload);
+      if (res.success) {
+        toast.success(res.message || 'Review submitted successfully! Thank you.');
+        setIsModalOpen(false);
+        setForm({
+          name: '',
+          location: '',
+          stars: 5,
+          title: '',
+          text: '',
+        });
+        loadReviews();
+      } else {
+        toast.error('Failed to submit review.');
+      }
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Failed to submit review.'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const row1 = dbReviews.length > 0 ? dbReviews.filter((_, i) => i % 2 === 0) : ROW1_DATA;
+  const row2 = dbReviews.length > 0 ? dbReviews.filter((_, i) => i % 2 !== 0) : ROW2_DATA;
+
+  const row1Doubled = [...row1, ...row1, ...row1, ...row1, ...row1, ...row1];
+  const row2Doubled = [...row2, ...row2, ...row2, ...row2, ...row2, ...row2];
+
   return (
     <section className="max-w-7xl mx-auto px-6 mb-24 overflow-visible relative">
-      {/* Self-contained CSS styles for infinite marquee scrolling, hover-pause, and dots */}
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes marquee-ltr {
           0% { transform: translate3d(-50%, 0, 0); }
@@ -170,7 +224,6 @@ const Testimonials = () => {
         }
       `}} />
 
-      {/* Full-bleed Cinematic Dotted Grid Background */}
       <div 
         className="absolute inset-y-0 w-screen left-1/2 -translate-x-1/2 pointer-events-none cinematic-dots -z-10"
         style={{
@@ -180,21 +233,18 @@ const Testimonials = () => {
         }}
       />
 
-      {/* Header Container */}
       <div className="text-center mb-16 space-y-3 relative flex flex-col items-center">
         <p className="text-[10px] sm:text-xs font-black tracking-widest text-brand-cyan uppercase">
           Public opinion suggests
         </p>
         
         <div className="flex items-center justify-center gap-3 sm:gap-5 w-full max-w-lg">
-          {/* Left Laurel Wreath */}
           <LaurelBranch shadowId="laurel-shadow-left" />
 
           <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
             Our Happy <span className="text-gradient">Readers</span>
           </h2>
 
-          {/* Right Laurel Wreath (Mirrored) */}
           <LaurelBranch shadowId="laurel-shadow-right" className="scale-x-[-1]" />
         </div>
 
@@ -203,30 +253,25 @@ const Testimonials = () => {
         </p>
       </div>
 
-      {/* Infinite Marquee Double Rows Wrapper */}
       <div className="relative w-screen left-1/2 -translate-x-1/2 overflow-hidden flex flex-col gap-5 max-w-[100vw]">
-        {/* Left Gradient Fade Overlay */}
         <div 
           className="absolute inset-y-0 left-0 w-24 sm:w-36 z-10 pointer-events-none"
           style={{ background: 'linear-gradient(to right, var(--color-bg-base, #05050f), transparent)' }}
         />
-        {/* Right Gradient Fade Overlay */}
         <div 
           className="absolute inset-y-0 right-0 w-24 sm:w-36 z-10 pointer-events-none"
           style={{ background: 'linear-gradient(to left, var(--color-bg-base, #05050f), transparent)' }}
         />
 
-        {/* Row 1: Scroll Left to Right */}
         <div className="flex w-full overflow-hidden py-1">
           <div className="flex gap-6 animate-marquee-ltr hover-pause select-none">
             {row1Doubled.map((card, idx) => (
               <div key={`${card.name}-${idx}`} className="w-[260px] sm:w-[320px] shrink-0">
                 <GlassCard className="p-4 flex flex-col justify-between border border-border-subtle bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
                   <div>
-                    {/* User profile row */}
                     <div className="flex items-center gap-2 mb-2">
                       <img
-                        src={card.avatar}
+                        src={card.avatar || defaultAvatar}
                         alt={card.name}
                         className="w-8 h-8 rounded-full object-cover border border-border-subtle shadow-sm"
                       />
@@ -240,7 +285,6 @@ const Testimonials = () => {
                       </div>
                     </div>
 
-                    {/* Star Rating */}
                     <div className="flex items-center gap-1 mb-2">
                       {Array(5).fill(null).map((_, idx) => (
                         <Star
@@ -253,12 +297,10 @@ const Testimonials = () => {
                       ))}
                     </div>
 
-                    {/* Review title */}
                     <h5 className="text-xs font-bold text-white mb-1 leading-snug line-clamp-1">
                       {card.title}
                     </h5>
 
-                    {/* Review text */}
                     <p className="text-[11px] text-gray-400 leading-relaxed line-clamp-2">
                       {card.text}
                     </p>
@@ -269,17 +311,15 @@ const Testimonials = () => {
           </div>
         </div>
 
-        {/* Row 2: Scroll Right to Left */}
         <div className="flex w-full overflow-hidden py-1">
           <div className="flex gap-6 animate-marquee-rtl hover-pause select-none">
             {row2Doubled.map((card, idx) => (
               <div key={`${card.name}-${idx}`} className="w-[280px] sm:w-[320px] shrink-0">
                 <GlassCard className="p-4 flex flex-col justify-between border border-border-subtle bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
                   <div>
-                    {/* User profile row */}
                     <div className="flex items-center gap-2 mb-2">
                       <img
-                        src={card.avatar}
+                        src={card.avatar || defaultAvatar}
                         alt={card.name}
                         className="w-8 h-8 rounded-full object-cover border border-border-subtle shadow-md"
                       />
@@ -293,7 +333,6 @@ const Testimonials = () => {
                       </div>
                     </div>
 
-                    {/* Star Rating */}
                     <div className="flex items-center gap-1 mb-2">
                       {Array(5).fill(null).map((_, idx) => (
                         <Star
@@ -306,12 +345,10 @@ const Testimonials = () => {
                       ))}
                     </div>
 
-                    {/* Review title */}
                     <h5 className="text-xs font-bold text-white mb-1 leading-snug line-clamp-1">
                       {card.title}
                     </h5>
 
-                    {/* Review text */}
                     <p className="text-[11px] text-gray-400 leading-relaxed line-clamp-2">
                       {card.text}
                     </p>
@@ -323,15 +360,147 @@ const Testimonials = () => {
         </div>
       </div>
 
-      {/* Write a Review Button */}
       <div className="flex justify-center mt-12">
         <Button 
+          onClick={() => setIsModalOpen(true)}
           variant="primary" 
-          className="shadow-[0_0_20px_rgba(139,92,246,0.25)] hover:shadow-[0_0_25px_rgba(139,92,246,0.45)] transition-all duration-300 transform active:scale-95"
+          className="shadow-[0_0_20px_rgba(139,92,246,0.25)] hover:shadow-[0_0_25px_rgba(139,92,246,0.45)] transition-all duration-300 transform active:scale-95 cursor-pointer"
         >
           Write a Review
         </Button>
       </div>
+
+      <AnimatePresence>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsModalOpen(false)}
+              className="absolute inset-0 bg-[#04040c]/80 backdrop-blur-md"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: 'spring', duration: 0.5 }}
+              className="relative w-full max-w-lg z-10 overflow-hidden"
+            >
+              <GlassCard className="p-6 sm:p-8 border border-border-subtle bg-bg-card/95 shadow-2xl relative">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="absolute right-4 top-4 text-gray-400 hover:text-white transition-colors cursor-pointer p-1 rounded-lg hover:bg-white/5"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+
+                <h3 className="text-xl font-bold text-white mb-1">Write a Review</h3>
+                <p className="text-xs text-gray-400 mb-6">
+                  Share your experience reading technical insights on NovaBlog.
+                </p>
+
+                <form onSubmit={handleSubmitReview} className="space-y-4 text-left">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1.5">
+                        Your Name
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="John Doe"
+                        value={form.name}
+                        onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
+                        className="w-full bg-border-subtle/20 border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-purple transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1.5">
+                        Location
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="London, UK"
+                        value={form.location}
+                        onChange={(e) => setForm(prev => ({ ...prev, location: e.target.value }))}
+                        className="w-full bg-border-subtle/20 border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-purple transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1.5">
+                      Rating
+                    </label>
+                    <div className="flex items-center gap-2 py-1">
+                      {Array(5).fill(null).map((_, idx) => {
+                        const starValue = idx + 1;
+                        return (
+                          <button
+                            type="button"
+                            key={idx}
+                            onClick={() => setForm(prev => ({ ...prev, stars: starValue }))}
+                            className="text-gray-400 hover:scale-110 transition-transform cursor-pointer p-0.5"
+                          >
+                            <Star
+                              className="w-6 h-6"
+                              fill={starValue <= form.stars ? "#eab308" : "none"}
+                              stroke={starValue <= form.stars ? "#eab308" : "var(--color-border-subtle)"}
+                              strokeWidth={2}
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1.5">
+                      Review Title
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g., Highly informative and beautifully built!"
+                      value={form.title}
+                      onChange={(e) => setForm(prev => ({ ...prev, title: e.target.value }))}
+                      className="w-full bg-border-subtle/20 border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-purple transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1.5">
+                      Your Feedback
+                    </label>
+                    <textarea
+                      required
+                      rows={3}
+                      placeholder="Write your detailed testimonial here..."
+                      value={form.text}
+                      onChange={(e) => setForm(prev => ({ ...prev, text: e.target.value }))}
+                      className="w-full bg-border-subtle/20 border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-purple transition-all resize-none"
+                    />
+                  </div>
+
+                  <div className="pt-2">
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      disabled={submitting}
+                      className="w-full py-3 text-xs font-bold uppercase tracking-wider bg-gradient-premium hover:opacity-95 shadow-[0_0_15px_rgba(139,92,246,0.3)] disabled:opacity-50 cursor-pointer"
+                    >
+                      {submitting ? 'Submitting Review...' : 'Submit Feedback'}
+                    </Button>
+                  </div>
+                </form>
+              </GlassCard>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

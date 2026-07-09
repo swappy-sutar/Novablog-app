@@ -2,18 +2,32 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Send, Heart } from "lucide-react";
 import toast from "react-hot-toast";
+import { newsletterAPI, getErrorMessage } from "../../lib/api";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
     if (!email || !email.includes("@")) {
       toast.error("Please enter a valid email address.");
       return;
     }
-    toast.success("Subscribed successfully! Welcome to NovaBlog.");
-    setEmail("");
+    setSubmitting(true);
+    try {
+      const res = await newsletterAPI.subscribe(email);
+      if (res.success) {
+        toast.success(res.message || "Subscribed successfully! Welcome to NovaBlog.");
+        setEmail("");
+      } else {
+        toast.error("Subscription failed.");
+      }
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Subscription failed."));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import GlassCard from '../ui/GlassCard';
 import toast from 'react-hot-toast';
+import { newsletterAPI, getErrorMessage } from '../../lib/api';
 
 const Sidebar = ({ blog }) => {
   const [activeId, setActiveId] = useState('');
+  const [email, setEmail] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const navContainerRef = useRef(null);
 
   const headings = React.useMemo(() => {
@@ -76,9 +79,26 @@ const Sidebar = ({ blog }) => {
     }
   };
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
-    toast.success("Successfully subscribed to Nova!");
+    if (!email || !email.includes('@')) {
+      toast.error('Please enter a valid email address.');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await newsletterAPI.subscribe(email);
+      if (res.success) {
+        toast.success(res.message || 'Subscribed successfully! Welcome to NovaBlog.');
+        setEmail('');
+      } else {
+        toast.error('Subscription failed.');
+      }
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Subscription failed.'));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -121,14 +141,18 @@ const Sidebar = ({ blog }) => {
           <input 
             type="email" 
             placeholder="Email..." 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={submitting}
             required
-            className="w-full bg-border-subtle/30 border border-border-subtle rounded p-2 text-xs text-gray-200 mb-2 focus:border-brand-purple focus:outline-none"
+            className="w-full bg-border-subtle/30 border border-border-subtle rounded p-2 text-xs text-gray-200 mb-2 focus:border-brand-purple focus:outline-none disabled:opacity-50"
           />
           <button 
             type="submit"
-            className="w-full bg-white text-black font-semibold text-xs py-2 rounded hover:bg-gray-200 transition-colors"
+            disabled={submitting}
+            className="w-full bg-white text-black font-semibold text-xs py-2 rounded hover:bg-gray-200 transition-colors disabled:opacity-50"
           >
-            Subscribe
+            {submitting ? 'Subscribing...' : 'Subscribe'}
           </button>
         </form>
       </GlassCard>
