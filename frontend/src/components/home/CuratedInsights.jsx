@@ -58,10 +58,60 @@ const CuratedInsights = () => {
           </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          <div className="lg:col-span-8 h-[480px] bg-white/[0.01] border border-border-subtle rounded-2xl animate-pulse" />
+          {/* Main featured skeleton */}
+          <div className="lg:col-span-8 flex flex-col">
+            <GlassCard className="relative p-8 border border-border-subtle bg-bg-card min-h-[480px] flex flex-col justify-end overflow-hidden">
+              <div className="space-y-4 w-full">
+                {/* Category chip placeholder */}
+                <div>
+                  <div className="h-6 w-16 bg-white/[0.04] border border-white/[0.05] animate-pulse rounded-lg" />
+                </div>
+                {/* Title lines placeholder */}
+                <div className="space-y-2.5">
+                  <div className="h-8 w-3/4 bg-white/[0.04] animate-pulse rounded-md" />
+                  <div className="h-8 w-1/2 bg-white/[0.04] animate-pulse rounded-md" />
+                </div>
+                {/* Excerpt line placeholder */}
+                <div className="space-y-2 pt-1">
+                  <div className="h-4 w-5/6 bg-white/[0.02] animate-pulse rounded" />
+                  <div className="h-4 w-2/3 bg-white/[0.02] animate-pulse rounded" />
+                </div>
+                {/* Author and meta details placeholder */}
+                <div className="flex items-center gap-3 pt-4 border-t border-border-subtle/10 mt-2">
+                  <div className="w-8 h-8 rounded-full bg-white/[0.04] animate-pulse" />
+                  <div className="h-4 w-24 bg-white/[0.03] animate-pulse rounded" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-white/[0.02] animate-pulse" />
+                  <div className="h-4 w-12 bg-white/[0.03] animate-pulse rounded" />
+                </div>
+              </div>
+            </GlassCard>
+          </div>
+
+          {/* Side blogs skeletons */}
           <div className="lg:col-span-4 flex flex-col gap-6">
-            <div className="h-[228px] bg-white/[0.01] border border-border-subtle rounded-2xl animate-pulse" />
-            <div className="h-[228px] bg-white/[0.01] border border-border-subtle rounded-2xl animate-pulse" />
+            {Array(2).fill(null).map((_, idx) => (
+              <GlassCard key={idx} className="p-6 flex flex-col justify-between border border-border-subtle bg-bg-card min-h-[228px] h-auto lg:h-[calc(50%-12px)]">
+                <div className="space-y-3.5">
+                  {/* Category chip placeholder */}
+                  <div className="h-4 w-12 bg-white/[0.04] animate-pulse rounded" />
+                  {/* Title placeholder */}
+                  <div className="space-y-2">
+                    <div className="h-5 w-5/6 bg-white/[0.04] animate-pulse rounded-md" />
+                    <div className="h-5 w-2/3 bg-white/[0.04] animate-pulse rounded-md" />
+                  </div>
+                  {/* Excerpt placeholder */}
+                  <div className="h-3.5 w-11/12 bg-white/[0.02] animate-pulse rounded" />
+                </div>
+                {/* Divider line and footer */}
+                <div className="flex items-center justify-between border-t border-border-subtle/10 pt-4 mt-auto">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-white/[0.04] animate-pulse" />
+                    <div className="h-3.5 w-16 bg-white/[0.03] animate-pulse rounded" />
+                  </div>
+                  <div className="h-3.5 w-20 bg-white/[0.03] animate-pulse rounded" />
+                </div>
+              </GlassCard>
+            ))}
           </div>
         </div>
       </section>
