@@ -51,7 +51,9 @@ const CuratedInsights = () => {
       <section className="max-w-7xl mx-auto px-6 mb-20 space-y-8">
         <div className="flex items-end justify-between border-b border-border-subtle/30 pb-4">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Curated Insights</h2>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+              Curated <span className="text-gradient">Insights</span>
+            </h2>
             <p className="text-sm text-gray-400 mt-1">Top engineering minds sharing knowledge today.</p>
           </div>
         </div>
@@ -71,7 +73,9 @@ const CuratedInsights = () => {
       <section className="max-w-7xl mx-auto px-6 mb-20 space-y-8">
         <div className="flex items-end justify-between border-b border-border-subtle/30 pb-4">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Curated Insights</h2>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+              Curated <span className="text-gradient">Insights</span>
+            </h2>
             <p className="text-sm text-gray-400 mt-1">Top engineering minds sharing knowledge today.</p>
           </div>
         </div>
@@ -141,7 +145,9 @@ const CuratedInsights = () => {
       <div className="space-y-8">
         <div className="flex items-end justify-between border-b border-border-subtle/30 pb-4">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Curated Insights</h2>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+              Curated <span className="text-gradient">Insights</span>
+            </h2>
             <p className="text-sm text-gray-400 mt-1">Top engineering minds sharing knowledge today.</p>
           </div>
           <Link 

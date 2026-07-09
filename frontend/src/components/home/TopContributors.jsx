@@ -68,7 +68,7 @@ const TopContributors = () => {
     <section className="max-w-7xl mx-auto px-6 mb-20">
       {/* Title & Subtitle */}
       <div className="text-center mb-12 space-y-2">
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
           The Collective <span className="text-gradient">Intelligence</span>
         </h2>
         <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto leading-relaxed">

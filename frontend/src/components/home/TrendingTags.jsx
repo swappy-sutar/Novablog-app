@@ -86,8 +86,8 @@ const TrendingTags = () => {
       {/* Trending Topics Grid */}
       <div className="max-w-7xl mx-auto px-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-md sm:text-lg font-bold text-white tracking-tight uppercase">
-            Trending Technical Topics
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+            Trending Technical <span className="text-gradient">Topics</span>
           </h2>
           <Link 
             to="/explore" 
