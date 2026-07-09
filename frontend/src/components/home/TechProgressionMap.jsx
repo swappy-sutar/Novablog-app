@@ -130,9 +130,9 @@ const TechProgressionMap = () => {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-6 mb-24 overflow-visible relative pt-12">
+    <section className="max-w-7xl mx-auto px-6 mb-24 overflow-visible relative pt-0">
       {/* Wavy Divider Transition */}
-      <div className="relative w-screen left-1/2 -translate-x-1/2 h-20 md:h-28 overflow-visible pointer-events-none mb-16 -mt-16 z-10">
+      <div className="relative w-screen left-1/2 -translate-x-1/2 h-20 md:h-28 overflow-visible pointer-events-none mb-2 -mt-16 z-10">
 
         {/* Glow backdrop mesh */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-12 bg-gradient-to-r from-brand-purple/10 via-brand-cyan/10 to-transparent blur-3xl rounded-full pointer-events-none -z-10" />
