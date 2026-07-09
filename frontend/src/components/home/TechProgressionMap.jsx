@@ -258,45 +258,10 @@ const TechProgressionMap = () => {
         </p>
       </div>
 
-      {/* Dynamic Laser Connection Path representing Evolution Path */}
-      <svg 
-        viewBox="0 0 100 100" 
-        preserveAspectRatio="none"
-        className="hidden xl:block absolute left-0 right-0 top-36 w-full h-[calc(100%-120px)] pointer-events-none z-0 overflow-visible"
-      >
-        <defs>
-          <linearGradient id="laser-path-grad" x1="0%" y1="50%" x2="100%" y2="50%">
-            <stop offset="0%" stopColor="#00b4db" />
-            <stop offset="20%" stopColor="#98ec2d" />
-            <stop offset="40%" stopColor="#f97316" />
-            <stop offset="60%" stopColor="#7c3aed" />
-            <stop offset="80%" stopColor="#3a7bd5" />
-            <stop offset="100%" stopColor="#d4a359" />
-          </linearGradient>
-          <filter id="laser-blur" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="8" />
-          </filter>
-        </defs>
-        {/* Ambient Glow path */}
-        <path 
-          d="M 8.3 80 C 16.6 80, 16.6 70, 25 68 C 33.3 66, 33.3 58, 41.6 56 C 50 54, 50 46, 58.3 44 C 66.6 42, 66.6 34, 75 32 C 83.3 30, 83.3 22, 91.6 20" 
-          fill="none" 
-          stroke="url(#laser-path-grad)" 
-          strokeWidth="6" 
-          opacity="0.35" 
-          filter="url(#laser-blur)"
-        />
-        {/* Foreground sharp sweeping path */}
-        <path 
-          d="M 8.3 80 C 16.6 80, 16.6 70, 25 68 C 33.3 66, 33.3 58, 41.6 56 C 50 54, 50 46, 58.3 44 C 66.6 42, 66.6 34, 75 32 C 83.3 30, 83.3 22, 91.6 20" 
-          fill="none" 
-          stroke="url(#laser-path-grad)" 
-          strokeWidth="2.5" 
-        />
-      </svg>
+
 
       {/* CINEMATIC CHEVRON GRID */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 items-stretch select-none xl:pt-32 relative z-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 items-stretch select-none xl:pt-8 relative z-10">
         {LEVELS_DATA.map((lvl, index) => {
           const isHovered = hoveredLevel === lvl.id;
           const isExpanded = expandedLevel === lvl.id;
