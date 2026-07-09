@@ -101,6 +101,14 @@ const TechProgressionMap = () => {
             filter: drop-shadow(0 20px 30px rgba(0,0,0,0.3));
           }
         }
+        @media (min-width: 1280px) {
+          .staircase-card-0 { transform: translateY(0px); }
+          .staircase-card-1 { transform: translateY(-24px); }
+          .staircase-card-2 { transform: translateY(-48px); }
+          .staircase-card-3 { transform: translateY(-72px); }
+          .staircase-card-4 { transform: translateY(-96px); }
+          .staircase-card-5 { transform: translateY(-120px); }
+        }
       `}} />
 
       {/* Header */}
@@ -114,15 +122,15 @@ const TechProgressionMap = () => {
       </div>
 
       {/* CINEMATIC CHEVRON GRID */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 items-stretch select-none">
-        {LEVELS_DATA.map((lvl) => {
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 items-stretch select-none xl:pt-32">
+        {LEVELS_DATA.map((lvl, index) => {
           const IconComponent = lvl.icon;
           const isHovered = hoveredLevel === lvl.id;
           const isExpanded = expandedLevel === lvl.id;
           return (
             <div 
               key={lvl.level} 
-              className="relative flex flex-col cinematic-group cursor-pointer sm:cursor-default"
+              className={`relative flex flex-col cinematic-group cursor-pointer sm:cursor-default staircase-card-${index}`}
               onMouseEnter={() => setHoveredLevel(lvl.id)}
               onMouseLeave={() => setHoveredLevel(null)}
               onClick={() => handleCardClick(lvl.id)}
