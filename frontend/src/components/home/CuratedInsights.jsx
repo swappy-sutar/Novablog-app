@@ -193,16 +193,16 @@ const CuratedInsights = () => {
     <section className="max-w-7xl mx-auto px-6 mb-24 space-y-16">
       {/* 1. Curated Insights */}
       <div className="space-y-8">
-        <div className="flex items-end justify-between border-b border-border-subtle/30 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-border-subtle/30 pb-4 gap-2">
           <div>
             <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
               Curated <span className="text-gradient">Insights</span>
             </h2>
-            <p className="text-sm text-gray-400 mt-1">Top engineering minds sharing knowledge today.</p>
+            <p className="text-sm text-text-muted mt-1 leading-relaxed">Top engineering minds sharing knowledge today.</p>
           </div>
           <Link 
             to="/explore" 
-            className="text-xs font-bold text-brand-purple hover:text-[#c4b5fd] transition-colors flex items-center gap-1"
+            className="text-xs font-bold text-brand-purple hover:text-[#c4b5fd] transition-colors flex items-center gap-1 shrink-0 whitespace-nowrap self-start sm:self-auto mt-2 sm:mt-0"
           >
             View All <span className="text-sm">→</span>
           </Link>

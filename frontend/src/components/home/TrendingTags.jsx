@@ -91,7 +91,7 @@ const TrendingTags = () => {
           </h2>
           <Link 
             to="/explore" 
-            className="text-xs font-semibold text-gray-400 hover:text-brand-cyan transition-colors flex items-center gap-1.5"
+            className="text-xs font-semibold text-gray-400 hover:text-brand-cyan transition-colors flex items-center gap-1.5 shrink-0 whitespace-nowrap"
           >
             View all topics <span>→</span>
           </Link>
