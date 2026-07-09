@@ -92,7 +92,7 @@ const Testimonials = () => {
         </p>
         
         <div className="flex items-center justify-center gap-3 sm:gap-5 w-full max-w-lg">
-          {/* Left Laurel Wreath (High-Fidelity Lush Leaf Branch) */}
+          {/* Left Laurel Wreath (High-Fidelity Award-Style Branch) */}
           <svg className="w-10 h-10 sm:w-16 sm:h-16 text-brand-purple/95 shrink-0 select-none fill-current overflow-visible" viewBox="0 0 100 100">
             <defs>
               <filter id="laurel-shadow-left" x="-20%" y="-20%" width="140%" height="140%">
@@ -101,26 +101,30 @@ const Testimonials = () => {
             </defs>
             {/* Stem */}
             <path d="M68,85 C52,75 44,53 50,22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" filter="url(#laurel-shadow-left)" />
-            {/* Overlapping Leaf Pairs */}
+            {/* Leaves Group */}
             <g filter="url(#laurel-shadow-left)">
-              {/* Pair 1 - top */}
-              <path d="M52,22 C42,16 36,6 40,4 C44,2 50,12 53,18 Z" />
-              <path d="M54,22 C64,16 70,6 66,4 C62,2 56,12 53,18 Z" />
-              {/* Pair 2 */}
-              <path d="M50,33 C38,27 30,18 34,16 C38,14 46,23 49,29 Z" />
-              <path d="M53,33 C65,27 73,18 69,16 C65,14 57,23 54,29 Z" />
-              {/* Pair 3 */}
-              <path d="M47,45 C33,40 25,31 29,29 C33,27 41,36 45,41 Z" />
-              <path d="M52,45 C66,40 74,31 70,29 C66,27 58,36 54,41 Z" />
-              {/* Pair 4 */}
-              <path d="M45,57 C29,52 21,44 25,42 C29,40 38,48 42,53 Z" />
-              <path d="M51,57 C67,52 75,44 71,42 C67,40 58,48 54,53 Z" />
-              {/* Pair 5 */}
-              <path d="M44,69 C27,65 18,57 22,55 C26,53 36,60 40,65 Z" />
-              <path d="M52,69 C69,65 78,57 74,55 C70,53 60,60 56,65 Z" />
-              {/* Pair 6 */}
-              <path d="M46,81 C29,78 20,70 24,68 C28,66 38,72 42,77 Z" />
-              <path d="M54,81 C71,78 80,70 76,68 C72,66 62,72 58,77 Z" />
+              {/* Top central leaf */}
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(50, 18) rotate(-15) scale(1.3)" />
+              
+              {/* Left-side leaves pointing up-left */}
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(45, 23) rotate(-35) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(40, 31) rotate(-40) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(36, 40) rotate(-45) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(34, 50) rotate(-50) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(34, 60) rotate(-55) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(36, 70) rotate(-60) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(40, 79) rotate(-65) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(46, 87) rotate(-70) scale(1.3)" />
+              
+              {/* Right-side leaves pointing up-right */}
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(55, 25) rotate(15) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(57, 33) rotate(20) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(58, 42) rotate(25) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(57, 52) rotate(30) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(54, 62) rotate(35) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(49, 72) rotate(40) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(43, 81) rotate(45) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(35, 88) rotate(50) scale(1.3)" />
             </g>
           </svg>
 
@@ -128,36 +132,39 @@ const Testimonials = () => {
             Our Happy <span className="text-gradient">Readers</span>
           </h2>
 
-          {/* Right Laurel Wreath (Mirrored High-Fidelity Lush Leaf Branch) */}
+          {/* Right Laurel Wreath (Mirrored High-Fidelity Award-Style Branch) */}
           <svg className="w-10 h-10 sm:w-16 sm:h-16 text-brand-purple/95 shrink-0 select-none fill-current scale-x-[-1] overflow-visible" viewBox="0 0 100 100">
             <defs>
               <filter id="laurel-shadow-right" x="-20%" y="-20%" width="140%" height="140%">
-                {/* Mirror shadow offset horizontally */}
                 <feDropShadow dx="-0.8" dy="1.2" stdDeviation="0.8" floodColor="#000000" floodOpacity="0.25" />
               </filter>
             </defs>
             {/* Stem */}
             <path d="M68,85 C52,75 44,53 50,22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" filter="url(#laurel-shadow-right)" />
-            {/* Overlapping Leaf Pairs */}
+            {/* Leaves Group */}
             <g filter="url(#laurel-shadow-right)">
-              {/* Pair 1 - top */}
-              <path d="M52,22 C42,16 36,6 40,4 C44,2 50,12 53,18 Z" />
-              <path d="M54,22 C64,16 70,6 66,4 C62,2 56,12 53,18 Z" />
-              {/* Pair 2 */}
-              <path d="M50,33 C38,27 30,18 34,16 C38,14 46,23 49,29 Z" />
-              <path d="M53,33 C65,27 73,18 69,16 C65,14 57,23 54,29 Z" />
-              {/* Pair 3 */}
-              <path d="M47,45 C33,40 25,31 29,29 C33,27 41,36 45,41 Z" />
-              <path d="M52,45 C66,40 74,31 70,29 C66,27 58,36 54,41 Z" />
-              {/* Pair 4 */}
-              <path d="M45,57 C29,52 21,44 25,42 C29,40 38,48 42,53 Z" />
-              <path d="M51,57 C67,52 75,44 71,42 C67,40 58,48 54,53 Z" />
-              {/* Pair 5 */}
-              <path d="M44,69 C27,65 18,57 22,55 C26,53 36,60 40,65 Z" />
-              <path d="M52,69 C69,65 78,57 74,55 C70,53 60,60 56,65 Z" />
-              {/* Pair 6 */}
-              <path d="M46,81 C29,78 20,70 24,68 C28,66 38,72 42,77 Z" />
-              <path d="M54,81 C71,78 80,70 76,68 C72,66 62,72 58,77 Z" />
+              {/* Top central leaf */}
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(50, 18) rotate(-15) scale(1.3)" />
+              
+              {/* Left-side leaves pointing up-left */}
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(45, 23) rotate(-35) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(40, 31) rotate(-40) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(36, 40) rotate(-45) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(34, 50) rotate(-50) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(34, 60) rotate(-55) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(36, 70) rotate(-60) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(40, 79) rotate(-65) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(46, 87) rotate(-70) scale(1.3)" />
+              
+              {/* Right-side leaves pointing up-right */}
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(55, 25) rotate(15) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(57, 33) rotate(20) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(58, 42) rotate(25) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(57, 52) rotate(30) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(54, 62) rotate(35) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(49, 72) rotate(40) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(43, 81) rotate(45) scale(1.3)" />
+              <path d="M0,0 C-3,-6 -6,-10 0,-15 C6,-10 3,-6 0,0 Z" transform="translate(35, 88) rotate(50) scale(1.3)" />
             </g>
           </svg>
         </div>
