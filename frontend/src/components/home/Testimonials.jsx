@@ -143,7 +143,7 @@ const LaurelBranch = ({ shadowId, className }) => {
 const Testimonials = () => {
   return (
     <section className="max-w-7xl mx-auto px-6 mb-24 overflow-visible relative">
-      {/* Self-contained CSS styles for infinite marquee scrolling & hover-pause */}
+      {/* Self-contained CSS styles for infinite marquee scrolling, hover-pause, and dots */}
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes marquee-ltr {
           0% { transform: translate3d(-50%, 0, 0); }
@@ -162,7 +162,23 @@ const Testimonials = () => {
         .hover-pause:hover {
           animation-play-state: paused !important;
         }
+        .cinematic-dots {
+          background-image: radial-gradient(rgba(15, 23, 42, 0.16) 1.5px, transparent 1.5px);
+        }
+        :root:not(.light-mode) .cinematic-dots {
+          background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px) !important;
+        }
       `}} />
+
+      {/* Full-bleed Cinematic Dotted Grid Background */}
+      <div 
+        className="absolute inset-y-0 w-screen left-1/2 -translate-x-1/2 pointer-events-none cinematic-dots -z-10"
+        style={{
+          backgroundSize: '24px 24px',
+          maskImage: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.15) 12%, rgba(0,0,0,0.6) 24%, black 36%, black 85%, transparent)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.15) 12%, rgba(0,0,0,0.6) 24%, black 36%, black 85%, transparent)'
+        }}
+      />
 
       {/* Header Container */}
       <div className="text-center mb-16 space-y-3 relative flex flex-col items-center">
