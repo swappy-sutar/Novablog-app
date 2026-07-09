@@ -292,8 +292,6 @@ const TechProgressionMap = () => {
           fill="none" 
           stroke="url(#laser-path-grad)" 
           strokeWidth="2.5" 
-          strokeDasharray="25 140"
-          className="animate-laser-flow"
         />
       </svg>
 
