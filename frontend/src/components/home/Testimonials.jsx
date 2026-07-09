@@ -75,10 +75,10 @@ const Testimonials = () => {
           100% { transform: translate3d(-50%, 0, 0); }
         }
         .animate-marquee-ltr {
-          animation: marquee-ltr 28s linear infinite;
+          animation: marquee-ltr 42s linear infinite;
         }
         .animate-marquee-rtl {
-          animation: marquee-rtl 28s linear infinite;
+          animation: marquee-rtl 42s linear infinite;
         }
         .hover-pause:hover {
           animation-play-state: paused !important;
