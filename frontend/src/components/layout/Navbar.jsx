@@ -38,6 +38,7 @@ const Navbar = () => {
   const isFeed = location.pathname === "/feed";
   const isExplore = location.pathname === "/explore";
   const isAbout = location.pathname === "/about";
+  const isDocs = location.pathname === "/docs";
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -343,6 +344,13 @@ const Navbar = () => {
             className={isAbout ? linkActiveStyle : linkInactiveStyle}
           >
             About Us
+          </Link>
+          <Link
+            to="/docs"
+            onClick={(e) => handleNavClick(e, "/docs")}
+            className={isDocs ? linkActiveStyle : linkInactiveStyle}
+          >
+            Docs
           </Link>
         </div>
 
@@ -709,6 +717,16 @@ const Navbar = () => {
                   className={`py-1.5 ${isAbout ? "text-brand-cyan" : "text-gray-400 hover:text-gray-200"}`}
                 >
                   About Us
+                </Link>
+                <Link
+                  to="/docs"
+                  onClick={(e) => {
+                    handleNavClick(e, "/docs");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`py-1.5 ${isDocs ? "text-brand-cyan" : "text-gray-400 hover:text-gray-200"}`}
+                >
+                  Docs
                 </Link>
               </div>
 
