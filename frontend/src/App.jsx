@@ -25,6 +25,7 @@ import AdminPage from "./pages/AdminPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import DocsPage from "./pages/DocsPage";
 
 function App() {
   useEffect(() => {
@@ -111,6 +112,7 @@ function App() {
           <Route path="/post/:id" element={<BlogDetailsPage />} />
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/docs" element={<DocsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/cookie-policy" element={<CookiePage />} />
           <Route path="/terms" element={<TermsPage />} />
