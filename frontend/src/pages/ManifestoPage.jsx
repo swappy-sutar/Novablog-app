@@ -5,21 +5,20 @@ import {
   Settings, 
   HelpCircle,
   Sparkles,
-  ArrowRight,
   ShieldCheck,
   CheckCircle2,
   Share2
 } from "lucide-react";
 import GlassCard from "../components/ui/GlassCard";
 
-const DOCS_SECTIONS = [
+const MANIFESTO_SECTIONS = [
   { id: "overview", label: "Overview", icon: BookOpen },
   { id: "why-created", label: "Why NovaBlog?", icon: HelpCircle },
   { id: "how-it-works", label: "How It Works", icon: Settings },
   { id: "how-built", label: "How It's Built", icon: Layers },
 ];
 
-const DocsPage = () => {
+const ManifestoPage = () => {
   const [activeSection, setActiveSection] = useState("overview");
 
   return (
@@ -42,7 +41,7 @@ const DocsPage = () => {
             NovaBlog Manifesto
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
-            Inside <span className="text-gradient">NovaBlog</span>
+            Our <span className="text-gradient">Manifesto</span>
           </h1>
           <p className="text-gray-400 text-sm sm:text-base mt-2 max-w-2xl">
             A look under the hood of NovaBlog: our purpose, our mechanisms, and our architecture.
@@ -55,7 +54,7 @@ const DocsPage = () => {
             <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-gray-500">
               Navigation
             </div>
-            {DOCS_SECTIONS.map((sec) => {
+            {MANIFESTO_SECTIONS.map((sec) => {
               const Icon = sec.icon;
               const isActive = activeSection === sec.id;
               return (
@@ -290,7 +289,7 @@ const DocsPage = () => {
                   </div>
                 </div>
 
-                {/* Architecture visualization in simple typography */}
+                {/* Architecture visualization in boxy ASCII format */}
                 <div className="pt-4 space-y-2">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">System Flow Map</h4>
                   <div className="p-4 rounded-xl border border-border-subtle bg-[#08080f] font-mono text-[10px] text-emerald-400 overflow-x-auto whitespace-pre leading-relaxed">
@@ -319,4 +318,4 @@ const DocsPage = () => {
   );
 };
 
-export default DocsPage;
+export default ManifestoPage;

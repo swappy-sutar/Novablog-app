@@ -111,8 +111,8 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/docs" className="hover:text-brand-cyan hover:translate-x-1 inline-block transition-all duration-200">
-                  Documentation
+                <Link to="/manifesto" className="hover:text-brand-cyan hover:translate-x-1 inline-block transition-all duration-200">
+                  Our Manifesto
                 </Link>
               </li>
             </ul>
