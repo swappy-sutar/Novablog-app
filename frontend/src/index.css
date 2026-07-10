@@ -595,3 +595,55 @@
   color: var(--color-text-muted) !important;
   opacity: 0.65 !important;
 }
+
+/* Auth Background Styling rules */
+.auth-bg-gradient {
+  background: linear-gradient(to bottom, #020b11, #051520, #010609);
+}
+
+.auth-mouse-glow {
+  background-image: linear-gradient(to right, rgba(6, 182, 212, 0.12), rgba(59, 130, 246, 0.08)) !important;
+}
+
+.auth-grid-pattern pattern rect {
+  stroke: rgba(6, 182, 212, 0.1) !important;
+}
+
+.auth-floating-node {
+  background-color: rgba(6, 182, 212, 0.25) !important;
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.4) !important;
+}
+
+.auth-symbol {
+  color: rgba(6, 182, 212, 0.2) !important;
+}
+
+.auth-symbol-alt {
+  color: rgba(6, 182, 212, 0.25) !important;
+}
+
+/* Light mode overrides for AuthBackground */
+.light-mode .auth-bg-gradient {
+  background: linear-gradient(to bottom, #f8fafc, #f1f5f9, #e2e8f0) !important;
+}
+
+.light-mode .auth-mouse-glow {
+  background-image: linear-gradient(to right, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.06)) !important;
+}
+
+.light-mode .auth-grid-pattern pattern rect {
+  stroke: rgba(6, 182, 212, 0.25) !important;
+}
+
+.light-mode .auth-floating-node {
+  background-color: rgba(139, 92, 246, 0.4) !important;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.3) !important;
+}
+
+.light-mode .auth-symbol {
+  color: rgba(139, 92, 246, 0.15) !important;
+}
+
+.light-mode .auth-symbol-alt {
+  color: rgba(139, 92, 246, 0.2) !important;
+}

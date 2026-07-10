@@ -36,10 +36,10 @@ const AuthBackground = () => {
   const nodes = useMemo(() => generateStaticNodes(), []);
 
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-[-1] bg-gradient-to-b from-[#020b11] via-[#051520] to-[#010609]">
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-[-1] auth-bg-gradient">
       {/* Ambient Mouse Tracking Glow (coordinated to cyan/blue theme) */}
       <motion.div
-        className="absolute w-[450px] h-[450px] rounded-full bg-gradient-to-r from-brand-cyan/12 to-brand-blue/8 blur-[90px] pointer-events-none hidden md:block"
+        className="absolute w-[450px] h-[450px] rounded-full blur-[90px] pointer-events-none hidden md:block auth-mouse-glow"
         animate={{
           x: mousePosition.x - 225,
           y: mousePosition.y - 225,
@@ -52,7 +52,7 @@ const AuthBackground = () => {
       />
 
       {/* SVG Fine Square Grid Pattern (solid lines forming clean squares) */}
-      <svg className="absolute inset-0 w-full h-full opacity-25 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+      <svg className="absolute inset-0 w-full h-full opacity-25 pointer-events-none auth-grid-pattern" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern id="squares-grid" width="60" height="60" patternUnits="userSpaceOnUse">
             <rect width="60" height="60" fill="none" stroke="rgba(6, 182, 212, 0.1)" strokeWidth="1" />
@@ -79,7 +79,7 @@ const AuthBackground = () => {
       {nodes.map((node) => (
         <motion.div
           key={node.id}
-          className="absolute rounded-[2px] bg-brand-cyan/25 shadow-[0_0_8px_rgba(6,182,212,0.4)] pointer-events-none"
+          className="absolute rounded-[2px] pointer-events-none auth-floating-node"
           style={{
             width: node.size,
             height: node.size,
@@ -104,21 +104,21 @@ const AuthBackground = () => {
       <motion.div
         animate={{ y: [0, -25, 0], opacity: [0.08, 0.25, 0.08], rotate: [0, 3, 0] }}
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[15%] left-[8%] text-6xl font-mono text-brand-cyan/20 select-none hidden md:block"
+        className="absolute top-[15%] left-[8%] text-6xl font-mono select-none hidden md:block auth-symbol"
       >
         {`{ }`}
       </motion.div>
       <motion.div
         animate={{ y: [0, 30, 0], opacity: [0.08, 0.3, 0.08], rotate: [0, -5, 0] }}
         transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute bottom-[25%] right-[8%] text-5xl font-mono text-brand-cyan/25 select-none hidden md:block"
+        className="absolute bottom-[25%] right-[8%] text-5xl font-mono select-none hidden md:block auth-symbol-alt"
       >
         {`</>`}
       </motion.div>
       <motion.div
         animate={{ y: [0, -40, 0], opacity: [0.05, 0.2, 0.05], rotate: [0, 10, 0] }}
         transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute top-[65%] left-[12%] text-4xl font-mono text-brand-blue/20 select-none hidden md:block"
+        className="absolute top-[65%] left-[12%] text-4xl font-mono select-none hidden md:block auth-symbol"
       >
         #
       </motion.div>
