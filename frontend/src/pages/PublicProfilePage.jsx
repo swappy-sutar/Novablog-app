@@ -273,153 +273,125 @@ const PublicProfilePage = () => {
         </div>
       )}
 
-      <section className="relative mb-8">
-        {/* Inline CSS animation styles for the banner flow */}
-        <style dangerouslySetInnerHTML={{ __html: `
-          @keyframes laser-flow {
-            0% { transform: translateX(-50%); }
-            100% { transform: translateX(50%); }
-          }
-          .animate-laser-flow {
-            animation: laser-flow 8s linear infinite;
-          }
-        `}} />
-        <div
-          className="relative h-44 md:h-52 rounded-xl overflow-hidden border border-border-subtle"
+      <GlassCard 
+        className="relative p-6 md:p-8 border border-border-subtle bg-bg-card rounded-2xl mb-8 flex flex-col md:flex-row items-center md:items-center gap-6 md:gap-8 overflow-hidden"
+        style={{
+          background: 'linear-gradient(to bottom right, var(--color-bg-card), rgba(12, 13, 28, 0.45))'
+        }}
+      >
+        {/* Glow backdrop behind the avatar inside the card */}
+        <div 
+          className="absolute top-1/2 left-0 -translate-y-1/2 w-48 h-48 rounded-full opacity-20 blur-3xl pointer-events-none -z-10"
           style={{
-            background: `
-              radial-gradient(ellipse 90% 80% at 50% 100%, rgba(112, 225, 245, 0.22), transparent 55%),
-              radial-gradient(ellipse 60% 40% at 20% 30%, rgba(195, 199, 243, 0.12), transparent),
-              linear-gradient(165deg, #0b0e14 0%, #121a2e 45%, #0b0e14 100%)
-            `,
+            backgroundImage: `radial-gradient(circle, ${currentAccent} 0%, transparent 70%)`
           }}
-        >
-          {/* Laser beam tracer effect */}
-          <div 
-            className="absolute top-0 left-[-50%] w-[200%] h-[1.5px] bg-gradient-to-r from-transparent via-[#06b6d4]/40 to-transparent animate-laser-flow pointer-events-none"
+        />
+
+        {/* Avatar Container */}
+        <div className="relative shrink-0 group">
+          <button
+            type="button"
+            onClick={() => isOwnProfile && fileRef.current?.click()}
+            disabled={uploading || !isOwnProfile}
+            className={`relative w-28 h-28 md:w-32 md:h-32 rounded-2xl border-2 overflow-hidden shadow-xl bg-bg-card text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${isOwnProfile ? 'cursor-pointer' : 'cursor-default'}`}
             style={{
-              backgroundImage: `linear-gradient(to right, transparent, ${currentAccent}60, transparent)`
+              borderColor: currentAccent,
+              boxShadow: `0 0 20px ${currentAccent}25, 0 10px 25px rgba(0,0,0,0.3)`
             }}
-          />
-          <div
-            className="absolute inset-0 opacity-[0.35]"
+            aria-label="Profile photo"
+          >
+            {profile?.avatar ? (
+              <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-purple/40 to-brand-purple/20 text-3xl font-bold text-white">
+                {initials}
+              </div>
+            )}
+            {isOwnProfile && (
+              <span className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs font-medium text-white">
+                {uploading ? '…' : 'Change'}
+              </span>
+            )}
+          </button>
+          <span 
+            className="absolute -bottom-1.5 -right-1.5 px-2.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider text-white shadow-lg border"
             style={{
-              backgroundImage: `
-                linear-gradient(90deg, rgba(112,225,245,0.07) 1px, transparent 1px),
-                linear-gradient(rgba(112,225,245,0.07) 1px, transparent 1px)
-              `,
-              backgroundSize: '28px 28px',
-              maskImage: 'radial-gradient(ellipse 70% 70% at 50% 60%, black 20%, transparent)',
+              backgroundColor: currentAccent,
+              borderColor: 'rgba(255,255,255,0.15)',
+              boxShadow: `0 2px 8px ${currentAccent}40`
             }}
-          />
-          <div
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120%] h-1/2 opacity-40"
-            style={{
-              background:
-                'conic-gradient(from 180deg at 50% 0%, transparent 0deg, rgba(112,225,245,0.15) 60deg, transparent 120deg)',
-            }}
-          />
+          >
+            {profile?.isVerified ? 'Verified' : roleLabel}
+          </span>
         </div>
 
-        <div className="relative -mt-16 md:-mt-20 flex flex-col md:flex-row md:items-end gap-6 md:gap-8 px-1 md:px-2">
-          <div className="relative shrink-0 group">
-            <button
-              type="button"
-              onClick={() => isOwnProfile && fileRef.current?.click()}
-              disabled={uploading || !isOwnProfile}
-              className={`relative w-32 h-32 md:w-40 md:h-40 rounded-xl border-2 overflow-hidden shadow-xl shadow-black/40 bg-bg-card text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${isOwnProfile ? 'cursor-pointer' : 'cursor-default'}`}
-              style={{
-                borderColor: currentAccent,
-                boxShadow: `0 0 25px ${currentAccent}25, 0 10px 30px rgba(0,0,0,0.5)`
-              }}
-              aria-label="Profile photo"
-            >
-              {profile?.avatar ? (
-                <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-purple/40 to-brand-purple/20 text-3xl font-semibold text-white">
-                  {initials}
-                </div>
-              )}
-              {isOwnProfile && (
-                <span className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs font-medium text-white">
-                  {uploading ? '…' : 'Change'}
-                </span>
-              )}
-            </button>
-            <span 
-              className="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide text-white shadow-lg border"
-              style={{
-                backgroundColor: currentAccent,
-                borderColor: 'rgba(255,255,255,0.1)',
-                boxShadow: `0 2px 10px ${currentAccent}40`
-              }}
-            >
-              {profile?.isVerified ? 'Verified' : roleLabel}
-            </span>
-          </div>
-
-          <div className="flex-1 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 pb-1 md:pb-2 min-w-0">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-semibold text-white tracking-tight">
-                {displayName}
-              </h1>
-              <p className="text-gray-400 mt-1.5 text-sm md:text-base max-w-xl line-clamp-3">
+        {/* Details & Actions block */}
+        <div className="flex-1 flex flex-col md:flex-row md:items-center md:justify-between gap-6 w-full text-center md:text-left min-w-0">
+          <div className="space-y-1.5">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+              {displayName}
+            </h1>
+            <p className="text-gray-400 text-xs md:text-sm font-semibold tracking-wide uppercase">
+              @{profile?.username}
+            </p>
+            {subtitle && (
+              <p className="text-text-muted mt-2 text-xs md:text-sm max-w-xl leading-relaxed">
                 {subtitle}
               </p>
-            </div>
-            {!isOwnProfile && (
-              <div className="flex flex-wrap items-center gap-3 shrink-0">
-                <Button
-                  type="button"
-                  variant={profile?.isFollowing ? "primary" : "outline"}
-                  onClick={handleFollowToggle}
-                  className={`!rounded-[10px] !py-2.5 !px-4 ${
-                    profile?.isFollowing 
-                      ? "bg-brand-purple text-white hover:opacity-90 border-transparent" 
-                      : "border-border-subtle bg-white/[0.04] hover:bg-white/[0.08]"
-                  }`}
-                >
-                  {profile?.isFollowing ? (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                  ) : (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                      />
-                    </svg>
-                  )}
-                  {profile?.isFollowing ? "Following" : "Follow"}
-                </Button>
-                <button
-                  type="button"
-                  className="px-6 py-2.5 rounded-[10px] font-medium text-sm flex items-center justify-center gap-2 bg-[#c3c7f3] text-[#0b0e14] hover:opacity-90 transition-opacity"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            )}
+          </div>
+
+          {!isOwnProfile && (
+            <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 shrink-0">
+              <Button
+                type="button"
+                variant={profile?.isFollowing ? "primary" : "outline"}
+                onClick={handleFollowToggle}
+                className={`!rounded-[10px] !py-2.5 !px-5 text-xs font-bold ${
+                  profile?.isFollowing 
+                    ? "bg-[#6366f1] text-[#ffffff] hover:bg-[#4f46e5] border-transparent" 
+                    : "border-border-subtle bg-white/[0.04] hover:bg-white/[0.08]"
+                }`}
+              >
+                {profile?.isFollowing ? (
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      strokeWidth={2.5}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  Message
-                </button>
-              </div>
-            )}
-          </div>
+                ) : (
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2.5}
+                      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                    />
+                  </svg>
+                )}
+                {profile?.isFollowing ? "Following" : "Follow"}
+              </Button>
+              <button
+                type="button"
+                className="px-5 py-2.5 rounded-[10px] font-bold text-xs flex items-center justify-center gap-2 bg-[#6366f1] text-[#ffffff] hover:bg-[#4f46e5] transition-all cursor-pointer shadow-lg shadow-[#6366f1]/15"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
+                </svg>
+                Message
+              </button>
+            </div>
+          )}
         </div>
-      </section>
+      </GlassCard>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-10">
         {[
