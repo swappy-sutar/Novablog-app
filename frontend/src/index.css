@@ -559,7 +559,21 @@
   display: none;
 }
 
-/* PostCard overlay gradient adjustment for light mode */
-.light-mode .postcard-overlay {
-  background-image: linear-gradient(to top, rgba(248, 250, 252, 0.6) 0%, rgba(248, 250, 252, 0.2) 60%, transparent 100%) !important;
+/* PostCard overlay gradient to ensure text readability in both dark and light modes */
+.postcard-overlay {
+  background-image: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%) !important;
+}
+
+/* PostCard custom typography styles to override light mode defaults on background image cards */
+.postcard-text-white {
+  color: #ffffff !important;
+}
+.postcard-text-cyan {
+  color: #06b6d4 !important;
+}
+.postcard-text-gray {
+  color: #94a3b8 !important;
+}
+.postcard-border-subtle {
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
