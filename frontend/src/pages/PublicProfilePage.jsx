@@ -486,7 +486,7 @@ const PublicProfilePage = () => {
               <p
                 className="text-xl md:text-2xl font-bold tabular-nums"
                 style={{
-                  color: stat.accent ? '#06b6d4' : '#ffffff'
+                  color: stat.accent ? '#06b6d4' : 'var(--color-white)'
                 }}
               >
                 {stat.value}
