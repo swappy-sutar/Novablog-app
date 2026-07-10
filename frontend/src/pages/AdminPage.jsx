@@ -99,6 +99,7 @@ const AdminPage = () => {
   const [isLogPaused, setIsLogPaused] = useState(false);
   const [pingingServices, setPingingServices] = useState({});
   const [systemHealth, setSystemHealth] = useState(null);
+  const [analyticsData, setAnalyticsData] = useState(null);
 
   const handleConsoleScroll = (e) => {
     const container = e.currentTarget;
@@ -192,8 +193,20 @@ const AdminPage = () => {
     }
   };
 
+  const loadAnalytics = async () => {
+    try {
+      const res = await adminAPI.getAnalytics();
+      if (res.success && res.data) {
+        setAnalyticsData(res.data);
+      }
+    } catch (e) {
+      console.error("Failed to load performance analytics", e);
+    }
+  };
+
   useEffect(() => {
     loadAllBlogs();
+    loadAnalytics();
     
     // Sync current user from local storage
     const storedUser = localStorage.getItem("user");
@@ -223,6 +236,9 @@ const AdminPage = () => {
       loadModerationQueue();
     } else if (activeTab === "content" || activeTab === "dashboard" || activeTab === "analytics") {
       loadAllBlogs();
+      if (activeTab === "dashboard" || activeTab === "analytics") {
+        loadAnalytics();
+      }
     }
   }, [activeTab]);
 
@@ -1034,10 +1050,10 @@ const AdminPage = () => {
               {/* 4 Cards Row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                  { title: "Total Views", val: formatNumber(totalViews), change: "+18.2%", color: "text-brand-purple", bg: "bg-brand-purple/10" },
-                  { title: "Engagement Rate", val: "64.8%", change: "+3.4%", color: "text-brand-cyan", bg: "bg-brand-cyan/10" },
-                  { title: "Avg Read Time", val: "4.2 mins", change: "+12s", color: "text-emerald-500", bg: "bg-emerald-500/10" },
-                  { title: "Bounce Rate", val: "38.2%", change: "-2.1%", color: "text-red-400", bg: "bg-red-400/10" },
+                  { title: "Total Views", val: formatNumber(analyticsData ? analyticsData.totalViews : totalViews), change: "+18.2%", color: "text-brand-purple", bg: "bg-brand-purple/10" },
+                  { title: "Engagement Rate", val: analyticsData ? `${analyticsData.engagementRate}%` : "64.8%", change: "+3.4%", color: "text-brand-cyan", bg: "bg-brand-cyan/10" },
+                  { title: "Avg Read Time", val: analyticsData ? `${analyticsData.avgReadTime} mins` : "4.2 mins", change: "+12s", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+                  { title: "Bounce Rate", val: analyticsData ? `${analyticsData.bounceRate}%` : "38.2%", change: "-2.1%", color: "text-red-400", bg: "bg-red-400/10" },
                 ].map((item, idx) => (
                   <div key={idx} className="border border-border-subtle bg-bg-card backdrop-blur-xl p-5 rounded-2xl space-y-3 shadow-sm hover:bg-bg-card-hover transition-colors duration-350">
                     <p className="text-[10px] text-gray-500 font-bold tracking-wide uppercase">{item.title}</p>
@@ -1060,18 +1076,18 @@ const AdminPage = () => {
                   
                   {/* Visual Bar Chart */}
                   <div className="h-[240px] flex items-end justify-between gap-4 pt-6 px-4">
-                    {[
+                    {(analyticsData?.monthlyTraffic || [
                       { m: "Jan", v: 45 }, { m: "Feb", v: 62 }, { m: "Mar", v: 58 },
                       { m: "Apr", v: 75 }, { m: "May", v: 88 }, { m: "Jun", v: 100 },
                       { m: "Jul", v: 82 }, { m: "Aug", v: 68 }, { m: "Sep", v: 92 }
-                    ].map((bar, idx) => (
+                    ]).map((bar, idx) => (
                       <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
                         <div
                           style={{ height: `${bar.v}%` }}
                           className="w-full bg-brand-purple/25 border border-brand-purple/35 rounded-t-lg transition-all group-hover:bg-brand-purple group-hover:shadow-[0_0_15px_rgba(139,92,246,0.4)] relative"
                         >
                           <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-bg-dropdown border border-border-subtle text-white text-[9px] font-bold px-1.5 py-0.8 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                            {(bar.v * 120).toLocaleString()} views
+                            {(bar.actualViews !== undefined ? bar.actualViews : bar.v * 120).toLocaleString()} views
                           </div>
                         </div>
                         <span className="text-[10px] text-gray-500 font-bold">{bar.m}</span>
@@ -1084,7 +1100,7 @@ const AdminPage = () => {
                 <div className="border border-border-subtle bg-bg-card backdrop-blur-xl p-6 rounded-2xl space-y-4 shadow-sm hover:bg-bg-card-hover transition-colors duration-350">
                   <h3 className="text-xs font-bold text-white uppercase tracking-wide">Top Performing Articles</h3>
                   <div className="flex flex-col gap-4">
-                    {blogs.slice(0, 4).map((blog) => (
+                    {(analyticsData?.topPerforming || blogs.slice(0, 4)).map((blog) => (
                       <div key={blog.id} className="flex items-center justify-between border-b border-border-subtle pb-3 last:border-b-0 last:pb-0">
                         <div className="space-y-0.5 pr-2 truncate">
                           <h4 className="text-[11px] font-bold text-white truncate">{blog.title}</h4>

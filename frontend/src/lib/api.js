@@ -307,6 +307,10 @@ export const adminAPI = {
   deleteBlog: async (id) => {
     const response = await api.delete(`/admin/blogs/${id}`);
     return response.data;
+  },
+  getAnalytics: async () => {
+    const response = await api.get('/admin/analytics');
+    return response.data;
   }
 };
 

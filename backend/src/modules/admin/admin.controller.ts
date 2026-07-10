@@ -76,5 +76,10 @@ export class AdminController {
   async deleteBlog(@Param('id') id: string) {
     return this.adminService.deleteBlog(id);
   }
+
+  @Get('analytics')
+  async getAnalytics() {
+    return this.adminService.getAnalytics();
+  }
 }
 
