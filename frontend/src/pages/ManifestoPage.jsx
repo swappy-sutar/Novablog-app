@@ -292,7 +292,7 @@ const ManifestoPage = () => {
                 {/* Architecture visualization in boxy ASCII format */}
                 <div className="pt-4 space-y-2">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">System Flow Map</h4>
-                  <div className="p-4 rounded-xl border border-border-subtle bg-bg-card-sub font-mono text-[10px] text-emerald-600 dark:text-emerald-400 overflow-x-auto whitespace-pre leading-relaxed">
+                  <div className="p-4 rounded-xl border border-border-subtle bg-bg-card-sub font-mono text-[10px] text-gray-800 dark:text-emerald-400 font-semibold overflow-x-auto whitespace-pre leading-relaxed">
 {`┌─────────────────────────────────────────────────────┐
 │                     Client Browser                  │
 │              React 19 + Vite (Tailwind CSS)          │
