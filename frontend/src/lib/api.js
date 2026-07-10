@@ -315,6 +315,18 @@ export const adminAPI = {
   getDashboardData: async (range = 'real-time') => {
     const response = await api.get('/admin/dashboard', { params: { range } });
     return response.data;
+  },
+  getReviews: async () => {
+    const response = await api.get('/admin/reviews');
+    return response.data;
+  },
+  updateReview: async (id, reviewData) => {
+    const response = await api.patch(`/admin/reviews/${id}`, reviewData);
+    return response.data;
+  },
+  deleteReview: async (id) => {
+    const response = await api.delete(`/admin/reviews/${id}`);
+    return response.data;
   }
 };
 

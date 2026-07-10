@@ -681,5 +681,44 @@ export class AdminService {
       activities: formattedActivities
     });
   }
+
+  async getAllReviews() {
+    const reviews = await this.prisma.review.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+    return successResponse('Reviews retrieved successfully', { reviews });
+  }
+
+  async updateReview(
+    id: string,
+    data: { name?: string; location?: string; stars?: number; text?: string; isActive?: boolean }
+  ) {
+    const review = await this.prisma.review.findUnique({
+      where: { id }
+    });
+    if (!review) {
+      throw new NotFoundException('Review not found');
+    }
+
+    const updated = await this.prisma.review.update({
+      where: { id },
+      data
+    });
+    return successResponse('Review updated successfully', updated);
+  }
+
+  async deleteReview(id: string) {
+    const review = await this.prisma.review.findUnique({
+      where: { id }
+    });
+    if (!review) {
+      throw new NotFoundException('Review not found');
+    }
+
+    await this.prisma.review.delete({
+      where: { id }
+    });
+    return successResponse('Review deleted successfully');
+  }
 }
 

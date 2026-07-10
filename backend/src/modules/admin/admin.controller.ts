@@ -86,5 +86,23 @@ export class AdminController {
   async getDashboardData(@Query('range') range?: string) {
     return this.adminService.getDashboardData(range);
   }
+
+  @Get('reviews')
+  async getAllReviews() {
+    return this.adminService.getAllReviews();
+  }
+
+  @Patch('reviews/:id')
+  async updateReview(
+    @Param('id') id: string,
+    @Body() body: { name?: string; location?: string; stars?: number; text?: string; isActive?: boolean },
+  ) {
+    return this.adminService.updateReview(id, body);
+  }
+
+  @Delete('reviews/:id')
+  async deleteReview(@Param('id') id: string) {
+    return this.adminService.deleteReview(id);
+  }
 }
 

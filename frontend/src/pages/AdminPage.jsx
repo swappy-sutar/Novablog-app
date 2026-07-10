@@ -39,6 +39,11 @@ import {
   Mail,
   UserCheck,
   UserX,
+  Star,
+  Edit3,
+  Save,
+  X,
+  RefreshCw,
 } from "lucide-react";
 import { blogAPI, authAPI, adminAPI } from "../lib/api";
 import { connectSocket } from "../lib/socket";
@@ -146,6 +151,56 @@ const AdminPage = () => {
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
+  // Reviews state
+  const [reviewsList, setReviewsList] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [editingReview, setEditingReview] = useState(null);
+
+  const loadReviews = async () => {
+    setReviewsLoading(true);
+    try {
+      const res = await adminAPI.getReviews();
+      if (res.success && res.data) {
+        setReviewsList(res.data.reviews || []);
+      }
+    } catch (e) {
+      toast.error("Failed to load platform reviews.");
+      console.error(e);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  const handleUpdateReview = async (id, updatedData) => {
+    try {
+      const res = await adminAPI.updateReview(id, updatedData);
+      if (res.success && res.data) {
+        toast.success("Review updated successfully.");
+        setReviewsList((prev) =>
+          prev.map((r) => (r.id === id ? { ...r, ...res.data } : r))
+        );
+        setEditingReview(null);
+      }
+    } catch (e) {
+      toast.error("Failed to update review.");
+      console.error(e);
+    }
+  };
+
+  const handleDeleteReview = async (id) => {
+    if (!window.confirm("Are you sure you want to permanently delete this review?")) return;
+    try {
+      const res = await adminAPI.deleteReview(id);
+      if (res.success) {
+        toast.success("Review deleted successfully.");
+        setReviewsList((prev) => prev.filter((r) => r.id !== id));
+      }
+    } catch (e) {
+      toast.error("Failed to delete review.");
+      console.error(e);
+    }
+  };
+
   const loadSystemHealth = async () => {
     try {
       const res = await adminAPI.getSystemHealth();
@@ -251,6 +306,8 @@ const AdminPage = () => {
       loadUsers();
     } else if (activeTab === "moderation") {
       loadModerationQueue();
+    } else if (activeTab === "reviews") {
+      loadReviews();
     } else if (activeTab === "content" || activeTab === "dashboard" || activeTab === "analytics") {
       loadAllBlogs();
       if (activeTab === "dashboard" || activeTab === "analytics") {
@@ -512,6 +569,7 @@ const AdminPage = () => {
             { id: "analytics", label: "Analytics", icon: Activity },
             { id: "content", label: "Content", icon: FileText },
             { id: "moderation", label: "Moderation", icon: ShieldAlert },
+            { id: "reviews", label: "Reviews", icon: Star },
             { id: "system", label: "System Health", icon: Cpu },
             { id: "users", label: "Users", icon: Users },
           ].map((item) => {
@@ -1783,6 +1841,258 @@ const AdminPage = () => {
                 </div>
               </div>
             </motion.div>
+          )}
+          {/* TAB 7: REVIEWS */}
+          {activeTab === "reviews" && (
+            <motion.div
+              key="reviews"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25 }}
+              className="space-y-6"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-extrabold text-white tracking-tight">Platform Reviews</h2>
+                  <p className="text-[11px] text-gray-400 mt-0.5">
+                    {reviewsList.length} review{reviewsList.length !== 1 ? "s" : ""} total
+                  </p>
+                </div>
+                <button
+                  onClick={loadReviews}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border-subtle bg-bg-input text-[10px] font-bold text-gray-300 hover:text-white hover:border-gray-600 transition-all cursor-pointer"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                  Refresh
+                </button>
+              </div>
+
+              {/* Skeleton / Loading */}
+              {reviewsLoading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="rounded-2xl border border-border-subtle bg-bg-card p-5 space-y-3 animate-pulse">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-white/5" />
+                        <div className="space-y-1.5 flex-1">
+                          <div className="h-2.5 rounded bg-white/5 w-2/3" />
+                          <div className="h-2 rounded bg-white/5 w-1/3" />
+                        </div>
+                      </div>
+                      <div className="h-2 rounded bg-white/5 w-full" />
+                      <div className="h-2 rounded bg-white/5 w-5/6" />
+                      <div className="flex gap-2 pt-1">
+                        <div className="h-6 rounded-lg bg-white/5 w-16" />
+                        <div className="h-6 rounded-lg bg-white/5 w-16" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : reviewsList.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
+                  <Star className="w-10 h-10 text-gray-600" />
+                  <p className="text-gray-500 text-sm font-semibold">No reviews found</p>
+                  <p className="text-gray-600 text-xs">Reviews submitted on the platform will appear here.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {reviewsList.map((review) => (
+                    <div
+                      key={review.id}
+                      className="group relative rounded-2xl border border-border-subtle bg-bg-card p-5 space-y-3 hover:border-[#6366f1]/40 hover:shadow-lg hover:shadow-[#6366f1]/5 transition-all duration-300"
+                    >
+                      {/* Status badge */}
+                      <span
+                        className={`absolute top-3 right-3 text-[8px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full border ${
+                          review.isActive
+                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                            : "border-gray-600/30 bg-gray-700/20 text-gray-500"
+                        }`}
+                      >
+                        {review.isActive ? "Active" : "Hidden"}
+                      </span>
+
+                      {/* Header */}
+                      <div className="flex items-center gap-3 pr-16">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#6366f1]/30 to-[#a78bfa]/20 border border-[#6366f1]/20 flex items-center justify-center text-[13px] font-black text-[#a78bfa]">
+                          {review.name?.charAt(0)?.toUpperCase() || "?"}
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-white leading-tight">{review.name}</p>
+                          <p className="text-[10px] text-gray-500 font-medium">{review.location || "Unknown location"}</p>
+                        </div>
+                      </div>
+
+                      {/* Stars */}
+                      <div className="flex items-center gap-0.5">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <Star
+                            key={s}
+                            className={`w-3.5 h-3.5 ${s <= review.stars ? "text-amber-400 fill-amber-400" : "text-gray-600"}`}
+                          />
+                        ))}
+                        <span className="ml-1.5 text-[10px] font-bold text-amber-400">{review.stars}/5</span>
+                      </div>
+
+                      {/* Review text */}
+                      <p className="text-[11px] text-gray-300 leading-relaxed line-clamp-3">{review.text}</p>
+
+                      {/* Date */}
+                      <p className="text-[9px] text-gray-600 font-semibold">
+                        {new Date(review.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+                      </p>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-2 pt-1 border-t border-border-subtle">
+                        <button
+                          onClick={() => setEditingReview({ ...review })}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold border border-[#6366f1]/30 bg-[#6366f1]/5 text-[#818cf8] hover:bg-[#6366f1]/15 hover:border-[#6366f1]/50 hover:text-white transition-all cursor-pointer"
+                        >
+                          <Edit3 className="w-3 h-3" />
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteReview(review.id)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold border border-red-500/20 bg-red-500/5 text-red-400 hover:bg-red-500/15 hover:border-red-500/50 hover:text-white transition-all cursor-pointer"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          )}
+
+          {/* EDIT REVIEW MODAL */}
+          {editingReview && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(10px)" }}
+              onClick={(e) => { if (e.target === e.currentTarget) setEditingReview(null); }}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.93, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.93, y: 20 }}
+                transition={{ duration: 0.2 }}
+                className="w-full max-w-lg rounded-2xl border border-[#6366f1]/30 bg-[#0d0d12] shadow-2xl shadow-[#6366f1]/10 overflow-hidden"
+              >
+                {/* Modal header */}
+                <div className="flex items-center justify-between px-6 py-4 border-b border-border-subtle bg-[#0d0d14]">
+                  <div className="flex items-center gap-2.5">
+                    <Star className="w-4 h-4 text-[#818cf8]" />
+                    <span className="text-sm font-extrabold text-white">Edit Review</span>
+                  </div>
+                  <button
+                    onClick={() => setEditingReview(null)}
+                    className="text-gray-500 hover:text-white transition-colors cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Modal body */}
+                <div className="p-6 space-y-4">
+                  {/* Name */}
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Reviewer Name</label>
+                    <input
+                      type="text"
+                      value={editingReview.name || ""}
+                      onChange={(e) => setEditingReview((prev) => ({ ...prev, name: e.target.value }))}
+                      className="w-full bg-bg-input border border-border-subtle rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#6366f1]/60 transition-colors"
+                    />
+                  </div>
+
+                  {/* Location */}
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Location</label>
+                    <input
+                      type="text"
+                      value={editingReview.location || ""}
+                      onChange={(e) => setEditingReview((prev) => ({ ...prev, location: e.target.value }))}
+                      className="w-full bg-bg-input border border-border-subtle rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#6366f1]/60 transition-colors"
+                    />
+                  </div>
+
+                  {/* Stars */}
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Rating</label>
+                    <div className="flex items-center gap-1.5">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <button
+                          key={s}
+                          onClick={() => setEditingReview((prev) => ({ ...prev, stars: s }))}
+                          className="cursor-pointer transition-transform hover:scale-110"
+                        >
+                          <Star
+                            className={`w-6 h-6 ${s <= editingReview.stars ? "text-amber-400 fill-amber-400" : "text-gray-600 hover:text-amber-400/50"} transition-colors`}
+                          />
+                        </button>
+                      ))}
+                      <span className="ml-2 text-sm font-bold text-amber-400">{editingReview.stars}/5</span>
+                    </div>
+                  </div>
+
+                  {/* Text */}
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Review Text</label>
+                    <textarea
+                      value={editingReview.text || ""}
+                      onChange={(e) => setEditingReview((prev) => ({ ...prev, text: e.target.value }))}
+                      rows={4}
+                      className="w-full bg-bg-input border border-border-subtle rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#6366f1]/60 transition-colors resize-none leading-relaxed"
+                    />
+                  </div>
+
+                  {/* Active Toggle */}
+                  <div className="flex items-center justify-between rounded-xl border border-border-subtle bg-bg-input px-4 py-3">
+                    <div>
+                      <p className="text-xs font-bold text-white">Visible on site</p>
+                      <p className="text-[10px] text-gray-500">Show this review publicly</p>
+                    </div>
+                    <button
+                      onClick={() => setEditingReview((prev) => ({ ...prev, isActive: !prev.isActive }))}
+                      className={`relative w-10 h-5 rounded-full transition-colors duration-300 cursor-pointer ${editingReview.isActive ? "bg-emerald-500" : "bg-gray-700"}`}
+                    >
+                      <span
+                        className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all duration-300 ${editingReview.isActive ? "left-5" : "left-0.5"}`}
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Modal footer */}
+                <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border-subtle bg-[#0d0d14]">
+                  <button
+                    onClick={() => setEditingReview(null)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold border border-border-subtle text-gray-400 hover:text-white hover:border-gray-600 transition-all cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() =>
+                      handleUpdateReview(editingReview.id, {
+                        name: editingReview.name,
+                        location: editingReview.location,
+                        stars: editingReview.stars,
+                        text: editingReview.text,
+                        isActive: editingReview.isActive,
+                      })
+                    }
+                    className="flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold bg-[#6366f1] text-white hover:bg-[#4f46e5] transition-all cursor-pointer shadow-lg shadow-[#6366f1]/20"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    Save Changes
+                  </button>
+                </div>
+              </motion.div>
+            </div>
           )}
 
         </AnimatePresence>
