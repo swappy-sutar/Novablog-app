@@ -2,90 +2,25 @@ import React, { useState } from "react";
 import { 
   BookOpen, 
   Layers, 
-  Terminal, 
-  Database, 
-  Globe, 
-  Search, 
-  Code,
-  ArrowRight,
+  Settings, 
+  HelpCircle,
   Sparkles,
-  Check,
-  Copy
+  ArrowRight,
+  ShieldCheck,
+  CheckCircle2,
+  Share2
 } from "lucide-react";
 import GlassCard from "../components/ui/GlassCard";
 
 const DOCS_SECTIONS = [
   { id: "overview", label: "Overview", icon: BookOpen },
-  { id: "architecture", label: "Architecture", icon: Layers },
-  { id: "setup", label: "Setup Guide", icon: Terminal },
-  { id: "api", label: "API Reference", icon: Database },
-  { id: "routes", label: "Frontend Routes", icon: Globe },
-];
-
-const API_ENDPOINTS = [
-  { method: "GET", path: "/health", auth: false, desc: "Bypasses prefix, returns raw backend service status" },
-  { method: "POST", path: "/auth/register", auth: false, desc: "Create a new user account on the platform" },
-  { method: "POST", path: "/auth/login", auth: false, desc: "Authenticate user and receive Access & Refresh JWTs" },
-  { method: "GET", path: "/auth/profile", auth: true, desc: "Retrieve active user profile data" },
-  { method: "PATCH", path: "/auth/profile", auth: true, desc: "Update user meta information (bio, social links, name)" },
-  { method: "POST", path: "/auth/upload-profile", auth: true, desc: "Upload avatar image to S3 bucket" },
-  { method: "POST", path: "/auth/refresh-token", auth: false, desc: "Generate a new access token using rotate strategy" },
-  { method: "POST", path: "/auth/logout", auth: true, desc: "Blacklist active refresh token and end session" },
-  { method: "POST", path: "/auth/forgot-password", auth: false, desc: "Send secure reset token via Resend email service" },
-  { method: "POST", path: "/auth/reset-password", auth: false, desc: "Update password using forgot-password token" },
-  { method: "POST", path: "/auth/setup-2fa", auth: true, desc: "Generate secret and QR code for Authenticator" },
-  { method: "POST", path: "/auth/verify-2fa", auth: true, desc: "Enable TOTP verification on profile" },
-  { method: "POST", path: "/blog/create-blog", auth: true, desc: "Create a new draft or published blog post" },
-  { method: "GET", path: "/blog/get-all-blogs", auth: false, desc: "Retrieve public blogs (paginated, supports tag & category filters)" },
-  { method: "GET", path: "/blog/my-blogs", auth: true, desc: "Retrieve all blogs created by current user" },
-  { method: "GET", path: "/blog/get-blog/:id", auth: false, desc: "Get full details of a specific blog post" },
-  { method: "PATCH", path: "/blog/update-blog/:id", auth: true, desc: "Modify draft or published details of a blog post" },
-  { method: "DELETE", path: "/blog/delete-blog/:id", auth: true, desc: "Remove blog post from database" },
-  { method: "POST", path: "/comments/create-comment/:blogId", auth: true, desc: "Add a comment (supports threaded/nested replies)" },
-  { method: "GET", path: "/comments/get-comment/:blogId", auth: false, desc: "Fetch comments hierarchy for a post" },
-  { method: "PATCH", path: "/comments/update-comment/:commentId", auth: true, desc: "Update text of own comment" },
-  { method: "DELETE", path: "/comments/delete-comment/:commentId", auth: true, desc: "Delete comment" },
-  { method: "POST", path: "/likes/toggle/:blogId", auth: true, desc: "Toggle like status of an article" },
-  { method: "POST", path: "/bookmarks/toggle/:blogId", auth: true, desc: "Toggle bookmark status of an article" },
-  { method: "GET", path: "/bookmarks/my-bookmarks", auth: true, desc: "List saved posts" },
-  { method: "POST", path: "/review/create", auth: false, desc: "Submit user feedback/review about the platform" },
-  { method: "GET", path: "/admin/dashboard", auth: true, admin: true, desc: "Admin metric aggregates" },
-  { method: "GET", path: "/admin/analytics", auth: true, admin: true, desc: "Historical user and post analytics logs" },
-  { method: "GET", path: "/admin/users", auth: true, admin: true, desc: "Search and paginate platform users" },
-  { method: "PATCH", path: "/admin/users/:id/status", auth: true, admin: true, desc: "Suspend or reactivate accounts" },
-  { method: "GET", path: "/admin/reviews", auth: true, admin: true, desc: "Fetch all platform reviews for moderation" },
-  { method: "PATCH", path: "/admin/reviews/:id", auth: true, admin: true, desc: "Update details or visibility status of a review" },
-  { method: "DELETE", path: "/admin/reviews/:id", auth: true, admin: true, desc: "Permanently purge a review from the system" },
-];
-
-const FRONTEND_ROUTES = [
-  { path: "/", scope: "Public", desc: "Landing page, testimonials, recent blogs, progression map" },
-  { path: "/explore", scope: "Public", desc: "Interactive feed searching, categorizing, and filtering blogs" },
-  { path: "/signin / signup", scope: "Public", desc: "Aesthetic neon signup, signin, email verification, 2FA prompt" },
-  { path: "/write", scope: "Protected Writer", desc: "Auto-saving TipTap rich text canvas with category selection & image upload" },
-  { path: "/my-blogs", scope: "Protected Writer", desc: "Management dashboard for drafts, published, and archived work" },
-  { path: "/profile/:username", scope: "Public", desc: "User statistics, bio, follow button, unlocks, and badging map" },
-  { path: "/settings", scope: "Protected User", desc: "Manage name, profile images, tech stack tags, and configure 2FA" },
-  { path: "/admin/dashboard", scope: "Protected Admin", desc: "Interactive server analytics logs, review/content deletion suite" },
+  { id: "why-created", label: "Why NovaBlog?", icon: HelpCircle },
+  { id: "how-it-works", label: "How It Works", icon: Settings },
+  { id: "how-built", label: "How It's Built", icon: Layers },
 ];
 
 const DocsPage = () => {
   const [activeSection, setActiveSection] = useState("overview");
-  const [copiedText, setCopiedText] = useState("");
-  const [apiSearch, setApiSearch] = useState("");
-
-  const handleCopy = (text, label) => {
-    navigator.clipboard.writeText(text);
-    setCopiedText(label);
-    setTimeout(() => setCopiedText(""), 2000);
-  };
-
-  const filteredApi = API_ENDPOINTS.filter(
-    (ep) =>
-      ep.path.toLowerCase().includes(apiSearch.toLowerCase()) ||
-      ep.method.toLowerCase().includes(apiSearch.toLowerCase()) ||
-      ep.desc.toLowerCase().includes(apiSearch.toLowerCase())
-  );
 
   return (
     <div className="min-h-screen bg-[#07070d] text-white pt-24 pb-20 relative overflow-hidden">
@@ -104,13 +39,13 @@ const DocsPage = () => {
         <div className="mb-12 text-center md:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-purple/30 bg-brand-purple/10 text-xs text-[#a78bfa] font-bold mb-4">
             <Sparkles className="w-3.5 h-3.5" />
-            Developer Hub
+            NovaBlog Manifesto
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
-            NovaBlog <span className="text-gradient">Documentation</span>
+            Inside <span className="text-gradient">NovaBlog</span>
           </h1>
           <p className="text-gray-400 text-sm sm:text-base mt-2 max-w-2xl">
-            Explore architecture blueprints, setup workflows, local deployment targets, and full REST API routes.
+            A look under the hood of NovaBlog: our purpose, our mechanisms, and our architecture.
           </p>
         </div>
 
@@ -118,7 +53,7 @@ const DocsPage = () => {
           {/* LEFT: Sidebar Navigation */}
           <GlassCard className="lg:col-span-1 p-4 space-y-1.5 lg:sticky lg:top-24">
             <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-gray-500">
-              Documentation Chapters
+              Navigation
             </div>
             {DOCS_SECTIONS.map((sec) => {
               const Icon = sec.icon;
@@ -141,278 +76,203 @@ const DocsPage = () => {
           </GlassCard>
 
           {/* RIGHT: Document Content Area */}
-          <GlassCard className="lg:col-span-3 p-6 sm:p-8 min-h-[600px]">
+          <GlassCard className="lg:col-span-3 p-6 sm:p-8 min-h-[500px]">
+            
             {/* OVERVIEW SECTION */}
             {activeSection === "overview" && (
               <div className="space-y-6">
                 <h2 className="text-2xl font-black border-b border-border-subtle pb-3 text-white flex items-center gap-3">
                   <BookOpen className="w-6 h-6 text-[#a78bfa]" />
-                  Project Overview
+                  Overview
                 </h2>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  NovaBlog is a modern, high-performance, developer-centric blogging platform designed for rich knowledge sharing, bookmarking, and public profiles. Built with a decoupled design system, it pairs a fast, dynamic React 19 UI with a robust NestJS backend.
+                  NovaBlog is a modern technical publishing platform designed to bridge the gap between rich developer thoughts and immersive reader experiences. Our platform replaces clunky interfaces and distracting layouts with a fast, high-performance, glassmorphic layout tailored for long-form knowledge sharing.
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
                   <div className="p-5 rounded-2xl border border-border-subtle bg-[#0a0a14] space-y-2">
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                      Client Architecture
+                      Clean Web Interface
                     </h3>
-                    <p className="text-[11px] text-gray-400 leading-normal">
-                      Built on React 19, Vite, Tailwind CSS, Framer Motion, and TipTap Rich Editor.
+                    <p className="text-[11px] text-gray-400 leading-normal font-medium">
+                      Built for modern browsers using React 19 and Vite. Responsively scales from smartphones to ultra-wide displays.
                     </p>
                   </div>
                   <div className="p-5 rounded-2xl border border-border-subtle bg-[#0a0a14] space-y-2">
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-blue-500" />
-                      Server Architecture
+                      Scalable Services
                     </h3>
-                    <p className="text-[11px] text-gray-400 leading-normal">
-                      Powered by NestJS framework, Prisma ORM, PostgreSQL database, and Upstash Redis.
+                    <p className="text-[11px] text-gray-400 leading-normal font-medium">
+                      Powered by a modular NestJS server using PostgreSQL for persistence and Redis for caching.
                     </p>
                   </div>
                 </div>
+              </div>
+            )}
 
-                <div className="pt-6 space-y-4">
-                  <h3 className="text-lg font-bold text-white">Platform Core Vision</h3>
-                  <ul className="space-y-2.5 text-xs text-gray-300">
-                    <li className="flex items-start gap-2.5">
-                      <ArrowRight className="w-4 h-4 text-brand-purple shrink-0 mt-0.5" />
-                      <span><strong>Distraction-Free Writing:</strong> Auto-saving editor tailored with live preview, header formatting, and direct code highlighting block.</span>
+            {/* WHY CREATED SECTION */}
+            {activeSection === "why-created" && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-black border-b border-border-subtle pb-3 text-white flex items-center gap-3">
+                  <HelpCircle className="w-6 h-6 text-[#a78bfa]" />
+                  Why NovaBlog?
+                </h2>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Most modern blogging engines have drifted away from clean readability. They are clogged with ads, require heavy tracking cookies, and offer sluggish editors that break layout structures. 
+                </p>
+
+                <div className="space-y-4 pt-2">
+                  <h3 className="text-base font-bold text-white">We created NovaBlog to satisfy three core principles:</h3>
+                  <ul className="space-y-4 text-xs text-gray-300">
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="text-white block mb-0.5">Readability First</strong>
+                        We utilize selected modern typography, soft ambient glass background frames, and structured spacing rules to let readers concentrate fully on technical insights.
+                      </div>
                     </li>
-                    <li className="flex items-start gap-2.5">
-                      <ArrowRight className="w-4 h-4 text-brand-purple shrink-0 mt-0.5" />
-                      <span><strong>Level-Up Progression:</strong> High engagement system calculating reader habits and awarding profile badges sequentially.</span>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="text-white block mb-0.5">High Performance</strong>
+                        Every asset loads immediately. By utilizing server-side pagination, structured database indexes, and Redis caching layers, NovaBlog ensures latency is kept to a minimum.
+                      </div>
                     </li>
-                    <li className="flex items-start gap-2.5">
-                      <ArrowRight className="w-4 h-4 text-brand-purple shrink-0 mt-0.5" />
-                      <span><strong>Reliable Task Handling:</strong> Background thread queuing (email delivery and verification checks) built with BullMQ queue systems.</span>
+                    <li className="flex gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="text-white block mb-0.5">Writer Empowerment</strong>
+                        Writers should focus on writing, not markdown formatting errors. Our rich text canvas automatically cleans inputs, processes images seamlessly via S3 storage, and tracks post lifecycles accurately.
+                      </div>
                     </li>
                   </ul>
                 </div>
               </div>
             )}
 
-            {/* ARCHITECTURE SECTION */}
-            {activeSection === "architecture" && (
+            {/* HOW IT WORKS SECTION */}
+            {activeSection === "how-it-works" && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-black border-b border-border-subtle pb-3 text-white flex items-center gap-3">
+                  <Settings className="w-6 h-6 text-[#a78bfa]" />
+                  How It Works
+                </h2>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  NovaBlog organizes content production and discovery into four main modules:
+                </p>
+
+                <div className="space-y-6 pt-2">
+                  {/* Auth */}
+                  <div className="flex gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-brand-purple/10 flex items-center justify-center shrink-0 border border-brand-purple/30">
+                      <ShieldCheck className="w-5 h-5 text-brand-purple" />
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-bold text-white">1. Secure Authentication & Identity</h4>
+                      <p className="text-xs text-gray-400 leading-relaxed">
+                        Users register accounts with verified emails. Sessions use secure JSON Web Tokens (JWT) split into short-term Access tokens and long-term Refresh tokens. Two-Factor Authentication (2FA) via Authenticator apps is built-in for account safety.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Editor */}
+                  <div className="flex gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-brand-cyan/10 flex items-center justify-center shrink-0 border border-brand-cyan/30">
+                      <Sparkles className="w-5 h-5 text-brand-cyan" />
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-bold text-white">2. Auto-Saving Writing Canvas</h4>
+                      <p className="text-xs text-gray-400 leading-relaxed">
+                        The writing dashboard features a distraction-free WYSIWYG editor using the TipTap framework. It handles headings, custom inline links, block quotes, and media uploads automatically. Banners are stored securely using cloud objects.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Social */}
+                  <div className="flex gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-brand-purple/10 flex items-center justify-center shrink-0 border border-brand-purple/30">
+                      <Share2 className="w-5 h-5 text-brand-purple" />
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-bold text-white">3. Social Interactivity & Feeds</h4>
+                      <p className="text-xs text-gray-400 leading-relaxed">
+                        Readers interact through targeted likes, bookmarks, and threaded nested comments. An interactive home feed lists updates from followed writers in real-time, backed by WebSocket event pathways.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Badges */}
+                  <div className="flex gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-brand-cyan/10 flex items-center justify-center shrink-0 border border-brand-cyan/30">
+                      <CheckCircle2 className="w-5 h-5 text-brand-cyan" />
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-bold text-white">4. Gamified Badge Progression</h4>
+                      <p className="text-xs text-gray-400 leading-relaxed">
+                        Reading records are tracked automatically. As you read more articles, your account progresses through six unique levels (Seedling, Contributor, Influencer, Rising Writer, Legend, and Established), unlocking visual profile badges.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* HOW BUILT SECTION */}
+            {activeSection === "how-built" && (
               <div className="space-y-6">
                 <h2 className="text-2xl font-black border-b border-border-subtle pb-3 text-white flex items-center gap-3">
                   <Layers className="w-6 h-6 text-[#a78bfa]" />
-                  System Architecture
+                  How It's Built
                 </h2>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  NovaBlog leverages a clean, high-concurrency architecture that decouples frontend delivery from transaction handling, event emission, and media storing.
+                  NovaBlog is engineered using modern, proven technologies structured in a decoupled frontend-backend architecture:
                 </p>
 
-                {/* Architecture Diagram */}
-                <div className="p-5 rounded-2xl border border-border-subtle bg-[#08080f] font-mono text-[10px] text-emerald-400 overflow-x-auto whitespace-pre leading-relaxed">
-{`┌─────────────────────────────────────────────────────┐
-│                     Client Browser                  │
-│              React 19 + Vite (Tailwind CSS)          │
-└─────────────────┬───────────────────────────────────┘
-                  │ HTTPS REST / WebSockets (WSS)
-┌─────────────────▼───────────────────────────────────┐
-│               NestJS Gateway API Router             │
-│    JWT Auth Guards · Rate Limiter · WebSocket Hub   │
-├──────────┬──────────────┬────────────┬──────────────┤
-│  Prisma  │   BullMQ     │  Socket.IO │    AWS S3    │
-│  ORM API │  Queue Hub   │ Notifications│ (File Store)│
-│  + Neon  │  + Upstash   │  Streamer  │              │
-│ Postgres │    Redis     │            │              │
-└──────────┴──────────────┴────────────┴──────────────┘`}
-                </div>
-
-                <div className="space-y-4 pt-4">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-gray-400">Database Models Overview</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="p-3 border border-border-subtle bg-white/[0.01] rounded-xl text-center">
-                      <span className="text-white font-bold text-xs">User Model</span>
-                      <p className="text-[10px] text-gray-500 mt-1">Credentials, Profile, Tech Stack, 2FA Setup</p>
-                    </div>
-                    <div className="p-3 border border-border-subtle bg-white/[0.01] rounded-xl text-center">
-                      <span className="text-white font-bold text-xs">Blog Model</span>
-                      <p className="text-[10px] text-gray-500 mt-1">Title, Content, Category, Status (DRAFT/PUBLISHED)</p>
-                    </div>
-                    <div className="p-3 border border-border-subtle bg-white/[0.01] rounded-xl text-center">
-                      <span className="text-white font-bold text-xs">Review Model</span>
-                      <p className="text-[10px] text-gray-500 mt-1">Feedback text, star rating, location, status</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* SETUP GUIDE SECTION */}
-            {activeSection === "setup" && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-black border-b border-border-subtle pb-3 text-white flex items-center gap-3">
-                  <Terminal className="w-6 h-6 text-[#a78bfa]" />
-                  Setup Guide
-                </h2>
-                <p className="text-gray-300 text-sm leading-relaxed">
-                  NovaBlog is optimized for lightning-fast setup using standard Docker orchestration.
-                </p>
-
-                <div className="space-y-5">
-                  {/* Step 1 */}
-                  <div className="space-y-2">
-                    <span className="text-xs font-bold text-[#818cf8]">STEP 1: Clone and Configure Env</span>
-                    <p className="text-xs text-gray-400">Clone the codebase from GitHub and copy the env template config to the root directory.</p>
-                    <div className="relative">
-                      <pre className="p-4 rounded-xl bg-[#08080f] border border-border-subtle font-mono text-xs text-gray-300 overflow-x-auto">
-                        {`git clone https://github.com/swappy-sutar/Novablog-app.git\ncd Novablog-app\ncp .env.example .env`}
-                      </pre>
-                      <button
-                        onClick={() => handleCopy(`git clone https://github.com/swappy-sutar/Novablog-app.git\ncd Novablog-app\ncp .env.example .env`, "step1")}
-                        className="absolute top-3 right-3 p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors cursor-pointer"
-                      >
-                        {copiedText === "step1" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      </button>
-                    </div>
+                <div className="space-y-4 pt-2">
+                  <div className="border-l-2 border-brand-purple pl-4 py-1 space-y-1">
+                    <h4 className="text-sm font-bold text-white">React 19 & Vite</h4>
+                    <p className="text-xs text-gray-400 leading-relaxed">
+                      Used to render the client interface. Vite guarantees extremely fast bundling, hot-reloading during development, and small build sizes for lightning-fast loads.
+                    </p>
                   </div>
 
-                  {/* Step 2 */}
-                  <div className="space-y-2">
-                    <span className="text-xs font-bold text-[#818cf8]">STEP 2: Boot Services via Docker Compose</span>
-                    <p className="text-xs text-gray-400">Start the PostgreSQL database, Redis store, and NestJS API services.</p>
-                    <div className="relative">
-                      <pre className="p-4 rounded-xl bg-[#08080f] border border-border-subtle font-mono text-xs text-gray-300 overflow-x-auto">
-                        {`docker compose up -d db redis backend`}
-                      </pre>
-                      <button
-                        onClick={() => handleCopy("docker compose up -d db redis backend", "step2")}
-                        className="absolute top-3 right-3 p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors cursor-pointer"
-                      >
-                        {copiedText === "step2" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      </button>
-                    </div>
+                  <div className="border-l-2 border-brand-cyan pl-4 py-1 space-y-1">
+                    <h4 className="text-sm font-bold text-white">NestJS (TypeScript)</h4>
+                    <p className="text-xs text-gray-400 leading-relaxed">
+                      Powering the backend. It offers a structured, modular controller-service model with built-in validation pipes, guards, interceptors, and strict TypeScript types.
+                    </p>
                   </div>
 
-                  {/* Step 3 */}
-                  <div className="space-y-2">
-                    <span className="text-xs font-bold text-[#818cf8]">STEP 3: Run Frontend Dev Server</span>
-                    <p className="text-xs text-gray-400">Boot the local Vite web UI server to start coding or reading.</p>
-                    <div className="relative">
-                      <pre className="p-4 rounded-xl bg-[#08080f] border border-border-subtle font-mono text-xs text-gray-300 overflow-x-auto">
-                        {`cd frontend\nnpm install\nnpm run dev`}
-                      </pre>
-                      <button
-                        onClick={() => handleCopy(`cd frontend\nnpm install\nnpm run dev`, "step3")}
-                        className="absolute top-3 right-3 p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors cursor-pointer"
-                      >
-                        {copiedText === "step3" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      </button>
-                    </div>
+                  <div className="border-l-2 border-brand-purple pl-4 py-1 space-y-1">
+                    <h4 className="text-sm font-bold text-white">Prisma ORM & PostgreSQL</h4>
+                    <p className="text-xs text-gray-400 leading-relaxed">
+                      Our database layer. Prisma ORM handles strict schema definitions and generates type-safe database queries. PostgreSQL stores users, posts, comments, likes, and bookmarks reliably.
+                    </p>
+                  </div>
+
+                  <div className="border-l-2 border-brand-cyan pl-4 py-1 space-y-1">
+                    <h4 className="text-sm font-bold text-white">Redis Caching & BullMQ Queues</h4>
+                    <p className="text-xs text-gray-400 leading-relaxed">
+                      Ensures backend performance remains high. Redis cache stores hot server responses, and acts as the broker for BullMQ background queues to handle heavy mail jobs asynchronously.
+                    </p>
                   </div>
                 </div>
-              </div>
-            )}
 
-            {/* API REFERENCE SECTION */}
-            {activeSection === "api" && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-black border-b border-border-subtle pb-3 text-white flex items-center gap-3">
-                  <Database className="w-6 h-6 text-[#a78bfa]" />
-                  API Reference
-                </h2>
-
-                {/* API Route Search bar */}
-                <div className="relative">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                  <input
-                    type="text"
-                    placeholder="Search API endpoints (e.g. /auth, POST)..."
-                    value={apiSearch}
-                    onChange={(e) => setApiSearch(e.target.value)}
-                    className="w-full bg-[#08080f] border border-border-subtle rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-[#6366f1]/60 transition-colors"
-                  />
-                </div>
-
-                <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
-                  {filteredApi.length === 0 ? (
-                    <p className="text-xs text-gray-500 text-center py-6">No matching endpoints found.</p>
-                  ) : (
-                    filteredApi.map((ep, i) => {
-                      const isPost = ep.method === "POST";
-                      const isPatch = ep.method === "PATCH";
-                      const isDelete = ep.method === "DELETE";
-                      let badgeColor = "bg-blue-500/10 text-blue-400 border-blue-500/20";
-                      if (isPost) badgeColor = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-                      if (isPatch) badgeColor = "bg-amber-500/10 text-amber-400 border-amber-500/20";
-                      if (isDelete) badgeColor = "bg-red-500/10 text-red-400 border-red-500/20";
-
-                      return (
-                        <div
-                          key={i}
-                          className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border border-border-subtle bg-white/[0.01] hover:bg-white/[0.02] transition-colors"
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded border ${badgeColor}`}>
-                              {ep.method}
-                            </span>
-                            <span className="font-mono text-xs text-white">{ep.path}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <p className="text-[11px] text-gray-400 max-w-sm text-left sm:text-right">{ep.desc}</p>
-                            <div className="flex gap-1 shrink-0">
-                              {ep.auth && (
-                                <span className="text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[#6366f1]/15 text-[#818cf8] border border-[#6366f1]/20">
-                                  🔒 Auth
-                                </span>
-                              )}
-                              {ep.admin && (
-                                <span className="text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 border border-red-500/25">
-                                  🛡 Admin
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* FRONTEND ROUTES SECTION */}
-            {activeSection === "routes" && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-black border-b border-border-subtle pb-3 text-white flex items-center gap-3">
-                  <Globe className="w-6 h-6 text-[#a78bfa]" />
-                  Frontend Routes
-                </h2>
-                <p className="text-gray-300 text-sm leading-relaxed">
-                  Frontend routing configuration map with viewport scope settings.
-                </p>
-
-                <div className="space-y-2.5">
-                  {FRONTEND_ROUTES.map((route, i) => {
-                    const isAdmin = route.scope.includes("Admin");
-                    const isProtected = route.scope.includes("Protected");
-                    let badgeColor = "bg-gray-800 text-gray-400 border-gray-700";
-                    if (isAdmin) badgeColor = "bg-red-500/10 text-red-400 border-red-500/20";
-                    else if (isProtected) badgeColor = "bg-[#6366f1]/10 text-[#818cf8] border-[#6366f1]/20";
-
-                    return (
-                      <div
-                        key={i}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border border-border-subtle bg-white/[0.01]"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Code className="w-3.5 h-3.5 text-gray-500" />
-                          <span className="font-mono text-xs text-white">{route.path}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-[11px] text-gray-400 text-left sm:text-right">{route.desc}</p>
-                          <span className={`text-[8px] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded border shrink-0 ${badgeColor}`}>
-                            {route.scope}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
+                {/* Architecture visualization in simple typography */}
+                <div className="pt-4 space-y-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">System Flow Map</h4>
+                  <div className="p-4 rounded-xl border border-border-subtle bg-[#08080f] font-mono text-[10px] text-emerald-400 overflow-x-auto whitespace-pre leading-relaxed">
+{`Client Browser (React 19 + Tailwind)
+       │
+       ▼ (HTTPS REST / WSS Events)
+NestJS Gateway (Auth Guards & Rate Limiter)
+       │
+       ├─► Redis Caching & BullMQ Jobs (Mail Queue)
+       ├─► AWS S3 Bucket (Image Uploads)
+       └─► PostgreSQL DB (Prisma Schema models)`}
+                  </div>
                 </div>
               </div>
             )}
