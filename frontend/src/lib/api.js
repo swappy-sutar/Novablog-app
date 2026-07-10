@@ -312,8 +312,8 @@ export const adminAPI = {
     const response = await api.get('/admin/analytics');
     return response.data;
   },
-  getDashboardData: async () => {
-    const response = await api.get('/admin/dashboard');
+  getDashboardData: async (range = 'real-time') => {
+    const response = await api.get('/admin/dashboard', { params: { range } });
     return response.data;
   }
 };
