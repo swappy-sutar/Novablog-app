@@ -229,6 +229,31 @@ export class AdminService {
       redisColor = 'bg-red-500';
     }
 
+    // Helper functions to parse hosted connection endpoints
+    let apiEndpoint = "novablog-backend-vrgz.onrender.com/api/v1";
+    let dbEndpoint = "db:5432/blog_app";
+    let redisEndpoint = "redis:6379";
+
+    try {
+      const dbUrl = process.env.DATABASE_URL;
+      if (dbUrl) {
+        const parsedDb = new URL(dbUrl);
+        dbEndpoint = `${parsedDb.hostname}${parsedDb.port ? ':' + parsedDb.port : ''}${parsedDb.pathname}`;
+      }
+    } catch (e) {
+      // fallback
+    }
+
+    try {
+      const redisUrl = process.env.REDIS_URL;
+      if (redisUrl) {
+        const parsedRedis = new URL(redisUrl);
+        redisEndpoint = `${parsedRedis.hostname}${parsedRedis.port ? ':' + parsedRedis.port : ''}`;
+      }
+    } catch (e) {
+      // fallback
+    }
+
     return successResponse('System health retrieved successfully', {
       metrics: [
         { title: "CPU Utilization", val: cpuVal, status: cpuStatus, color: cpuColor },
@@ -237,9 +262,9 @@ export class AdminService {
         { title: "Database Pools", val: activePools, status: dbStatus === 'Operational' ? 'HEALTHY' : 'ERROR', color: dbStatus === 'Operational' ? 'text-emerald-500' : 'text-red-500' },
       ],
       services: [
-        { name: "NestJS core API", endpoint: "localhost:3000/api/v1", status: "Operational", color: "bg-emerald-500" },
-        { name: "PostgreSQL Instance", endpoint: "db:5432/blog_app", status: dbStatus, color: dbColor },
-        { name: "Redis Core Cache", endpoint: "redis:6379", status: redisStatus, color: redisColor },
+        { name: "NestJS core API", endpoint: apiEndpoint, status: "Operational", color: "bg-emerald-500" },
+        { name: "PostgreSQL Instance", endpoint: dbEndpoint, status: dbStatus, color: dbColor },
+        { name: "Redis Core Cache", endpoint: redisEndpoint, status: redisStatus, color: redisColor },
         { name: "BullMQ Email Engine", endpoint: "background:queue", status: redisStatus, color: redisColor },
       ]
     });
