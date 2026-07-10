@@ -264,14 +264,20 @@ const DocsPage = () => {
                 <div className="pt-4 space-y-2">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">System Flow Map</h4>
                   <div className="p-4 rounded-xl border border-border-subtle bg-[#08080f] font-mono text-[10px] text-emerald-400 overflow-x-auto whitespace-pre leading-relaxed">
-{`Client Browser (React 19 + Tailwind)
-       │
-       ▼ (HTTPS REST / WSS Events)
-NestJS Gateway (Auth Guards & Rate Limiter)
-       │
-       ├─► Redis Caching & BullMQ Jobs (Mail Queue)
-       ├─► AWS S3 Bucket (Image Uploads)
-       └─► PostgreSQL DB (Prisma Schema models)`}
+{`┌─────────────────────────────────────────────────────┐
+│                     Client Browser                  │
+│              React 19 + Vite (Tailwind CSS)          │
+└─────────────────┬───────────────────────────────────┘
+                  │ HTTPS REST / WebSockets (WSS)
+┌─────────────────▼───────────────────────────────────┐
+│               NestJS Gateway API Router             │
+│    JWT Auth Guards · Rate Limiter · WebSocket Hub   │
+├──────────┬──────────────┬────────────┬──────────────┤
+│  Prisma  │   BullMQ     │  Socket.IO │    AWS S3    │
+│  ORM API │  Queue Hub   │ Notifications│ (File Store)│
+│  + Neon  │  + Upstash   │  Streamer  │              │
+│ Postgres │    Redis     │            │              │
+└──────────┴──────────────┴────────────┴──────────────┘`}
                   </div>
                 </div>
               </div>
