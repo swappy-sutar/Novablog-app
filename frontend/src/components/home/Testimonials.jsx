@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Star, X } from 'lucide-react';
+import { Star, X, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '../ui/GlassCard';
 import Button from '../ui/Button';
@@ -211,6 +211,9 @@ const Testimonials = () => {
                 <GlassCard className="p-4 flex flex-col justify-between border border-border-subtle bg-white dark:bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-full bg-brand-cyan/10 text-brand-cyan flex items-center justify-center border border-border-subtle shadow-sm shrink-0">
+                        <User className="w-4 h-4" />
+                      </div>
                       <div className="min-w-0">
                         <h4 className="text-xs font-bold text-text-input truncate">
                           {card.name}
@@ -250,6 +253,9 @@ const Testimonials = () => {
                 <GlassCard className="p-4 flex flex-col justify-between border border-border-subtle bg-white dark:bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-full bg-brand-purple/10 text-brand-purple flex items-center justify-center border border-border-subtle shadow-md shrink-0">
+                        <User className="w-4 h-4" />
+                      </div>
                       <div className="min-w-0">
                         <h4 className="text-xs font-bold text-text-input truncate">
                           {card.name}
