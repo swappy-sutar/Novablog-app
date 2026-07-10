@@ -168,7 +168,7 @@ const SignInPage = () => {
   };
 
   const inputClass = "w-full bg-white/[0.04] border border-border-subtle rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all text-sm";
-  const labelClass = "block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2";
+  const labelClass = "block text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2";
 
   return (
     <>
@@ -187,7 +187,7 @@ const SignInPage = () => {
               <img src="/svg/novablog-lockup-light.svg" alt="NovaBlog" className="h-11 logo-lockup-light" />
             </Link>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1.5 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-semibold text-white mb-1.5 tracking-tight">
             {is2FARequired ? "Two-Factor Auth" : "Welcome back"}
           </h1>
           <p className="text-gray-400 text-xs sm:text-sm px-4">
@@ -250,7 +250,7 @@ const SignInPage = () => {
 
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Password</label>
+                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Password</label>
                 <Link to="/forgot-password" className="text-xs text-brand-cyan hover:underline">Forgot password?</Link>
               </div>
               <div className="relative flex items-center">

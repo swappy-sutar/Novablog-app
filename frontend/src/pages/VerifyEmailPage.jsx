@@ -111,7 +111,7 @@ const VerifyEmailPage = () => {
                 <div className="absolute inset-0 rounded-full bg-brand-purple/20 blur-xl animate-pulse" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-white mb-2">Verifying your email</h2>
+                <h2 className="text-xl font-semibold text-white mb-2">Verifying your email</h2>
                 <p className="text-gray-400 text-sm">
                   We are validating your account with the database. Please hold on.
                 </p>
@@ -136,7 +136,7 @@ const VerifyEmailPage = () => {
               </div>
               
               <div>
-                <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Email Verified!</h2>
+                <h2 className="text-2xl font-semibold text-white mb-2 tracking-tight">Email Verified!</h2>
                 <p className="text-gray-300 text-sm">
                   Your email address has been successfully verified. Your account is now fully active.
                 </p>
@@ -169,7 +169,7 @@ const VerifyEmailPage = () => {
               </div>
 
               <div>
-                <h2 className="text-xl font-bold text-white mb-2">Verification Failed</h2>
+                <h2 className="text-xl font-semibold text-white mb-2">Verification Failed</h2>
                 <p className="text-red-400/90 text-xs bg-red-950/20 border border-red-900/30 rounded-lg p-2.5 mb-4">
                   {errorMessage}
                 </p>

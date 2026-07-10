@@ -362,28 +362,39 @@ const ExplorePage = () => {
                     <ExploreFeaturedSkeleton className="lg:col-span-2" />
                   ) : featuredBlog ? (
                     <Link to={`/post/${featuredBlog.id}`} className={`${popularBlogs && popularBlogs.length > 0 ? "lg:col-span-2" : "lg:col-span-3"} block group relative`}>
-                      <GlassCard className="relative h-[480px] overflow-hidden flex flex-col justify-end p-8 border border-white/5 bg-gradient-to-t from-bg-base via-bg-base/40 to-transparent">
-                        <img
-                          src={featuredBlog.thumbnail || "https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2664&auto=format&fit=crop"}
-                          alt={featuredBlog.title}
-                          className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-[1.02] transition-transform duration-700"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-bg-base/90 via-bg-base/30 to-transparent" />
-
-                        <div className="relative space-y-4">
-                          <span className="inline-block px-3 py-1 bg-brand-purple/20 text-brand-purple text-[10px] font-bold tracking-widest uppercase rounded-md border border-brand-purple/30 backdrop-blur-md">
-                            {featuredBlog.category?.name || "Featured"}
-                          </span>
-                          <h3 className="text-3xl font-extrabold text-white leading-tight tracking-tight group-hover:text-brand-purple transition-colors line-clamp-2">
-                            {featuredBlog.title}
-                          </h3>
-                          <p className="text-gray-300 text-sm max-w-xl leading-relaxed line-clamp-2">
-                            {stripHtml(featuredBlog.excerpt) || (featuredBlog.content ? stripHtml(featuredBlog.content).slice(0, 180) + "..." : "No summary available.")}
-                          </p>
-                          <div className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-white/[0.06] hover:bg-brand-purple hover:text-white border border-white/5 transition-all w-fit cursor-pointer">
-                            <BookOpen className="w-4 h-4" />
-                            Read Article
+                      <GlassCard className="relative min-h-[480px] md:h-[480px] overflow-hidden flex flex-col-reverse md:flex-row border border-white/5 hover:bg-bg-card-hover/20 transition-colors p-0">
+                        {/* Left Column (Text & Details) */}
+                        <div className="flex-1 flex flex-col justify-between p-6 sm:p-8 relative z-10 md:max-w-[55%]">
+                          <div className="space-y-4">
+                            <span className="inline-block px-3 py-1 bg-brand-purple/20 text-brand-purple text-[10px] font-bold tracking-widest uppercase rounded-md border border-brand-purple/30 backdrop-blur-md">
+                              {featuredBlog.category?.name || "Featured"}
+                            </span>
+                            <h3 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight group-hover:text-brand-purple transition-colors line-clamp-3">
+                              {featuredBlog.title}
+                            </h3>
+                            <p className="text-gray-300 text-sm leading-relaxed line-clamp-3">
+                              {stripHtml(featuredBlog.excerpt) || (featuredBlog.content ? stripHtml(featuredBlog.content).slice(0, 180) + "..." : "No summary available.")}
+                            </p>
                           </div>
+                          
+                          <div className="mt-6">
+                            <div className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-white/[0.06] group-hover:bg-brand-purple group-hover:text-white border border-white/5 transition-all w-fit cursor-pointer">
+                              <BookOpen className="w-4 h-4" />
+                              Read Article
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Right Column (Clean Cover Image) */}
+                        <div className="relative w-full md:w-[45%] h-48 md:h-full overflow-hidden flex-shrink-0">
+                          <img
+                            src={featuredBlog.thumbnail || "https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2664&auto=format&fit=crop"}
+                            alt={featuredBlog.title}
+                            className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
+                          />
+                          {/* Soft edge blending overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-bg-base/20 to-transparent hidden md:block" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-bg-base/20 to-transparent md:hidden" />
                         </div>
                       </GlassCard>
                     </Link>

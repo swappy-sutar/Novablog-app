@@ -102,7 +102,7 @@ const SignUpPage = () => {
   };
 
   const inputClass = "w-full bg-white/[0.04] border border-border-subtle rounded-xl px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all text-sm";
-  const labelClass = "block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5";
+  const labelClass = "block text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1.5";
 
   return (
     <>
@@ -124,7 +124,7 @@ const SignUpPage = () => {
               </div>
               
               <div>
-                <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Check your email</h2>
+                <h2 className="text-2xl font-semibold text-white mb-2 tracking-tight">Check your email</h2>
                 <p className="text-gray-300 text-sm leading-relaxed mb-4">
                   We've sent a verification link to <span className="text-brand-cyan font-medium">{formData.email}</span>. Please click the link to activate your account.
                 </p>
@@ -168,7 +168,7 @@ const SignUpPage = () => {
                   <img src="/svg/novablog-lockup-light.svg" alt="NovaBlog" className="h-11 logo-lockup-light" />
                 </Link>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1.5 tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-semibold text-white mb-1.5 tracking-tight">
                 Create an account
               </h1>
               <p className="text-gray-400 text-xs sm:text-sm px-2">

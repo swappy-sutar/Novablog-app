@@ -70,7 +70,7 @@ const ResetPasswordPage = () => {
   };
 
   const inputClass = "w-full bg-white/[0.04] border border-border-subtle rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all text-sm";
-  const labelClass = "block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2";
+  const labelClass = "block text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2";
 
   return (
     <>
@@ -95,7 +95,7 @@ const ResetPasswordPage = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
-              <h1 className="text-xl font-bold text-white mb-2 tracking-tight">Invalid Reset Link</h1>
+              <h1 className="text-xl font-semibold text-white mb-2 tracking-tight">Invalid Reset Link</h1>
               <p className="text-gray-400 text-xs sm:text-sm mb-6 leading-relaxed">
                 This reset link is missing a valid signature token. Please check the email you received or request a new reset link.
               </p>
@@ -108,7 +108,7 @@ const ResetPasswordPage = () => {
           ) : (
             <div className="space-y-5">
               <div className="text-center mb-6">
-                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1.5 tracking-tight">New password</h1>
+                <h1 className="text-2xl sm:text-3xl font-semibold text-white mb-1.5 tracking-tight">New password</h1>
                 <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
                   Provide a new, strong password to secure your developer space.
                 </p>

@@ -32,7 +32,7 @@ const ForgotPasswordPage = () => {
   };
 
   const inputClass = "w-full bg-white/[0.04] border border-border-subtle rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/20 transition-all text-sm";
-  const labelClass = "block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2";
+  const labelClass = "block text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2";
 
   return (
     <>
@@ -57,7 +57,7 @@ const ForgotPasswordPage = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 19v-8.93a2 2 0 01.89-1.664l8-4.8a2 2 0 012.22 0l8 4.8A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-2.25-1.5a2 2 0 00-2.22 0l-2.25 1.5" />
                 </svg>
               </div>
-              <h1 className="text-xl font-bold text-white mb-2 tracking-tight">Check your email</h1>
+              <h1 className="text-xl font-semibold text-white mb-2 tracking-tight">Check your email</h1>
               <p className="text-gray-400 text-xs sm:text-sm mb-6 leading-relaxed">
                 We've sent a password reset link to <span className="text-white font-medium">{email}</span>. Click the link in the email to configure your new password.
               </p>
@@ -70,7 +70,7 @@ const ForgotPasswordPage = () => {
           ) : (
             <div className="space-y-5">
               <div className="text-center mb-6">
-                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1.5 tracking-tight">Reset password</h1>
+                <h1 className="text-2xl sm:text-3xl font-semibold text-white mb-1.5 tracking-tight">Reset password</h1>
                 <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
                   Enter your registered email address and we'll send you instructions to reset your password.
                 </p>
