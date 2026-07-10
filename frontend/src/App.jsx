@@ -57,10 +57,42 @@ function App() {
         position="top-center"
         toastOptions={{
           style: {
-            background: "#1e1e2d",
+            background: "#0c0c1e",
             color: "#fff",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+            fontSize: "11px",
+            fontWeight: "600",
+            fontFamily: "'Inter', sans-serif",
+            borderRadius: "10px",
+            padding: "8px 14px",
+            boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
           },
+          success: {
+            style: {
+              border: "1px solid rgba(16, 185, 129, 0.25)",
+              background: "rgba(10, 10, 22, 0.95)",
+            },
+            iconTheme: {
+              primary: "#10b981",
+              secondary: "#0c0c1e",
+            }
+          },
+          error: {
+            style: {
+              border: "1px solid rgba(239, 68, 68, 0.25)",
+              background: "rgba(10, 10, 22, 0.95)",
+            },
+            iconTheme: {
+              primary: "#ef4444",
+              secondary: "#0c0c1e",
+            }
+          },
+          blank: {
+            style: {
+              border: "1px solid rgba(139, 92, 246, 0.25)",
+              background: "rgba(10, 10, 22, 0.95)",
+            }
+          }
         }}
       />
       <Routes>
