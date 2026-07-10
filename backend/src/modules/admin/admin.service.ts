@@ -455,7 +455,7 @@ export class AdminService {
 
     // 5. Monthly Traffic Distribution (last 9 months)
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const monthlyTraffic = [];
+    const monthlyTraffic: { m: string; views: number }[] = [];
     const now = new Date();
     
     for (let i = 8; i >= 0; i--) {
