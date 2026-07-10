@@ -72,4 +72,73 @@ export class EmailService {
       },
     );
   }
+
+  async sendNewFollowerEmail(data: {
+    email: string;
+    firstname: string;
+    followerName: string;
+    followerUsername: string;
+    followerBio: string;
+    followerInitial: string;
+    profileLink: string;
+  }) {
+    await this.emailQueue.add(
+      'new-follower',
+      data,
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 3000,
+        },
+        removeOnComplete: true,
+      },
+    );
+  }
+
+  async sendNewCommentEmail(data: {
+    email: string;
+    firstname: string;
+    commenterName: string;
+    blogTitle: string;
+    commentContent: string;
+    blogLink: string;
+  }) {
+    await this.emailQueue.add(
+      'new-comment',
+      data,
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 3000,
+        },
+        removeOnComplete: true,
+      },
+    );
+  }
+
+  async sendWeeklyNewsletterEmail(data: {
+    email: string;
+    firstname: string;
+    articles: {
+      title: string;
+      excerpt: string;
+      link: string;
+      category: string;
+    }[];
+  }) {
+    await this.emailQueue.add(
+      'weekly-newsletter',
+      data,
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 3000,
+        },
+        removeOnComplete: true,
+      },
+    );
+  }
 }

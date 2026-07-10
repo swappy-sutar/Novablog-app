@@ -37,6 +37,40 @@ export class EmailProcessor extends WorkerHost {
         );
 
         break;
+
+      case 'new-follower':
+        await this.mailProvider.sendNewFollowerEmail(
+          job.data.email,
+          job.data.firstname,
+          job.data.followerName,
+          job.data.followerUsername,
+          job.data.followerBio,
+          job.data.followerInitial,
+          job.data.profileLink,
+        );
+
+        break;
+
+      case 'new-comment':
+        await this.mailProvider.sendNewCommentEmail(
+          job.data.email,
+          job.data.firstname,
+          job.data.commenterName,
+          job.data.blogTitle,
+          job.data.commentContent,
+          job.data.blogLink,
+        );
+
+        break;
+
+      case 'weekly-newsletter':
+        await this.mailProvider.sendWeeklyNewsletterEmail(
+          job.data.email,
+          job.data.firstname,
+          job.data.articles,
+        );
+
+        break;
     }
   }
 }

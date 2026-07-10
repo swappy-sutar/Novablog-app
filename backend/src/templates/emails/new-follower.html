@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>You have a new follower on NovaBlog!</title>
+</head>
+<body style="
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: #05050f;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    ">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #05050f;">
+        <tr>
+            <td align="center" style="padding: 24px 10px;">
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 580px; background-color: #0b0c1e; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
+                    <!-- Header -->
+                    <tr>
+                        <td align="center" style="padding: 32px 24px 16px 24px;">
+                            <img src="https://novablog.space/svg/novablog-lockup-dark.png" alt="NovaBlog Logo" width="160" style="display: block; border: none;" />
+                        </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 0 32px 20px 32px;">
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td align="center">
+                                        <h1 style="color: #ffffff; font-size: 24px; font-weight: 700; margin: 0 0 16px 0; font-family: 'Inter', system-ui, sans-serif; letter-spacing: -0.03em;">New Follower Alert! 🎉</h1>
+                                        <p style="color: #cbd5e1; font-size: 15px; line-height: 24px; margin: 0 0 24px 0; text-align: center;">
+                                            Hello <strong>{{firstname}}</strong>,<br />
+                                            Great news! Someone just started following your developer profile on NovaBlog.
+                                        </p>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td style="background-color: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
+                                        <div style="display: inline-block; width: 64px; height: 64px; border-radius: 50%; bg-color: rgba(139, 92, 246, 0.15); border: 2px solid #8b5cf6; line-height: 64px; font-size: 28px; color: #ffffff; font-family: 'Inter', system-ui, sans-serif; font-weight: bold; margin-bottom: 12px; background: rgba(139, 92, 246, 0.15);">
+                                            {{followerInitial}}
+                                        </div>
+                                        <h2 style="color: #ffffff; font-size: 18px; font-weight: 700; margin: 0 0 4px 0; font-family: 'Inter', system-ui, sans-serif;">{{followerName}}</h2>
+                                        <p style="color: #94a3b8; font-size: 13px; margin: 0 0 16px 0; font-family: 'Inter', system-ui, sans-serif;">@{{followerUsername}}</p>
+                                        <p style="color: #cbd5e1; font-size: 14px; line-height: 20px; margin: 0; font-style: italic;">
+                                            "{{followerBio}}"
+                                        </p>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Button -->
+                                <tr>
+                                    <td align="center" style="padding: 10px 0 20px 0;">
+                                        <a href="{{profileLink}}" style="
+                                          display: inline-block;
+                                          background: linear-gradient(135deg, #06b6d4, #0891b2);
+                                          background-color: #06b6d4;
+                                          color: #ffffff;
+                                          font-size: 14px;
+                                          font-weight: 600;
+                                          text-decoration: none;
+                                          padding: 14px 32px;
+                                          border-radius: 12px;
+                                          box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+                                          font-family: 'Inter', system-ui, sans-serif;
+                                        ">
+                                            View Follower Profile
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- Divider -->
+                    <tr>
+                        <td style="padding: 0 32px;">
+                            <div style="border-top: 1px solid rgba(255, 255, 255, 0.08); height: 1px; width: 100%;"></div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 24px 32px 32px 32px; text-align: center;">
+                            <p style="color: #64748b; font-size: 12px; line-height: 18px; margin: 0 0 8px 0;">
+                                &copy; 2026 NovaBlog. All rights reserved.
+                            </p>
+                            <p style="color: #64748b; font-size: 11px; line-height: 18px; margin: 0;">
+                                You received this email because follow notifications are active. <a href="https://novablog.space/settings?tab=appearance" style="color: #8b5cf6; text-decoration: none;">Manage notifications</a>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
