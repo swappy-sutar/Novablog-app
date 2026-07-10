@@ -83,8 +83,8 @@ export class AdminController {
   }
 
   @Get('dashboard')
-  async getDashboardData() {
-    return this.adminService.getDashboardData();
+  async getDashboardData(@Query('range') range?: string) {
+    return this.adminService.getDashboardData(range);
   }
 }
 

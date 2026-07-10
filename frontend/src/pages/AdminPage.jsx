@@ -205,9 +205,9 @@ const AdminPage = () => {
     }
   };
 
-  const loadDashboardData = async () => {
+  const loadDashboardData = async (range = timeRange) => {
     try {
-      const res = await adminAPI.getDashboardData();
+      const res = await adminAPI.getDashboardData(range);
       if (res.success && res.data) {
         setDashboardData(res.data);
       }
@@ -219,7 +219,7 @@ const AdminPage = () => {
   useEffect(() => {
     loadAllBlogs();
     loadAnalytics();
-    loadDashboardData();
+    loadDashboardData("real-time");
     
     // Sync current user from local storage
     const storedUser = localStorage.getItem("user");
@@ -253,10 +253,10 @@ const AdminPage = () => {
         loadAnalytics();
       }
       if (activeTab === "dashboard") {
-        loadDashboardData();
+        loadDashboardData(timeRange);
       }
     }
-  }, [activeTab]);
+  }, [activeTab, timeRange]);
 
   // Live system health and logs streaming via WebSockets
   useEffect(() => {
