@@ -1415,10 +1415,10 @@ const AdminPage = () => {
                   
                   <div className="flex flex-col gap-4">
                     {(systemHealth?.services || [
-                      { name: "NestJS core API", endpoint: "localhost:3000/api/v1", status: "Operational", color: "bg-emerald-500" },
-                      { name: "PostgreSQL Instance", endpoint: "db:5432/blog_app", status: "Operational", color: "bg-emerald-500" },
-                      { name: "Redis Core Cache", endpoint: "redis:6379", status: "Operational", color: "bg-emerald-500" },
-                      { name: "BullMQ Email Engine", endpoint: "background:queue", status: "Operational", color: "bg-emerald-500" },
+                      { name: "NestJS core API", endpoint: "novablog-backend-vrgz.onrender.com/api/v1", status: "Operational", color: "bg-emerald-500" },
+                      { name: "PostgreSQL Instance", endpoint: "ep-floral-king-apz3z71u-pooler.c-7.us-east-1.aws.neon.tech/neondb", status: "Operational", color: "bg-emerald-500" },
+                      { name: "Redis Core Cache", endpoint: "complete-vervet-157690.upstash.io:6379", status: "Operational", color: "bg-emerald-500" },
+                      { name: "BullMQ Email Engine", endpoint: "complete-vervet-157690.upstash.io:6379/queue", status: "Operational", color: "bg-emerald-500" },
                     ]).map((svc, idx) => (
                       <div key={idx} className="flex justify-between items-center border-b border-border-subtle pb-3 last:border-b-0 last:pb-0">
                         <div className="space-y-0.5">
