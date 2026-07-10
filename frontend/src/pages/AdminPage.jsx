@@ -101,6 +101,8 @@ const AdminPage = () => {
   const [systemHealth, setSystemHealth] = useState(null);
   const [analyticsData, setAnalyticsData] = useState(null);
   const [dashboardData, setDashboardData] = useState(null);
+  const [dashboardLoading, setDashboardLoading] = useState(true);
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
 
   const handleConsoleScroll = (e) => {
     const container = e.currentTarget;
@@ -195,6 +197,7 @@ const AdminPage = () => {
   };
 
   const loadAnalytics = async () => {
+    setAnalyticsLoading(true);
     try {
       const res = await adminAPI.getAnalytics();
       if (res.success && res.data) {
@@ -202,10 +205,13 @@ const AdminPage = () => {
       }
     } catch (e) {
       console.error("Failed to load performance analytics", e);
+    } finally {
+      setAnalyticsLoading(false);
     }
   };
 
   const loadDashboardData = async (range = timeRange) => {
+    setDashboardLoading(true);
     try {
       const res = await adminAPI.getDashboardData(range);
       if (res.success && res.data) {
@@ -213,6 +219,8 @@ const AdminPage = () => {
       }
     } catch (e) {
       console.error("Failed to load dashboard data", e);
+    } finally {
+      setDashboardLoading(false);
     }
   };
 
@@ -851,7 +859,11 @@ const AdminPage = () => {
                           <HardDrive className="w-5 h-5" />
                         </div>
                         <div>
-                          <h4 className="text-xs font-bold text-white">{dashboardData ? dashboardData.storageUtilized : "9.4k GB"}</h4>
+                          {dashboardLoading ? (
+                            <div className="h-4 w-16 bg-white/10 rounded animate-pulse mt-0.5" />
+                          ) : (
+                            <h4 className="text-xs font-bold text-white">{dashboardData ? dashboardData.storageUtilized : "9.4k GB"}</h4>
+                          )}
                           <p className="text-[10px] text-gray-500 font-semibold mt-0.5">Cloud Storage Utilized</p>
                         </div>
                       </div>
@@ -865,7 +877,11 @@ const AdminPage = () => {
                           <Shield className="w-5 h-5" />
                         </div>
                         <div>
-                          <h4 className="text-xs font-bold text-white">{dashboardData ? dashboardData.threatsBlocked : "1.2M"}</h4>
+                          {dashboardLoading ? (
+                            <div className="h-4 w-16 bg-white/10 rounded animate-pulse mt-0.5" />
+                          ) : (
+                            <h4 className="text-xs font-bold text-white">{dashboardData ? dashboardData.threatsBlocked : "1.2M"}</h4>
+                          )}
                           <p className="text-[10px] text-gray-500 font-semibold mt-0.5">Threats Blocked (24h)</p>
                         </div>
                       </div>
@@ -892,7 +908,11 @@ const AdminPage = () => {
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500 font-bold tracking-wide uppercase">Writer Growth</p>
-                      <h4 className="text-2xl font-extrabold text-white mt-1">{dashboardData ? dashboardData.activeAuthorsCount : "24,812"}</h4>
+                      {dashboardLoading ? (
+                        <div className="h-6 w-20 bg-white/10 rounded animate-pulse mt-1" />
+                      ) : (
+                        <h4 className="text-2xl font-extrabold text-white mt-1">{dashboardData ? dashboardData.activeAuthorsCount : "24,812"}</h4>
+                      )}
                       <p className="text-[10px] text-gray-400 font-semibold mt-1">Active Authors on Platform</p>
                     </div>
                     
@@ -915,7 +935,11 @@ const AdminPage = () => {
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500 font-bold tracking-wide uppercase">Revenue Metrics</p>
-                      <h4 className="text-2xl font-extrabold text-white mt-1">{dashboardData ? dashboardData.earnings : "$184.2k"}</h4>
+                      {dashboardLoading ? (
+                        <div className="h-6 w-24 bg-white/10 rounded animate-pulse mt-1" />
+                      ) : (
+                        <h4 className="text-2xl font-extrabold text-white mt-1">{dashboardData ? dashboardData.earnings : "$184.2k"}</h4>
+                      )}
                       <p className="text-[10px] text-gray-400 font-semibold mt-1">Current Month Earnings</p>
                     </div>
 
@@ -946,7 +970,11 @@ const AdminPage = () => {
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500 font-bold tracking-wide uppercase">Server Latency</p>
-                      <h4 className="text-2xl font-extrabold text-white mt-1">{dashboardData ? dashboardData.latency : "18ms"}</h4>
+                      {dashboardLoading ? (
+                        <div className="h-6 w-20 bg-white/10 rounded animate-pulse mt-1" />
+                      ) : (
+                        <h4 className="text-2xl font-extrabold text-white mt-1">{dashboardData ? dashboardData.latency : "18ms"}</h4>
+                      )}
                       <p className="text-[10px] text-gray-400 font-semibold mt-1">Global Average Ping</p>
                     </div>
 
@@ -978,24 +1006,36 @@ const AdminPage = () => {
 
                     {/* Activity Feed list */}
                     <div className="flex flex-col gap-4">
-                      {((dashboardData?.activities) || [
-                        { id: "mod-1", name: "Elena Vance", initials: "EV", action: 'Published "The Future of Web3"', tag: "TECH", time: "2m ago", type: "BLOG" },
-                        { id: "mod-2", name: "Marcus Thorne", initials: "MT", action: "Updated system cluster configuration for Node 07", tag: "SYSTEM_ROOT", time: "15m ago", type: "COMMENT" },
-                        { id: "mod-3", name: "Sarah Connor", initials: "SC", action: "Flagged 3 posts for moderation review in Community Forum", tag: "ACTION REQUIRED", time: "42m ago", type: "MODERATION" },
-                      ]).map((act) => {
-                        let iconColor = "bg-brand-purple/10 border-brand-purple/20 text-brand-purple";
-                        let tagColor = "border-white/20 text-white bg-white/5";
-                        if (act.type === "COMMENT") {
-                          iconColor = "bg-brand-cyan/10 border-brand-cyan/20 text-brand-cyan";
-                          tagColor = "border-white/10 text-gray-400 bg-white/[0.02]";
-                        } else if (act.type === "MODERATION" || act.tag === "ACTION REQUIRED") {
-                          iconColor = "bg-red-500/10 border-red-500/20 text-red-500";
-                          tagColor = "border-red-500/20 text-red-400 bg-red-500/5 uppercase tracking-wide";
-                        } else if (act.type === "BLOG") {
-                          iconColor = "bg-brand-purple/10 border-brand-purple/20 text-brand-purple";
-                          tagColor = "border-[#06b6d4]/20 text-brand-cyan bg-[#06b6d4]/5";
-                        }
-                        return (
+                      {dashboardLoading ? (
+                        [1, 2, 3].map((n) => (
+                          <div key={n} className="flex items-start gap-3.5 animate-pulse">
+                            <div className="w-8 h-8 rounded-full bg-white/10 shrink-0" />
+                            <div className="space-y-2 flex-1">
+                              <div className="h-3.5 bg-white/10 rounded w-[45%]" />
+                              <div className="h-3 bg-white/5 rounded w-[85%]" />
+                              <div className="h-2.5 bg-white/5 rounded w-[20%] mt-1" />
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        ((dashboardData?.activities) || [
+                          { id: "mod-1", name: "Elena Vance", initials: "EV", action: 'Published "The Future of Web3"', tag: "TECH", time: "2m ago", type: "BLOG" },
+                          { id: "mod-2", name: "Marcus Thorne", initials: "MT", action: "Updated system cluster configuration for Node 07", tag: "SYSTEM_ROOT", time: "15m ago", type: "COMMENT" },
+                          { id: "mod-3", name: "Sarah Connor", initials: "SC", action: "Flagged 3 posts for moderation review in Community Forum", tag: "ACTION REQUIRED", time: "42m ago", type: "MODERATION" },
+                        ]).map((act) => {
+                          let iconColor = "bg-brand-purple/10 border-brand-purple/20 text-brand-purple";
+                          let tagColor = "border-white/20 text-white bg-white/5";
+                          if (act.type === "COMMENT") {
+                            iconColor = "bg-brand-cyan/10 border-brand-cyan/20 text-brand-cyan";
+                            tagColor = "border-white/10 text-gray-400 bg-white/[0.02]";
+                          } else if (act.type === "MODERATION" || act.tag === "ACTION REQUIRED") {
+                            iconColor = "bg-red-500/10 border-red-500/20 text-red-500";
+                            tagColor = "border-red-500/20 text-red-400 bg-red-500/5 uppercase tracking-wide";
+                          } else if (act.type === "BLOG") {
+                            iconColor = "bg-brand-purple/10 border-brand-purple/20 text-brand-purple";
+                            tagColor = "border-[#06b6d4]/20 text-brand-cyan bg-[#06b6d4]/5";
+                          }
+                          return (
                           <div key={act.id} className="flex items-start gap-3.5 group animate-fadeIn">
                             <div className={`w-8 h-8 rounded-full border flex items-center justify-center font-bold text-[10px] group-hover:scale-105 transition-transform shrink-0 ${iconColor}`}>
                               {act.initials}
