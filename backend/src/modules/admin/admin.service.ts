@@ -284,6 +284,7 @@ export class AdminService {
       const latency = Math.round(end - start) || 1;
       return successResponse(`${service} pinged successfully`, { latency });
     } catch (e) {
+      console.error(`Error pinging service ${service}:`, e);
       throw new BadRequestException(`Failed to ping service: ${service}`);
     }
   }
