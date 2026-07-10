@@ -7,7 +7,7 @@ import Button from '../components/ui/Button';
 import Loader from '../components/ui/Loader';
 import { ProfileSkeleton } from '../components/ui/Skeleton';
 import { authAPI } from '../lib/api';
-import { Sprout, Flame, FileText, Crown, Award, Pencil } from 'lucide-react';
+import { Sprout, Flame, FileText, Crown, Award, Pencil, CheckCircle2 } from 'lucide-react';
 
 const HEAT_WEEKS = 52;
 const HEAT_DAYS = 7;
