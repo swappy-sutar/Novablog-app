@@ -266,6 +266,15 @@ const TechProgressionMap = () => {
         {LEVELS_DATA.map((lvl, index) => {
           const isHovered = hoveredLevel === lvl.id;
           const isExpanded = expandedLevel === lvl.id;
+
+          const mobileTooltipAlign = index % 2 === 0 ? 'left-0 translate-x-0' : 'right-0 left-auto translate-x-0';
+          const mobilePointerAlign = index % 2 === 0 ? 'left-8 -translate-x-1/2' : 'right-8 translate-x-1/2';
+
+          const smTooltipAlign = lvl.tooltipAlign.split(' ').map(cls => `sm:${cls}`).join(' ');
+          const smPointerAlign = lvl.pointerAlign.split(' ').map(cls => `sm:${cls}`).join(' ');
+
+          const showTooltip = isHovered || isExpanded;
+
           return (
             <div 
               key={lvl.level} 
@@ -283,15 +292,15 @@ const TechProgressionMap = () => {
                 }}
               />
  
-              {/* CINEMATIC TOOLTIP POPOVER (Hidden on Mobile, Displayed on Desktop hover) */}
+              {/* CINEMATIC TOOLTIP POPOVER (Displayed on Desktop hover and Mobile card tap) */}
               <AnimatePresence>
-                {isHovered && (
+                {showTooltip && (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9, y: 10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
                     transition={{ duration: 0.2 }}
-                    className={`hidden sm:block absolute bottom-full mb-5 w-64 p-4 rounded-2xl bg-bg-dropdown border shadow-2xl backdrop-blur-xl pointer-events-none z-50 text-left font-sans ${lvl.tooltipAlign}`}
+                    className={`absolute bottom-full mb-5 w-60 sm:w-64 p-4 rounded-2xl bg-bg-dropdown border shadow-2xl backdrop-blur-xl pointer-events-none z-50 text-left font-sans ${mobileTooltipAlign} ${smTooltipAlign}`}
                     style={{ 
                       borderColor: `${lvl.gradientFrom}50`, 
                       boxShadow: `0 0 25px ${lvl.gradientFrom}20, 0 10px 30px rgba(0,0,0,0.15)`
@@ -315,7 +324,7 @@ const TechProgressionMap = () => {
  
                     {/* Glowing rotated-square tooltip pointer that matches the glowing outline */}
                     <div 
-                      className={`absolute top-full -mt-1.5 w-2.5 h-2.5 rotate-45 border-r border-b bg-bg-dropdown pointer-events-none ${lvl.pointerAlign}`}
+                      className={`absolute top-full -mt-1.5 w-2.5 h-2.5 rotate-45 border-r border-b bg-bg-dropdown pointer-events-none ${mobilePointerAlign} ${smPointerAlign}`}
                       style={{ 
                         borderColor: `transparent ${lvl.gradientFrom}50 ${lvl.gradientFrom}50 transparent`
                       }}
@@ -370,26 +379,6 @@ const TechProgressionMap = () => {
                   <p className={`text-[10px] leading-relaxed font-sans font-bold px-1 flex-grow mb-6.5 ${lvl.readsColor} cinematic-level-reads`}>
                     {lvl.summary}
                   </p>
-
-                  {/* MOBILE EXPANDABLE DETAILS: Slide open inline details when tapped on touch screen */}
-                  <div className="w-full sm:hidden overflow-hidden block">
-                    <AnimatePresence initial={false}>
-                      {isExpanded && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0, marginBottom: 0 }}
-                          animate={{ height: 'auto', opacity: 1, marginBottom: 18 }}
-                          exit={{ height: 0, opacity: 0, marginBottom: 0 }}
-                          transition={{ duration: 0.3, ease: 'easeInOut' }}
-                          className="text-left pt-3 border-t border-white/10 w-full"
-                        >
-                          <span className={`text-[7.5px] font-bold uppercase tracking-wider block mb-1 ${lvl.textColor} cinematic-level-title`}>How to Unlock</span>
-                          <p className={`text-[10px] leading-relaxed font-sans font-medium ${lvl.readsColor} cinematic-level-reads`}>
-                            {lvl.description}
-                          </p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
 
                   {/* Step Level Identifier Badge (Vibrant theme-colored glass button) */}
                   <div 
