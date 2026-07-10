@@ -13,7 +13,7 @@ const PostCard = ({ post, variant = "grid" }) => {
         <img
           src={thumbnailUrl || "https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=600&auto=format&fit=crop"}
           alt=""
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-contain bg-black/20 transition-transform duration-500 group-hover:scale-105"
           style={{
             opacity: "var(--card-thumbnail-opacity, 0.22)",
             filter: "var(--card-thumbnail-filter, grayscale(10%))",
