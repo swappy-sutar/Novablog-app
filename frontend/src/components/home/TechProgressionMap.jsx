@@ -125,7 +125,8 @@ const TechProgressionMap = () => {
 
   const handleCardClick = (id) => {
     if (window.innerWidth < 640) {
-      setExpandedLevel(expandedLevel === id ? null : id);
+      // Accordion: tapping a different card closes the previous one first
+      setExpandedLevel((prev) => (prev === id ? null : id));
     }
   };
 
@@ -261,7 +262,7 @@ const TechProgressionMap = () => {
 
 
       {/* CINEMATIC CHEVRON GRID */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 items-stretch select-none xl:pt-8 relative z-10">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-6 items-start sm:items-stretch select-none xl:pt-8 relative z-10">
         {LEVELS_DATA.map((lvl, index) => {
           const isHovered = hoveredLevel === lvl.id;
           const isExpanded = expandedLevel === lvl.id;
