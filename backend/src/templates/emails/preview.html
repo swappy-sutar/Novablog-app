@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>NovaBlog Email Template Preview</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: #09090f; color: #e2e8f0; }
+    .header { display: flex; align-items: center; justify-content: space-between; padding: 20px 32px; background: #0b0c1e; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .header h1 { font-size: 18px; font-weight: 700; color: #fff; }
+    .header span { font-size: 12px; color: #64748b; }
+    .tabs { display: flex; gap: 0; padding: 24px 32px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .tab { padding: 10px 22px; cursor: pointer; font-size: 13px; font-weight: 600; color: #64748b; border-bottom: 2px solid transparent; transition: all 0.2s; }
+    .tab.active { color: #8b5cf6; border-color: #8b5cf6; }
+    .tab:hover { color: #e2e8f0; }
+    .preview-area { display: none; padding: 32px; }
+    .preview-area.active { display: block; }
+    iframe { width: 100%; min-height: 700px; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; background: #fff; }
+    .badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+    .badge-follow { background: rgba(6, 182, 212, 0.15); color: #06b6d4; border: 1px solid rgba(6,182,212,0.3); }
+    .badge-comment { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.3); }
+    .badge-newsletter { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+    .tab-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+    .tab-title { font-size: 15px; font-weight: 700; color: #fff; }
+    .tab-desc { font-size: 12px; color: #64748b; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📧 NovaBlog Email Template Preview</h1>
+    <span>Local test environment · Not connected to Resend</span>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('follower', this)">New Follower</div>
+    <div class="tab" onclick="switchTab('comment', this)">Comment &amp; Mention</div>
+    <div class="tab" onclick="switchTab('newsletter', this)">Weekly Newsletter</div>
+  </div>
+
+  <!-- New Follower -->
+  <div class="preview-area active" id="preview-follower">
+    <div class="tab-header">
+      <span class="badge badge-follow">FOLLOW</span>
+      <div>
+        <div class="tab-title">New Follower Notification</div>
+        <div class="tab-desc">Sent when someone follows a user's profile</div>
+      </div>
+    </div>
+    <iframe srcdoc="" id="frame-follower" title="New Follower Email"></iframe>
+  </div>
+
+  <!-- Comment & Mention -->
+  <div class="preview-area" id="preview-comment">
+    <div class="tab-header">
+      <span class="badge badge-comment">COMMENT</span>
+      <div>
+        <div class="tab-title">Comment &amp; Mention Notification</div>
+        <div class="tab-desc">Sent when someone comments on a blog post</div>
+      </div>
+    </div>
+    <iframe srcdoc="" id="frame-comment" title="New Comment Email"></iframe>
+  </div>
+
+  <!-- Weekly Newsletter -->
+  <div class="preview-area" id="preview-newsletter">
+    <div class="tab-header">
+      <span class="badge badge-newsletter">NEWSLETTER</span>
+      <div>
+        <div class="tab-title">Weekly Newsletter Digest</div>
+        <div class="tab-desc">Sent every week to subscribed users</div>
+      </div>
+    </div>
+    <iframe srcdoc="" id="frame-newsletter" title="Weekly Newsletter Email"></iframe>
+  </div>
+
+  <script>
+    function switchTab(name, el) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.preview-area').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('preview-' + name).classList.add('active');
+    }
+
+    // Follower Email Sample Data
+    const followerHTML = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background-color:#05050f;margin:0;padding:0;">
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#05050f;">
+<tr><td align="center" style="padding:24px 10px;">
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:580px;background-color:#0b0c1e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+<tr><td align="center" style="padding:32px 24px 16px 24px;"><span style="font-size:28px;font-weight:900;color:#ffffff;font-family:'Inter',system-ui,sans-serif;letter-spacing:-0.04em;">Nova<span style="color:#8b5cf6;">Blog</span></span></td></tr>
+<tr><td style="padding:0 32px 20px 32px;">
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr><td align="center">
+<h1 style="color:#ffffff;font-size:24px;font-weight:700;margin:0 0 16px 0;letter-spacing:-0.03em;">New Follower Alert! 🎉</h1>
+<p style="color:#cbd5e1;font-size:15px;line-height:24px;margin:0 0 24px 0;text-align:center;">Hello <strong>Swapnil</strong>,<br/>Great news! Someone just started following your developer profile on NovaBlog.</p>
+</td></tr>
+<tr><td style="background-color:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:24px;text-align:center;">
+<div style="display:inline-block;width:64px;height:64px;border-radius:50%;background:rgba(139,92,246,0.15);border:2px solid #8b5cf6;line-height:64px;font-size:28px;color:#ffffff;font-weight:bold;margin-bottom:12px;">A</div>
+<h2 style="color:#ffffff;font-size:18px;font-weight:700;margin:0 0 4px 0;">Alex Rivera</h2>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 16px 0;">@arivera_dev</p>
+<p style="color:#cbd5e1;font-size:14px;line-height:20px;margin:0;font-style:italic;">"Full-stack engineer passionate about scalable architecture and developer tooling."</p>
+</td></tr>
+<tr><td align="center" style="padding:24px 0 12px 0;">
+<a href="#" style="display:inline-block;background:linear-gradient(135deg,#06b6d4,#0891b2);color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;padding:14px 32px;border-radius:12px;box-shadow:0 4px 12px rgba(6,182,212,0.3);">View Follower Profile</a>
+</td></tr>
+</table></td></tr>
+<tr><td style="padding:0 32px;"><div style="border-top:1px solid rgba(255,255,255,0.08);height:1px;width:100%;"></div></td></tr>
+<tr><td style="padding:24px 32px 32px 32px;text-align:center;">
+<p style="color:#64748b;font-size:12px;margin:0 0 8px 0;">&copy; 2026 NovaBlog. All rights reserved.</p>
+<p style="color:#64748b;font-size:11px;margin:0;">You received this email because follow notifications are active. <a href="#" style="color:#8b5cf6;text-decoration:none;">Manage notifications</a></p>
+</td></tr>
+</table></td></tr></table>
+</body></html>`;
+
+    const commentHTML = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"/></head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background-color:#05050f;margin:0;padding:0;">
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#05050f;">
+<tr><td align="center" style="padding:24px 10px;">
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:580px;background-color:#0b0c1e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+<tr><td align="center" style="padding:32px 24px 16px 24px;"><span style="font-size:28px;font-weight:900;color:#ffffff;letter-spacing:-0.04em;">Nova<span style="color:#8b5cf6;">Blog</span></span></td></tr>
+<tr><td style="padding:0 32px 20px 32px;">
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr><td align="center">
+<h1 style="color:#ffffff;font-size:24px;font-weight:700;margin:0 0 16px 0;letter-spacing:-0.03em;">New Comment Received 💬</h1>
+<p style="color:#cbd5e1;font-size:15px;line-height:24px;margin:0 0 24px 0;text-align:center;">Hello <strong>Swapnil</strong>,<br/><strong>Alex Rivera</strong> shared their perspective on your article:<br/><span style="color:#8b5cf6;font-weight:600;">"NestJS 11 Complete Guide: Build Production-Ready REST APIs"</span></p>
+</td></tr>
+<tr><td style="background-color:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;">
+<h3 style="color:#cbd5e1;font-size:13px;font-weight:700;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.05em;">Alex Rivera says:</h3>
+<p style="color:#e2e8f0;font-size:14px;line-height:22px;margin:0;font-style:italic;">"This is an incredibly comprehensive guide! The section on exception filters and guards really solidified my understanding. Already implemented the pattern in my own project."</p>
+</td></tr>
+<tr><td align="center" style="padding:24px 0 12px 0;">
+<a href="#" style="display:inline-block;background:linear-gradient(135deg,#8b5cf6,#5b2a9e);color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;padding:14px 32px;border-radius:12px;box-shadow:0 4px 12px rgba(139,92,246,0.3);">Reply to Comment</a>
+</td></tr>
+</table></td></tr>
+<tr><td style="padding:0 32px;"><div style="border-top:1px solid rgba(255,255,255,0.08);height:1px;width:100%;"></div></td></tr>
+<tr><td style="padding:24px 32px 32px 32px;text-align:center;">
+<p style="color:#64748b;font-size:12px;margin:0 0 8px 0;">&copy; 2026 NovaBlog. All rights reserved.</p>
+<p style="color:#64748b;font-size:11px;margin:0;">You received this because engagement notifications are active. <a href="#" style="color:#8b5cf6;text-decoration:none;">Manage notifications</a></p>
+</td></tr></table></td></tr></table>
+</body></html>`;
+
+    const newsletterHTML = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"/></head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background-color:#05050f;margin:0;padding:0;">
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#05050f;">
+<tr><td align="center" style="padding:24px 10px;">
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:580px;background-color:#0b0c1e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+<tr><td align="center" style="padding:32px 24px 16px 24px;"><span style="font-size:28px;font-weight:900;color:#ffffff;letter-spacing:-0.04em;">Nova<span style="color:#8b5cf6;">Blog</span></span></td></tr>
+<tr><td style="padding:0 32px 20px 32px;">
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr><td align="center">
+<h1 style="color:#ffffff;font-size:24px;font-weight:700;margin:0 0 12px 0;letter-spacing:-0.03em;">Weekly Engineering Digest 📰</h1>
+<p style="color:#cbd5e1;font-size:14px;line-height:22px;margin:0 0 28px 0;text-align:center;">Hello <strong>Swapnil</strong>,<br/>Here is your weekly curation of deep-dive architectural perspectives, technical tutorials, and trend updates.</p>
+</td></tr>
+<tr><td style="background-color:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:20px;">
+<span style="color:#06b6d4;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:6px;">BACKEND</span>
+<h3 style="color:#ffffff;font-size:16px;font-weight:700;margin:0 0 8px 0;line-height:22px;">NestJS 11 Complete Guide: Build Production-Ready REST APIs</h3>
+<p style="color:#cbd5e1;font-size:13px;line-height:20px;margin:0 0 16px 0;">A complete walkthrough of NestJS v11 including Prisma ORM, JWT auth, BullMQ queues, and Dockerized deployment strategies.</p>
+<a href="#" style="color:#8b5cf6;text-decoration:none;font-size:13px;font-weight:600;">Read article &rarr;</a>
+</td></tr>
+<tr><td style="height:12px;"></td></tr>
+<tr><td style="background-color:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:20px;">
+<span style="color:#06b6d4;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:6px;">SYSTEMS</span>
+<h3 style="color:#ffffff;font-size:16px;font-weight:700;margin:0 0 8px 0;line-height:22px;">Scaling Modern Distributed Systems with Redis &amp; BullMQ</h3>
+<p style="color:#cbd5e1;font-size:13px;line-height:20px;margin:0 0 16px 0;">Learn how to design and implement fault-tolerant background job processing pipelines for high-throughput production systems.</p>
+<a href="#" style="color:#8b5cf6;text-decoration:none;font-size:13px;font-weight:600;">Read article &rarr;</a>
+</td></tr>
+<tr><td align="center" style="padding:24px 0 12px 0;">
+<a href="#" style="display:inline-block;background:linear-gradient(135deg,#8b5cf6,#5b2a9e);color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;padding:14px 32px;border-radius:12px;box-shadow:0 4px 12px rgba(139,92,246,0.3);">Explore More Insights</a>
+</td></tr>
+</table></td></tr>
+<tr><td style="padding:0 32px;"><div style="border-top:1px solid rgba(255,255,255,0.08);height:1px;width:100%;"></div></td></tr>
+<tr><td style="padding:24px 32px 32px 32px;text-align:center;">
+<p style="color:#64748b;font-size:12px;margin:0 0 8px 0;">&copy; 2026 NovaBlog. All rights reserved.</p>
+<p style="color:#64748b;font-size:11px;margin:0;">You received this because you are subscribed to the weekly newsletter. <a href="#" style="color:#8b5cf6;text-decoration:none;">Unsubscribe</a></p>
+</td></tr></table></td></tr></table>
+</body></html>`;
+
+    document.getElementById('frame-follower').srcdoc = followerHTML;
+    document.getElementById('frame-comment').srcdoc = commentHTML;
+    document.getElementById('frame-newsletter').srcdoc = newsletterHTML;
+  </script>
+</body>
+</html>
