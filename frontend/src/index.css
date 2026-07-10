@@ -577,3 +577,21 @@
 .postcard-border-subtle {
   border-color: rgba(255, 255, 255, 0.12) !important;
 }
+
+/* Testimonials Modal & Input theme synchronization overrides */
+.testimonial-modal {
+  background-color: var(--color-bg-dropdown) !important;
+  color: var(--color-text-input) !important;
+  border-color: var(--color-border-subtle) !important;
+}
+
+.testimonial-input {
+  background-color: var(--color-bg-input) !important;
+  color: var(--color-text-input) !important;
+  border-color: var(--color-border-subtle) !important;
+}
+
+.testimonial-input::placeholder {
+  color: var(--color-text-muted) !important;
+  opacity: 0.65 !important;
+}

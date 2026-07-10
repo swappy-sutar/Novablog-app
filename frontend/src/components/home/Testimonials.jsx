@@ -317,10 +317,10 @@ const Testimonials = () => {
               transition={{ type: 'spring', duration: 0.5 }}
               className="relative w-full max-w-lg z-10 overflow-hidden"
             >
-              <GlassCard className="p-6 sm:p-8 border border-border-subtle bg-white dark:bg-bg-card/95 shadow-2xl relative">
+              <GlassCard className="p-6 sm:p-8 border rounded-2xl shadow-2xl relative testimonial-modal">
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="absolute right-4 top-4 text-text-muted hover:text-text-input transition-colors cursor-pointer p-1 rounded-lg hover:bg-white/5"
+                  className="absolute right-4 top-4 text-text-muted hover:text-text-input transition-colors cursor-pointer p-1 rounded-lg hover:bg-bg-input"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -342,7 +342,7 @@ const Testimonials = () => {
                         placeholder="John Doe"
                         value={form.name}
                         onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
-                        className="w-full bg-white dark:bg-bg-input border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-purple transition-all"
+                        className="w-full border rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-brand-purple transition-all testimonial-input"
                       />
                     </div>
                     <div>
@@ -355,7 +355,7 @@ const Testimonials = () => {
                         placeholder="London, UK"
                         value={form.location}
                         onChange={(e) => setForm(prev => ({ ...prev, location: e.target.value }))}
-                        className="w-full bg-white dark:bg-bg-input border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-purple transition-all"
+                        className="w-full border rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-brand-purple transition-all testimonial-input"
                       />
                     </div>
                   </div>
@@ -398,7 +398,7 @@ const Testimonials = () => {
                       placeholder="Write your detailed testimonial here..."
                       value={form.text}
                       onChange={(e) => setForm(prev => ({ ...prev, text: e.target.value }))}
-                      className="w-full bg-white dark:bg-bg-input border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-purple transition-all resize-none"
+                      className="w-full border rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-brand-purple transition-all resize-none testimonial-input"
                     />
                   </div>
 
