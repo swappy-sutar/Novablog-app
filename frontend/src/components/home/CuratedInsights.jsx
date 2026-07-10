@@ -358,13 +358,13 @@ const CuratedInsights = () => {
                 {/* Card Content Overlay */}
                 <div className="p-6 space-y-3 z-10 w-full text-left">
                   <Link to={`/post/${post.id}`} className="block">
-                    <h3 className="text-base font-extrabold text-white tracking-tight leading-snug group-hover:text-brand-purple transition-colors line-clamp-2 cursor-pointer">
+                    <h3 className="text-base font-extrabold postcard-text-white tracking-tight leading-snug group-hover:text-brand-purple transition-colors line-clamp-2 cursor-pointer">
                       {post.title}
                     </h3>
                   </Link>
 
                   {/* Author Info Row */}
-                  <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-2">
+                  <div className="flex items-center justify-between pt-4 border-t postcard-border-subtle mt-2">
                     <div className="flex items-center gap-2 text-xs">
                       {post.author.avatar ? (
                         <img 
@@ -373,18 +373,18 @@ const CuratedInsights = () => {
                           className="w-6 h-6 rounded-full object-cover border border-border-subtle"
                         />
                       ) : (
-                        <div className="w-6 h-6 rounded-full bg-brand-purple/20 border border-brand-purple/30 flex items-center justify-center text-[10px] font-bold text-white">
+                        <div className="w-6 h-6 rounded-full bg-brand-purple/20 border border-brand-purple/30 flex items-center justify-center text-[10px] font-bold postcard-text-white">
                           {post.author.initials || post.author.name?.[0]?.toUpperCase()}
                         </div>
                       )}
                       <Link 
                         to={post.author.username ? `/profile/${post.author.username}` : "#"}
-                        className="font-bold text-gray-300 hover:text-brand-purple transition-colors truncate max-w-[120px]"
+                        className="font-bold postcard-text-white hover:text-brand-purple transition-colors truncate max-w-[120px]"
                       >
                         {post.author.name}
                       </Link>
                     </div>
-                    <div className="flex items-center gap-1.5 text-[9px] text-gray-400 font-semibold tracking-wider">
+                    <div className="flex items-center gap-1.5 text-[9px] postcard-text-gray font-semibold tracking-wider">
                       <Clock className="w-3.5 h-3.5 opacity-60" />
                       <span>{post.readTime}</span>
                     </div>
