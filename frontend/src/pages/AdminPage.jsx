@@ -221,6 +221,8 @@ const AdminPage = () => {
       loadUsers();
     } else if (activeTab === "moderation") {
       loadModerationQueue();
+    } else if (activeTab === "content" || activeTab === "dashboard" || activeTab === "analytics") {
+      loadAllBlogs();
     }
   }, [activeTab]);
 
