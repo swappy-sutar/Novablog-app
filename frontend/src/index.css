@@ -52,8 +52,8 @@
     --color-bg-card-hover: rgba(255, 255, 255, 1);
     --color-border-subtle: rgba(0, 0, 0, 0.1);
     --color-bg-dropdown: #ffffff;
-    --card-thumbnail-opacity: 0.18;
-    --card-thumbnail-filter: grayscale(40%) brightness(1.05) contrast(0.9);
+    --card-thumbnail-opacity: 0.38;
+    --card-thumbnail-filter: grayscale(10%) brightness(0.95);
 
     /* Accessibility contrast adjustments for brand elements */
     --color-brand-cyan: #0e7490;
@@ -547,4 +547,9 @@
 
 .light-mode .auth-symbol {
   color: rgba(6, 182, 212, 0.25) !important;
+}
+
+/* PostCard overlay gradient adjustment for light mode */
+.light-mode .postcard-overlay {
+  background-image: linear-gradient(to top, rgba(248, 250, 252, 0.6) 0%, rgba(248, 250, 252, 0.2) 60%, transparent 100%) !important;
 }

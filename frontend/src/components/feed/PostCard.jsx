@@ -19,7 +19,7 @@ const PostCard = ({ post, variant = "grid" }) => {
             filter: "var(--card-thumbnail-filter, grayscale(10%))",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-bg-base/90 via-bg-base/50 to-transparent transition-colors duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-t from-bg-base/90 via-bg-base/50 to-transparent transition-colors duration-500 postcard-overlay" />
       </div>
 
       {/* Content wrapper to place details on top of the background layer */}
