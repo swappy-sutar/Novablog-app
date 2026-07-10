@@ -844,14 +844,14 @@ const AdminPage = () => {
                   {/* Bottom small horizontal cards */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     
-                    {/* Storage utilized card */}
+                     {/* Storage utilized card */}
                     <div className="border border-border-subtle bg-bg-card backdrop-blur-xl p-5 rounded-2xl flex items-center justify-between hover:border-border-subtle/50 hover:bg-bg-card-hover transition-all duration-300 shadow-sm">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-[#8b5cf6]/10 border border-[#8b5cf6]/20 flex items-center justify-center text-brand-purple">
                           <HardDrive className="w-5 h-5" />
                         </div>
                         <div>
-                          <h4 className="text-xs font-bold text-white">9.4k GB</h4>
+                          <h4 className="text-xs font-bold text-white">{dashboardData ? dashboardData.storageUtilized : "9.4k GB"}</h4>
                           <p className="text-[10px] text-gray-500 font-semibold mt-0.5">Cloud Storage Utilized</p>
                         </div>
                       </div>
@@ -865,7 +865,7 @@ const AdminPage = () => {
                           <Shield className="w-5 h-5" />
                         </div>
                         <div>
-                          <h4 className="text-xs font-bold text-white">1.2M</h4>
+                          <h4 className="text-xs font-bold text-white">{dashboardData ? dashboardData.threatsBlocked : "1.2M"}</h4>
                           <p className="text-[10px] text-gray-500 font-semibold mt-0.5">Threats Blocked (24h)</p>
                         </div>
                       </div>
