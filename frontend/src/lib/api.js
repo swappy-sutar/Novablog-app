@@ -304,6 +304,9 @@ function processQueue(error, token = null) {
   failedQueue = [];
 }
 
+// ─── Response Interceptor: Automatic Token Refresh ───────────────────────────
+// When a request gets a 401, try to silently refresh the access token using
+// the stored refresh token. If refresh fails, log the user out.
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -311,6 +314,7 @@ api.interceptors.response.use(
     const status = error.response?.status;
     const reqUrl = (originalRequest?.url || '').toString();
 
+    // Don't retry if: no config, already retried, or it's an auth endpoint itself
     if (!originalRequest || originalRequest._retry) {
       return Promise.reject(error);
     }
@@ -318,8 +322,12 @@ api.interceptors.response.use(
     const isAuthPath =
       reqUrl.includes('/auth/login') ||
       reqUrl.includes('/auth/register') ||
-      reqUrl.includes('/auth/refresh-token');
+      reqUrl.includes('/auth/refresh-token') ||
+      reqUrl.includes('/auth/forgot-password') ||
+      reqUrl.includes('/auth/reset-password') ||
+      reqUrl.includes('/auth/verify-email');
 
+    // Only intercept 401 on non-auth paths
     if (status !== 401 || isAuthPath) {
       return Promise.reject(error);
     }
@@ -330,6 +338,7 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // If a refresh is already in flight, queue this request until it resolves
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
         failedQueue.push({ resolve, reject });
@@ -350,9 +359,9 @@ api.interceptors.response.use(
       const { data } = await axios.post(
         `${baseURL}/auth/refresh-token`,
         { refreshToken },
-        { 
+        {
           headers: { 'Content-Type': 'application/json' },
-          withCredentials: true
+          withCredentials: true,
         },
       );
 
@@ -382,6 +391,7 @@ api.interceptors.response.use(
     }
   },
 );
+
 
 export const newsletterAPI = {
   subscribe: async (email) => {

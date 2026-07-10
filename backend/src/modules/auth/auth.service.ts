@@ -561,26 +561,28 @@ export class AuthService {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET')!,
       });
 
-      // Verify the session in Redis first
-      const sessionKey = `session:${payload.id}`;
-      const cachedSession = await this.cacheService.get<string>(sessionKey);
-      if (!cachedSession) {
-        throw new UnauthorizedException('Session expired or invalid');
-      }
-
       const user = await this.usersRepository.findById(payload.id);
 
       if (!user || !user.refreshToken) {
         throw new UnauthorizedException('Invalid refresh token');
       }
 
+      // Validate the incoming refresh token against the stored bcrypt hash
       const isRefreshTokenMatched = await comparePassword(
         refreshToken,
         user.refreshToken,
       );
 
-      if (!isRefreshTokenMatched || cachedSession !== user.refreshToken) {
+      if (!isRefreshTokenMatched) {
         throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      // Verify the Redis session is still alive (soft-check; not strict comparison)
+      const sessionKey = `session:${payload.id}`;
+      const cachedSession = await this.cacheService.get<string>(sessionKey);
+      if (!cachedSession) {
+        // Redis session expired — validate via DB token match only, then re-hydrate session
+        this.logger?.warn?.(`Session cache miss for user ${payload.id}, re-hydrating from DB token match.`);
       }
 
       const tokens = await this.generateTokens(user.id, user.email, user.role);
@@ -591,8 +593,8 @@ export class AuthService {
         refreshToken: hashedRefreshToken,
       });
 
-      // Update the Redis session
-      await this.cacheService.set(sessionKey, hashedRefreshToken, 604800); // 7 days TTL
+      // Renew the Redis session with fresh token hash and reset 7-day TTL
+      await this.cacheService.set(sessionKey, hashedRefreshToken, 604800);
 
       return successResponse(
         'Token refreshed successfully',
@@ -600,6 +602,7 @@ export class AuthService {
         HttpStatus.OK,
       );
     } catch (error) {
+      if (error instanceof UnauthorizedException) throw error;
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
