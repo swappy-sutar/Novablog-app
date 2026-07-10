@@ -7,7 +7,7 @@ import Button from '../components/ui/Button';
 import Loader from '../components/ui/Loader';
 import { ProfileSkeleton } from '../components/ui/Skeleton';
 import { authAPI } from '../lib/api';
-import { Sprout, Flame, FileText, Crown, Award, Pencil, CheckCircle2 } from 'lucide-react';
+import { Sprout, Flame, FileText, Crown, Award, Pencil, CheckCircle2, Calendar } from 'lucide-react';
 
 const HEAT_WEEKS = 52;
 const HEAT_DAYS = 7;
@@ -271,14 +271,16 @@ const PublicProfilePage = () => {
       )}
 
       <GlassCard 
-        className="relative p-6 md:p-8 border border-border-subtle bg-bg-card rounded-2xl mb-8 flex flex-col md:flex-row items-center md:items-center gap-6 md:gap-8 overflow-hidden"
+        className="relative p-6 md:p-8 border rounded-2xl mb-8 flex flex-col md:flex-row items-center md:items-center gap-6 md:gap-8 overflow-hidden transition-all duration-300"
         style={{
-          background: 'linear-gradient(to bottom right, var(--color-bg-card), rgba(12, 13, 28, 0.45))'
+          background: 'var(--color-bg-card)',
+          borderColor: `${currentAccent}28`,
+          boxShadow: `0 20px 40px -12px ${currentAccent}15, 0 4px 12px rgba(0,0,0,0.03)`
         }}
       >
         {/* Glow backdrop behind the avatar inside the card */}
         <div 
-          className="absolute top-1/2 left-0 -translate-y-1/2 w-48 h-48 rounded-full opacity-20 blur-3xl pointer-events-none -z-10"
+          className="absolute top-1/2 left-0 -translate-y-1/2 w-48 h-48 rounded-full opacity-[0.12] blur-3xl pointer-events-none -z-10"
           style={{
             backgroundImage: `radial-gradient(circle, ${currentAccent} 0%, transparent 70%)`
           }}
@@ -290,17 +292,22 @@ const PublicProfilePage = () => {
             type="button"
             onClick={() => isOwnProfile && fileRef.current?.click()}
             disabled={uploading || !isOwnProfile}
-            className={`relative w-28 h-28 md:w-32 md:h-32 rounded-2xl border-2 overflow-hidden shadow-xl bg-bg-card text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${isOwnProfile ? 'cursor-pointer' : 'cursor-default'}`}
+            className={`relative w-28 h-28 md:w-32 md:h-32 rounded-2xl border-2 overflow-hidden shadow-lg bg-bg-card text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan ${isOwnProfile ? 'cursor-pointer' : 'cursor-default'}`}
             style={{
               borderColor: currentAccent,
-              boxShadow: `0 0 20px ${currentAccent}25, 0 10px 25px rgba(0,0,0,0.3)`
+              boxShadow: `0 0 20px ${currentAccent}20, 0 8px 24px rgba(0,0,0,0.15)`
             }}
             aria-label="Profile photo"
           >
             {profile?.avatar ? (
               <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-purple/40 to-brand-purple/20 text-3xl font-bold text-white">
+              <div 
+                className="w-full h-full flex items-center justify-center text-3xl font-extrabold text-white"
+                style={{
+                  background: `linear-gradient(135deg, ${currentAccent} 0%, ${currentAccent}88 100%)`
+                }}
+              >
                 {initials}
               </div>
             )}
@@ -314,9 +321,9 @@ const PublicProfilePage = () => {
 
         {/* Details & Actions block */}
         <div className="flex-1 flex flex-col md:flex-row md:items-center md:justify-between gap-6 w-full text-center md:text-left min-w-0">
-          <div className="space-y-1.5">
-            <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight flex flex-wrap items-center justify-center md:justify-start gap-2">
-              {displayName}
+          <div className="space-y-2">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-text-input tracking-tight flex flex-wrap items-center justify-center md:justify-start gap-2">
+              <span style={{ color: 'var(--color-white)' }}>{displayName}</span>
               {profile?.isVerified ? (
                 <CheckCircle2 
                   className="w-5 h-5 text-brand-cyan fill-brand-cyan/10 shrink-0" 
@@ -325,10 +332,10 @@ const PublicProfilePage = () => {
               ) : (
                 roleLabel && (
                   <span 
-                    className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider text-white border select-none"
+                    className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border select-none"
                     style={{
-                      backgroundColor: `${currentAccent}12`,
-                      borderColor: `${currentAccent}35`,
+                      backgroundColor: `${currentAccent}10`,
+                      borderColor: `${currentAccent}30`,
                       color: currentAccent
                     }}
                   >
@@ -337,9 +344,20 @@ const PublicProfilePage = () => {
                 )
               )}
             </h1>
-            <p className="text-xs md:text-sm font-semibold tracking-wide uppercase" style={{ color: currentAccent }}>
-              @{profile?.username}
-            </p>
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 gap-2 justify-center md:justify-start">
+              <p className="text-xs md:text-sm font-bold tracking-wide uppercase" style={{ color: currentAccent }}>
+                @{profile?.username}
+              </p>
+              
+              {joinedLine && (
+                <div className="flex items-center justify-center gap-1.5 text-xs text-text-muted select-none">
+                  <Calendar className="w-3.5 h-3.5 opacity-60" />
+                  <span>{joinedLine}</span>
+                </div>
+              )}
+            </div>
+
             {subtitle && (
               <p className="text-text-muted mt-2 text-xs md:text-sm max-w-xl leading-relaxed">
                 {subtitle}
@@ -353,11 +371,19 @@ const PublicProfilePage = () => {
                 type="button"
                 variant={profile?.isFollowing ? "primary" : "outline"}
                 onClick={handleFollowToggle}
-                className={`!rounded-[10px] !py-2.5 !px-5 text-xs font-bold ${
+                className={`!rounded-[10px] !py-2.5 !px-5 text-xs font-black transition-all duration-300 shadow-md ${
                   profile?.isFollowing 
-                    ? "bg-[#6366f1] text-[#ffffff] hover:bg-[#4f46e5] border-transparent" 
-                    : "border-border-subtle bg-white/[0.04] hover:bg-white/[0.08]"
+                    ? "text-[#ffffff] border-transparent" 
+                    : ""
                 }`}
+                style={profile?.isFollowing ? {
+                  backgroundColor: currentAccent,
+                  boxShadow: `0 4px 12px ${currentAccent}30`
+                } : {
+                  borderColor: `${currentAccent}50`,
+                  color: currentAccent,
+                  backgroundColor: `${currentAccent}08`
+                }}
               >
                 {profile?.isFollowing ? (
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -382,7 +408,12 @@ const PublicProfilePage = () => {
               </Button>
               <button
                 type="button"
-                className="px-5 py-2.5 rounded-[10px] font-bold text-xs flex items-center justify-center gap-2 bg-[#6366f1] text-[#ffffff] hover:bg-[#4f46e5] transition-all cursor-pointer shadow-lg shadow-[#6366f1]/15"
+                className="px-5 py-2.5 rounded-[10px] font-black text-xs flex items-center justify-center gap-2 border transition-all duration-300 hover:opacity-90 active:scale-95 shadow-sm"
+                style={{
+                  borderColor: 'var(--color-border-subtle)',
+                  backgroundColor: 'var(--color-bg-input)',
+                  color: 'var(--color-white)'
+                }}
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
