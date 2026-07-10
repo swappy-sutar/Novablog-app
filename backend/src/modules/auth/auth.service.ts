@@ -582,7 +582,7 @@ export class AuthService {
       const cachedSession = await this.cacheService.get<string>(sessionKey);
       if (!cachedSession) {
         // Redis session expired — validate via DB token match only, then re-hydrate session
-        this.logger?.warn?.(`Session cache miss for user ${payload.id}, re-hydrating from DB token match.`);
+        console.warn(`[AuthService] Session cache miss for user ${payload.id}, re-hydrating from DB token match.`);
       }
 
       const tokens = await this.generateTokens(user.id, user.email, user.role);
