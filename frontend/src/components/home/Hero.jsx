@@ -145,7 +145,7 @@ const TerminalMockup = () => {
           scriptIdx = 0;
           charIdx = 0;
           runScript();
-        }, 1500);
+        }, 3000);
         return;
       }
 
@@ -155,7 +155,7 @@ const TerminalMockup = () => {
         if (charIdx < step.text.length) {
           setCurrentInput(step.text.slice(0, charIdx + 1));
           charIdx++;
-          timer = setTimeout(runScript, 50);
+          timer = setTimeout(runScript, 80);
         } else {
           setHistory(prev => {
             const nextHist = [...prev, { type: 'input', text: step.text }];
@@ -164,7 +164,7 @@ const TerminalMockup = () => {
           setCurrentInput('');
           scriptIdx++;
           charIdx = 0;
-          timer = setTimeout(runScript, 600);
+          timer = setTimeout(runScript, 1000);
         }
       } else if (step.type === 'output') {
         setHistory(prev => {
@@ -172,11 +172,11 @@ const TerminalMockup = () => {
           return nextHist.slice(-40);
         });
         scriptIdx++;
-        timer = setTimeout(runScript, 300);
+        timer = setTimeout(runScript, 600);
       }
     };
 
-    timer = setTimeout(runScript, 800);
+    timer = setTimeout(runScript, 1200);
     return () => clearTimeout(timer);
   }, []);
 
