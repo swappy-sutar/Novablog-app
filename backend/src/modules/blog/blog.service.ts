@@ -542,4 +542,28 @@ export class BlogService {
       console.error(`Failed to notify followers for blog ${blog.id}:`, error);
     }
   }
+
+  async reportBlog(id: string, reason: string) {
+    const blog = await this.prisma.blog.findUnique({
+      where: { id },
+    });
+
+    if (!blog) {
+      throw new NotFoundException('Blog post not found');
+    }
+
+    const updated = await this.prisma.blog.update({
+      where: { id },
+      data: {
+        isFlagged: true,
+        flagReason: reason || 'Flagged by community report',
+        flaggedAt: new Date(),
+      },
+    });
+
+    // Clear caches
+    await this.cacheService.deleteByPattern('blog:*');
+
+    return successResponse('Blog post reported successfully', updated);
+  }
 }

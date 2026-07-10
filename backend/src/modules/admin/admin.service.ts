@@ -94,32 +94,59 @@ export class AdminService {
   }
 
   async getModerationQueue() {
-    // Return a set of mock flagged posts to drive the moderation queue on the frontend
-    const flaggedPosts = [
-      { id: "mod-1", title: "Free Crypto Airdrop 100% Legit!", author: "SpammyMcSpam", reason: "Spam / Phishing link detection", flaggedAt: "10m ago" },
-      { id: "mod-2", title: "Why everyone is wrong except me (Rant)", author: "AngryBlogger", reason: "Harassment and abusive language", flaggedAt: "45m ago" },
-      { id: "mod-3", title: "Copied Article from Medium", author: "LazyWriter", reason: "Plagiarism / Copyright violation", flaggedAt: "3h ago" },
-    ];
+    const flaggedBlogs = await this.prisma.blog.findMany({
+      where: { isFlagged: true },
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstname: true,
+            lastname: true,
+            username: true,
+          }
+        }
+      },
+      orderBy: { flaggedAt: 'desc' }
+    });
+
+    const flaggedPosts = flaggedBlogs.map((blog) => ({
+      id: blog.id,
+      title: blog.title,
+      author: `${blog.author?.firstname || ''} ${blog.author?.lastname || ''}`.trim() || blog.author?.username || 'Unknown',
+      reason: blog.flagReason || 'Flagged by community / system moderation',
+      flaggedAt: this.getRelativeTime(blog.flaggedAt || blog.updatedAt),
+    }));
 
     return successResponse('Moderation queue retrieved successfully', { flaggedPosts });
   }
 
   async approvePost(id: string) {
-    // In a real system we would clear the flagged status, here we just return success
+    const blog = await this.prisma.blog.findUnique({
+      where: { id },
+    });
+
+    if (!blog) {
+      throw new NotFoundException('Blog post not found');
+    }
+
+    await this.prisma.blog.update({
+      where: { id },
+      data: {
+        isFlagged: false,
+        flagReason: null,
+        flaggedAt: null,
+      }
+    });
+
+    // Clear caches
+    await this.cacheService.deleteByPattern('blog:*');
+
     return successResponse('Post approved and restored to public feed successfully');
   }
 
   async rejectPost(id: string) {
-    // In a real system we would permanently delete or archive the post
-    // If it's a real post in our DB, we can delete it
-    try {
-      const blog = await this.prisma.blog.findUnique({ where: { id } });
-      if (blog) {
-        await this.prisma.blog.delete({ where: { id } });
-      }
-    } catch (e) {
-      // Ignore if it's a mock post ID
-    }
+    // Reuses cascading deleteBlog method
+    await this.deleteBlog(id);
     return successResponse('Post rejected and permanently deleted');
   }
 

@@ -90,4 +90,13 @@ export class BlogController {
   async deleteBlog(@Param('id') id: string, @CurrentUser() user: any) {
     return this.blogService.deleteBlog(id, user.id);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('report/:id')
+  async reportBlog(
+    @Param('id') id: string,
+    @Body('reason') reason: string,
+  ) {
+    return this.blogService.reportBlog(id, reason);
+  }
 }

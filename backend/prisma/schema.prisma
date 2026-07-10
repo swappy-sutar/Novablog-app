@@ -76,6 +76,9 @@ model Blog {
   publishedAt DateTime?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+  isFlagged   Boolean    @default(false)
+  flagReason  String?
+  flaggedAt   DateTime?
 
   authorId   String
   author     User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
