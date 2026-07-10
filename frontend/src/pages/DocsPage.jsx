@@ -109,6 +109,36 @@ const DocsPage = () => {
                     </p>
                   </div>
                 </div>
+
+                <div className="pt-6 space-y-4">
+                  <h3 className="text-base font-bold text-white uppercase tracking-wider text-gray-400">Core Platform Features</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="p-4 rounded-xl border border-border-subtle bg-white/[0.01] space-y-1.5">
+                      <h4 className="text-xs font-bold text-[#818cf8]">🔒 Auth & 2FA Security</h4>
+                      <p className="text-[10px] text-gray-400 leading-relaxed font-medium">
+                        JWT Token rotation, password lockout security parameters, and strict Google Authenticator 2FA integrations keep profiles completely secured.
+                      </p>
+                    </div>
+                    <div className="p-4 rounded-xl border border-border-subtle bg-white/[0.01] space-y-1.5">
+                      <h4 className="text-xs font-bold text-brand-cyan">✍️ TipTap Canvas</h4>
+                      <p className="text-[10px] text-gray-400 leading-relaxed font-medium">
+                        An immersive WYSIWYG editor containing clean code highlighting, link cleaning mechanisms, header layout triggers, and S3 media upload pipelines.
+                      </p>
+                    </div>
+                    <div className="p-4 rounded-xl border border-border-subtle bg-white/[0.01] space-y-1.5">
+                      <h4 className="text-xs font-bold text-[#818cf8]">💬 Social Engagement</h4>
+                      <p className="text-[10px] text-gray-400 leading-relaxed font-medium">
+                        A dynamic comments ecosystem featuring threaded replies, instant bookmark lists, post like counters, and automated real-time notification gates.
+                      </p>
+                    </div>
+                    <div className="p-4 rounded-xl border border-border-subtle bg-white/[0.01] space-y-1.5">
+                      <h4 className="text-xs font-bold text-brand-cyan">🏆 Progression Badging</h4>
+                      <p className="text-[10px] text-gray-400 leading-relaxed font-medium">
+                        Calculates active reading behaviors, unlocking six distinct tier achievements shown proudly on author profile headers.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 
