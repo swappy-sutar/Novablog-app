@@ -92,15 +92,15 @@ const TerminalMockup = () => {
   };
 
   const script = [
-    { type: 'input', text: 'novablog search "react hooks"' },
+    { type: 'input', text: 'novablog search "ai databases"' },
     { type: 'output', text: '# Searching 50k+ articles...', color: 'text-[#64748b]' },
-    { type: 'output', text: '✓ Found 342 results', color: 'text-[#818cf8]' },
-    { type: 'input', text: 'novablog publish --draft' },
-    { type: 'output', text: '✓ Draft saved · slug: react-hooks-deep-dive', color: 'text-[#818cf8]' },
-    { type: 'output', text: '✓ Estimated read: 8 min · SEO score: 94', color: 'text-[#818cf8]' },
+    { type: 'output', text: '✓ Found 189 results in cloud & databases', color: 'text-[#818cf8]' },
+    { type: 'input', text: 'novablog publish --devops' },
+    { type: 'output', text: '✓ Deployment started · pipeline: cloud-ci-cd', color: 'text-[#818cf8]' },
+    { type: 'output', text: '✓ Built successfully · target: production-k8s', color: 'text-[#818cf8]' },
     { type: 'input', text: 'novablog analytics --week' },
-    { type: 'output', text: '# Views +24% · Followers +12', color: 'text-[#64748b]' },
-    { type: 'output', text: '✓ Top post: "TypeScript Generics" · 4.2k views', color: 'text-[#818cf8]' }
+    { type: 'output', text: '# Cloud Views +42% · AI Followers +185', color: 'text-[#64748b]' },
+    { type: 'output', text: '✓ Top post: "AI Database Scaling" · 8.4k views', color: 'text-[#818cf8]' }
   ];
 
   useEffect(() => {
