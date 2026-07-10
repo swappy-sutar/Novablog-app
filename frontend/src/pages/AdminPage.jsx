@@ -100,6 +100,7 @@ const AdminPage = () => {
   const [pingingServices, setPingingServices] = useState({});
   const [systemHealth, setSystemHealth] = useState(null);
   const [analyticsData, setAnalyticsData] = useState(null);
+  const [dashboardData, setDashboardData] = useState(null);
 
   const handleConsoleScroll = (e) => {
     const container = e.currentTarget;
@@ -204,9 +205,21 @@ const AdminPage = () => {
     }
   };
 
+  const loadDashboardData = async () => {
+    try {
+      const res = await adminAPI.getDashboardData();
+      if (res.success && res.data) {
+        setDashboardData(res.data);
+      }
+    } catch (e) {
+      console.error("Failed to load dashboard data", e);
+    }
+  };
+
   useEffect(() => {
     loadAllBlogs();
     loadAnalytics();
+    loadDashboardData();
     
     // Sync current user from local storage
     const storedUser = localStorage.getItem("user");
@@ -238,6 +251,9 @@ const AdminPage = () => {
       loadAllBlogs();
       if (activeTab === "dashboard" || activeTab === "analytics") {
         loadAnalytics();
+      }
+      if (activeTab === "dashboard") {
+        loadDashboardData();
       }
     }
   }, [activeTab]);
@@ -880,7 +896,7 @@ const AdminPage = () => {
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500 font-bold tracking-wide uppercase">Writer Growth</p>
-                      <h4 className="text-2xl font-extrabold text-white mt-1">24,812</h4>
+                      <h4 className="text-2xl font-extrabold text-white mt-1">{dashboardData ? dashboardData.activeAuthorsCount : "24,812"}</h4>
                       <p className="text-[10px] text-gray-400 font-semibold mt-1">Active Authors on Platform</p>
                     </div>
                     
@@ -903,7 +919,7 @@ const AdminPage = () => {
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500 font-bold tracking-wide uppercase">Revenue Metrics</p>
-                      <h4 className="text-2xl font-extrabold text-white mt-1">$184.2k</h4>
+                      <h4 className="text-2xl font-extrabold text-white mt-1">{dashboardData ? dashboardData.earnings : "$184.2k"}</h4>
                       <p className="text-[10px] text-gray-400 font-semibold mt-1">Current Month Earnings</p>
                     </div>
 
@@ -934,7 +950,7 @@ const AdminPage = () => {
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500 font-bold tracking-wide uppercase">Server Latency</p>
-                      <h4 className="text-2xl font-extrabold text-white mt-1">18ms</h4>
+                      <h4 className="text-2xl font-extrabold text-white mt-1">{dashboardData ? dashboardData.latency : "18ms"}</h4>
                       <p className="text-[10px] text-gray-400 font-semibold mt-1">Global Average Ping</p>
                     </div>
 
@@ -966,59 +982,43 @@ const AdminPage = () => {
 
                     {/* Activity Feed list */}
                     <div className="flex flex-col gap-4">
-                      
-                      {/* Event 1 */}
-                      <div className="flex items-start gap-3.5 group">
-                        <div className="w-8 h-8 rounded-full bg-brand-purple/10 border border-brand-purple/20 flex items-center justify-center font-bold text-brand-purple text-[10px] group-hover:scale-105 transition-transform shrink-0">
-                          EV
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex justify-between items-baseline gap-2">
-                            <span className="text-[11px] font-bold text-white">Elena Vance</span>
-                            <span className="text-[9px] text-gray-500 font-semibold">2m ago</span>
+                      {((dashboardData?.activities) || [
+                        { id: "mod-1", name: "Elena Vance", initials: "EV", action: 'Published "The Future of Web3"', tag: "TECH", time: "2m ago", type: "BLOG" },
+                        { id: "mod-2", name: "Marcus Thorne", initials: "MT", action: "Updated system cluster configuration for Node 07", tag: "SYSTEM_ROOT", time: "15m ago", type: "COMMENT" },
+                        { id: "mod-3", name: "Sarah Connor", initials: "SC", action: "Flagged 3 posts for moderation review in Community Forum", tag: "ACTION REQUIRED", time: "42m ago", type: "MODERATION" },
+                      ]).map((act) => {
+                        let iconColor = "bg-brand-purple/10 border-brand-purple/20 text-brand-purple";
+                        let tagColor = "border-white/20 text-white bg-white/5";
+                        if (act.type === "COMMENT") {
+                          iconColor = "bg-brand-cyan/10 border-brand-cyan/20 text-brand-cyan";
+                          tagColor = "border-white/10 text-gray-400 bg-white/[0.02]";
+                        } else if (act.type === "MODERATION" || act.tag === "ACTION REQUIRED") {
+                          iconColor = "bg-red-500/10 border-red-500/20 text-red-500";
+                          tagColor = "border-red-500/20 text-red-400 bg-red-500/5 uppercase tracking-wide";
+                        } else if (act.type === "BLOG") {
+                          iconColor = "bg-brand-purple/10 border-brand-purple/20 text-brand-purple";
+                          tagColor = "border-[#06b6d4]/20 text-brand-cyan bg-[#06b6d4]/5";
+                        }
+                        return (
+                          <div key={act.id} className="flex items-start gap-3.5 group animate-fadeIn">
+                            <div className={`w-8 h-8 rounded-full border flex items-center justify-center font-bold text-[10px] group-hover:scale-105 transition-transform shrink-0 ${iconColor}`}>
+                              {act.initials}
+                            </div>
+                            <div className="space-y-1">
+                              <div className="flex justify-between items-baseline gap-2">
+                                <span className="text-[11px] font-bold text-white">{act.name}</span>
+                                <span className="text-[9px] text-gray-500 font-semibold">{act.time}</span>
+                              </div>
+                              <p className="text-[10px] text-gray-400 leading-normal">
+                                {act.action}
+                              </p>
+                              <div className="pt-0.5">
+                                <span className={`px-1.5 py-0.2 rounded text-[8px] font-bold border ${tagColor}`}>{act.tag}</span>
+                              </div>
+                            </div>
                           </div>
-                          <p className="text-[10px] text-gray-400 leading-normal">Published <span className="text-brand-purple font-semibold">"The Future of Web3"</span></p>
-                          <div className="flex gap-1.5 pt-0.5">
-                            <span className="px-1.5 py-0.2 rounded text-[8px] font-bold border border-[#06b6d4]/20 text-brand-cyan bg-[#06b6d4]/5">TECH</span>
-                            <span className="px-1.5 py-0.2 rounded text-[8px] font-bold border border-white/20 text-white bg-white/5">NEW</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Event 2 */}
-                      <div className="flex items-start gap-3.5 group">
-                        <div className="w-8 h-8 rounded-full bg-brand-cyan/10 border border-brand-cyan/20 flex items-center justify-center font-bold text-brand-cyan text-[10px] group-hover:scale-105 transition-transform shrink-0">
-                          MT
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex justify-between items-baseline gap-2">
-                            <span className="text-[11px] font-bold text-white">Marcus Thorne</span>
-                            <span className="text-[9px] text-gray-500 font-semibold">15m ago</span>
-                          </div>
-                          <p className="text-[10px] text-gray-400 leading-normal">Updated system cluster configuration for Node 07</p>
-                          <div className="pt-0.5">
-                            <span className="px-1.5 py-0.2 rounded text-[8px] font-bold border border-white/10 text-gray-400 bg-white/[0.02]">SYSTEM_ROOT</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Event 3 */}
-                      <div className="flex items-start gap-3.5 group">
-                        <div className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center font-bold text-red-500 text-[10px] group-hover:scale-105 transition-transform shrink-0">
-                          SC
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex justify-between items-baseline gap-2">
-                            <span className="text-[11px] font-bold text-white">Sarah Connor</span>
-                            <span className="text-[9px] text-gray-500 font-semibold">42m ago</span>
-                          </div>
-                          <p className="text-[10px] text-gray-400 leading-normal">Flagged 3 posts for moderation review in Community Forum</p>
-                          <div className="pt-0.5">
-                            <span className="px-1.5 py-0.2 rounded text-[8px] font-bold border border-red-500/20 text-red-400 bg-red-500/5 uppercase tracking-wide">Action Required</span>
-                          </div>
-                        </div>
-                      </div>
-
+                        );
+                      })}
                     </div>
                   </div>
 

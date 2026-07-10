@@ -311,6 +311,10 @@ export const adminAPI = {
   getAnalytics: async () => {
     const response = await api.get('/admin/analytics');
     return response.data;
+  },
+  getDashboardData: async () => {
+    const response = await api.get('/admin/dashboard');
+    return response.data;
   }
 };
 

@@ -81,5 +81,10 @@ export class AdminController {
   async getAnalytics() {
     return this.adminService.getAnalytics();
   }
+
+  @Get('dashboard')
+  async getDashboardData() {
+    return this.adminService.getDashboardData();
+  }
 }
 
