@@ -141,4 +141,23 @@ export class EmailService {
       },
     );
   }
+
+  async sendCustomNewsletterEmail(data: {
+    email: string;
+    subject: string;
+    content: string;
+  }) {
+    await this.emailQueue.add(
+      'custom-newsletter',
+      data,
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 3000,
+        },
+        removeOnComplete: true,
+      },
+    );
+  }
 }

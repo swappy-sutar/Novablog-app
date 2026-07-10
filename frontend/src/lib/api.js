@@ -438,6 +438,30 @@ export const newsletterAPI = {
     const response = await api.post('/newsletter/subscribe', { email });
     return response.data;
   },
+  getSubscribers: async () => {
+    const response = await api.get('/newsletter/subscribers');
+    return response.data;
+  },
+  toggleSubscriberStatus: async (id, isActive) => {
+    const response = await api.patch(`/newsletter/subscribers/${id}/status`, { isActive });
+    return response.data;
+  },
+  deleteSubscriber: async (id) => {
+    const response = await api.delete(`/newsletter/subscribers/${id}`);
+    return response.data;
+  },
+  sendNewsletter: async (subject, content) => {
+    const response = await api.post('/newsletter/send', { subject, content });
+    return response.data;
+  },
+  sendTestEmail: async (email, subject, content) => {
+    const response = await api.post('/newsletter/send-test', { email, subject, content });
+    return response.data;
+  },
+  getHistory: async () => {
+    const response = await api.get('/newsletter/history');
+    return response.data;
+  },
 };
 
 export const reviewAPI = {

@@ -71,6 +71,15 @@ export class EmailProcessor extends WorkerHost {
         );
 
         break;
+
+      case 'custom-newsletter':
+        await this.mailProvider.sendCustomNewsletterEmail(
+          job.data.email,
+          job.data.subject,
+          job.data.content,
+        );
+
+        break;
     }
   }
 }

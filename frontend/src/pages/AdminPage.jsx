@@ -45,7 +45,7 @@ import {
   X,
   RefreshCw,
 } from "lucide-react";
-import { blogAPI, authAPI, adminAPI } from "../lib/api";
+import { blogAPI, authAPI, adminAPI, newsletterAPI } from "../lib/api";
 import { connectSocket } from "../lib/socket";
 import Button from "../components/ui/Button";
 import { ExploreInsightSkeleton as SkeletonCard } from "../components/ui/Skeleton";
@@ -201,6 +201,128 @@ const AdminPage = () => {
     }
   };
 
+  // Newsletter state
+  const [subscribersList, setSubscribersList] = useState([]);
+  const [subscribersLoading, setSubscribersLoading] = useState(false);
+  const [newsletterHistory, setNewsletterHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [activeNewsletterSubTab, setActiveNewsletterSubTab] = useState("create"); // create, subscribers, history
+  
+  // Newsletter Authoring State
+  const [newsletterSubject, setNewsletterSubject] = useState("");
+  const [newsletterContent, setNewsletterContent] = useState("");
+  const [testEmail, setTestEmail] = useState("");
+  const [sendingNewsletter, setSendingNewsletter] = useState(false);
+  const [sendingTest, setSendingTest] = useState(false);
+  const [showSendConfirmation, setShowSendConfirmation] = useState(false);
+  const [viewHistoryModalItem, setViewHistoryModalItem] = useState(null);
+
+  const loadSubscribers = async () => {
+    setSubscribersLoading(true);
+    try {
+      const res = await newsletterAPI.getSubscribers();
+      if (res.success && res.data) {
+        setSubscribersList(res.data || []);
+      }
+    } catch (e) {
+      toast.error("Failed to load subscribers.");
+      console.error(e);
+    } finally {
+      setSubscribersLoading(false);
+    }
+  };
+
+  const loadNewsletterHistory = async () => {
+    setHistoryLoading(true);
+    try {
+      const res = await newsletterAPI.getHistory();
+      if (res.success && res.data) {
+        setNewsletterHistory(res.data || []);
+      }
+    } catch (e) {
+      toast.error("Failed to load newsletter history.");
+      console.error(e);
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  const handleToggleSubscriber = async (id, isActive) => {
+    try {
+      const res = await newsletterAPI.toggleSubscriberStatus(id, isActive);
+      if (res.success && res.data) {
+        toast.success(`Subscriber ${isActive ? "activated" : "deactivated"} successfully.`);
+        setSubscribersList((prev) =>
+          prev.map((s) => (s.id === id ? { ...s, isActive: res.data.isActive } : s))
+        );
+      }
+    } catch (e) {
+      toast.error("Failed to update status.");
+      console.error(e);
+    }
+  };
+
+  const handleDeleteSubscriber = async (id) => {
+    if (!window.confirm("Are you sure you want to remove this subscriber permanently?")) return;
+    try {
+      const res = await newsletterAPI.deleteSubscriber(id);
+      if (res.success) {
+        toast.success("Subscriber removed successfully.");
+        setSubscribersList((prev) => prev.filter((s) => s.id !== id));
+      }
+    } catch (e) {
+      toast.error("Failed to delete subscriber.");
+      console.error(e);
+    }
+  };
+
+  const handleSendNewsletter = async () => {
+    if (!newsletterSubject.trim() || !newsletterContent.trim()) {
+      toast.error("Please fill in both Subject and Content fields.");
+      return;
+    }
+    setSendingNewsletter(true);
+    try {
+      const res = await newsletterAPI.sendNewsletter(newsletterSubject, newsletterContent);
+      if (res.success) {
+        toast.success("Newsletter successfully queued for delivery!");
+        setNewsletterSubject("");
+        setNewsletterContent("");
+        setShowSendConfirmation(false);
+        loadNewsletterHistory();
+      }
+    } catch (e) {
+      const errorMsg = e.response?.data?.message || "Failed to send newsletter.";
+      toast.error(errorMsg);
+      console.error(e);
+    } finally {
+      setSendingNewsletter(false);
+    }
+  };
+
+  const handleSendTestEmail = async () => {
+    if (!testEmail.trim()) {
+      toast.error("Please enter a test email address.");
+      return;
+    }
+    if (!newsletterSubject.trim() || !newsletterContent.trim()) {
+      toast.error("Please fill in both Subject and Content fields first.");
+      return;
+    }
+    setSendingTest(true);
+    try {
+      const res = await newsletterAPI.sendTestEmail(testEmail, newsletterSubject, newsletterContent);
+      if (res.success) {
+        toast.success(`Test email sent successfully to ${testEmail}`);
+      }
+    } catch (e) {
+      toast.error("Failed to send test email.");
+      console.error(e);
+    } finally {
+      setSendingTest(false);
+    }
+  };
+
   const loadSystemHealth = async () => {
     try {
       const res = await adminAPI.getSystemHealth();
@@ -308,6 +430,9 @@ const AdminPage = () => {
       loadModerationQueue();
     } else if (activeTab === "reviews") {
       loadReviews();
+    } else if (activeTab === "newsletter") {
+      loadSubscribers();
+      loadNewsletterHistory();
     } else if (activeTab === "content" || activeTab === "dashboard" || activeTab === "analytics") {
       loadAllBlogs();
       if (activeTab === "dashboard" || activeTab === "analytics") {
@@ -570,6 +695,7 @@ const AdminPage = () => {
             { id: "content", label: "Content", icon: FileText },
             { id: "moderation", label: "Moderation", icon: ShieldAlert },
             { id: "reviews", label: "Reviews", icon: Star },
+            { id: "newsletter", label: "Newsletter", icon: Mail },
             { id: "system", label: "System Health", icon: Cpu },
             { id: "users", label: "Users", icon: Users },
           ].map((item) => {
@@ -1966,6 +2092,463 @@ const AdminPage = () => {
                 </div>
               )}
             </motion.div>
+          )}
+
+          {/* TAB 8: NEWSLETTER */}
+          {activeTab === "newsletter" && (
+            <motion.div
+              key="newsletter"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25 }}
+              className="space-y-6"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-extrabold text-white tracking-tight">Newsletter Campaigns</h2>
+                  <p className="text-[11px] text-gray-400 mt-0.5">
+                    Manage subscribers, compose and launch newsletters
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      loadSubscribers();
+                      loadNewsletterHistory();
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border-subtle bg-bg-input text-[10px] font-bold text-gray-300 hover:text-white hover:border-gray-600 transition-all cursor-pointer"
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                    Refresh Data
+                  </button>
+                </div>
+              </div>
+
+              {/* Stats Overview */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="rounded-2xl border border-border-subtle bg-bg-card p-5 flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Subscribers</p>
+                    <h3 className="text-2xl font-extrabold text-white mt-1">{subscribersList.length}</h3>
+                  </div>
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-brand-purple">
+                    <Users className="w-5 h-5" />
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-border-subtle bg-bg-card p-5 flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Active Subscribers</p>
+                    <h3 className="text-2xl font-extrabold text-emerald-400 mt-1">
+                      {subscribersList.filter((s) => s.isActive).length}
+                    </h3>
+                  </div>
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                    <UserCheck className="w-5 h-5" />
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-border-subtle bg-bg-card p-5 flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Campaigns Sent</p>
+                    <h3 className="text-2xl font-extrabold text-brand-cyan mt-1">{newsletterHistory.length}</h3>
+                  </div>
+                  <div className="w-10 h-10 rounded-xl bg-brand-cyan/10 border border-brand-cyan/20 flex items-center justify-center text-brand-cyan">
+                    <Mail className="w-5 h-5" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Sub Navigation */}
+              <div className="flex gap-2 border-b border-border-subtle pb-2">
+                {[
+                  { id: "create", label: "Compose Newsletter", icon: Edit3 },
+                  { id: "subscribers", label: "Manage Subscribers", icon: Users },
+                  { id: "history", label: "Campaign History", icon: Calendar },
+                ].map((subTab) => {
+                  const SubIcon = subTab.icon;
+                  const isSubActive = activeNewsletterSubTab === subTab.id;
+                  return (
+                    <button
+                      key={subTab.id}
+                      onClick={() => setActiveNewsletterSubTab(subTab.id)}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        isSubActive
+                          ? "bg-brand-purple text-white shadow-lg shadow-brand-purple/20 border border-brand-purple/30"
+                          : "text-gray-400 hover:text-white hover:bg-white/5 border border-transparent"
+                      }`}
+                    >
+                      <SubIcon className="w-3.5 h-3.5" />
+                      {subTab.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* SUB TAB CONTENT */}
+              {activeNewsletterSubTab === "create" && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Composer Panel */}
+                  <div className="rounded-2xl border border-border-subtle bg-bg-card p-6 space-y-4">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">Campaign Composer</h3>
+                    
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] font-bold text-gray-400 uppercase">Subject Line</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Scaling Modern Architectures - NovaBlog Digest"
+                        value={newsletterSubject}
+                        onChange={(e) => setNewsletterSubject(e.target.value)}
+                        className="w-full rounded-xl border border-border-subtle bg-bg-input px-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple transition-all"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between items-center">
+                        <label className="text-[11px] font-bold text-gray-400 uppercase">Email Content (HTML/Markdown)</label>
+                        <span className="text-[9px] text-gray-500 font-semibold">Supports full HTML syntax</span>
+                      </div>
+                      <textarea
+                        rows={12}
+                        placeholder="<h1>Welcome to the NovaBlog Digest!</h1><p>Today we talk about scaling PostgreSQL databases...</p>"
+                        value={newsletterContent}
+                        onChange={(e) => setNewsletterContent(e.target.value)}
+                        className="w-full rounded-xl border border-border-subtle bg-bg-input px-4 py-3 text-xs text-white placeholder-gray-500 font-mono focus:outline-none focus:border-brand-purple transition-all resize-y"
+                      />
+                    </div>
+
+                    <div className="border-t border-border-subtle pt-4 space-y-4">
+                      {/* Test Send Row */}
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <input
+                          type="email"
+                          placeholder="test@example.com"
+                          value={testEmail}
+                          onChange={(e) => setTestEmail(e.target.value)}
+                          className="flex-1 rounded-xl border border-border-subtle bg-bg-input px-4 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple transition-all"
+                        />
+                        <button
+                          onClick={handleSendTestEmail}
+                          disabled={sendingTest}
+                          className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border border-border-subtle text-gray-300 hover:text-white hover:border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+                        >
+                          {sendingTest ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
+                          Send Test
+                        </button>
+                      </div>
+
+                      {/* Main Launch Button */}
+                      <button
+                        onClick={() => setShowSendConfirmation(true)}
+                        className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-xs font-extrabold bg-gradient-to-r from-brand-purple to-indigo-600 hover:from-brand-purple-hover hover:to-indigo-700 text-white shadow-xl shadow-brand-purple/20 transition-all cursor-pointer"
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        Queue Newsletter for all {subscribersList.filter((s) => s.isActive).length} Subscribers
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Preview Panel */}
+                  <div className="rounded-2xl border border-border-subtle bg-bg-card p-6 flex flex-col h-[580px] overflow-hidden">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Eye className="w-4 h-4 text-brand-cyan" />
+                      <h3 className="text-sm font-bold text-white uppercase tracking-wider">Live Preview</h3>
+                    </div>
+                    <div className="flex-1 rounded-xl border border-border-subtle bg-[#05050f] p-4 overflow-y-auto custom-scrollbar">
+                      {newsletterSubject ? (
+                        <h2 className="text-base font-extrabold text-white mb-3 border-b border-border-subtle pb-2">
+                          {newsletterSubject}
+                        </h2>
+                      ) : (
+                        <p className="text-xs text-gray-500 italic mb-3">Subject line preview will appear here</p>
+                      )}
+                      
+                      {newsletterContent ? (
+                        <div 
+                          className="text-xs text-gray-300 space-y-2 leading-relaxed"
+                          dangerouslySetInnerHTML={{ __html: newsletterContent }}
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-48 text-gray-500 gap-2">
+                          <FileText className="w-8 h-8 text-gray-600 animate-pulse" />
+                          <p className="text-xs font-semibold">Write some content to see a live preview</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeNewsletterSubTab === "subscribers" && (
+                <div className="rounded-2xl border border-border-subtle bg-bg-card overflow-hidden">
+                  <div className="p-4 border-b border-border-subtle flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">Subscriber List</h3>
+                  </div>
+
+                  {subscribersLoading ? (
+                    <div className="py-20 flex justify-center">
+                      <RefreshCw className="w-8 h-8 text-brand-purple animate-spin" />
+                    </div>
+                  ) : subscribersList.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
+                      <Users className="w-10 h-10 text-gray-600" />
+                      <p className="text-gray-500 text-sm font-semibold">No subscribers found</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-border-subtle bg-white/5">
+                            <th className="px-6 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Email Address</th>
+                            <th className="px-6 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Status</th>
+                            <th className="px-6 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Joined Date</th>
+                            <th className="px-6 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {subscribersList.map((sub) => (
+                            <tr key={sub.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-all">
+                              <td className="px-6 py-4">
+                                <span className="text-xs font-bold text-white">{sub.email}</span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span
+                                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold ${
+                                    sub.isActive
+                                      ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                      : "bg-red-500/10 text-red-400 border border-red-500/20"
+                                  }`}
+                                >
+                                  {sub.isActive ? "Active" : "Unsubscribed"}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="text-xs font-semibold text-gray-500">
+                                  {new Date(sub.createdAt).toLocaleDateString(undefined, {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                  })}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                <div className="flex justify-end gap-3">
+                                  <button
+                                    onClick={() => handleToggleSubscriber(sub.id, !sub.isActive)}
+                                    className={`px-3 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                                      sub.isActive
+                                        ? "bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20 border border-yellow-500/20"
+                                        : "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20"
+                                    }`}
+                                  >
+                                    {sub.isActive ? "Deactivate" : "Activate"}
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteSubscriber(sub.id)}
+                                    className="flex items-center gap-1 px-3 py-1 rounded-lg text-[10px] font-bold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-all cursor-pointer"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                    Remove
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeNewsletterSubTab === "history" && (
+                <div className="rounded-2xl border border-border-subtle bg-bg-card overflow-hidden">
+                  <div className="p-4 border-b border-border-subtle flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">Campaign Dispatch Log</h3>
+                  </div>
+
+                  {historyLoading ? (
+                    <div className="py-20 flex justify-center">
+                      <RefreshCw className="w-8 h-8 text-brand-purple animate-spin" />
+                    </div>
+                  ) : newsletterHistory.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
+                      <Mail className="w-10 h-10 text-gray-600" />
+                      <p className="text-gray-500 text-sm font-semibold">No campaigns sent yet</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-border-subtle bg-white/5">
+                            <th className="px-6 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Subject</th>
+                            <th className="px-6 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Sent At</th>
+                            <th className="px-6 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Recipients</th>
+                            <th className="px-6 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {newsletterHistory.map((historyItem) => (
+                            <tr key={historyItem.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-all">
+                              <td className="px-6 py-4">
+                                <span className="text-xs font-bold text-white block max-w-xs truncate">{historyItem.subject}</span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="text-xs font-semibold text-gray-400">
+                                  {new Date(historyItem.sentAt).toLocaleString()}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-[#6366f1]/10 text-[#818cf8] border border-[#6366f1]/20">
+                                  {historyItem.sentTo} subscribers
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                <button
+                                  onClick={() => setViewHistoryModalItem(historyItem)}
+                                  className="flex items-center gap-1 px-3 py-1 rounded-lg text-[10px] font-bold bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-border-subtle transition-all cursor-pointer ml-auto"
+                                >
+                                  <Eye className="w-3 h-3" />
+                                  View Content
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          )}
+
+          {/* SEND NEWSLETTER CONFIRMATION MODAL */}
+          {showSendConfirmation && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(10px)" }}
+              onClick={(e) => { if (e.target === e.currentTarget) setShowSendConfirmation(false); }}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.93, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.93, y: 20 }}
+                transition={{ duration: 0.2 }}
+                className="w-full max-w-md rounded-2xl border border-red-500/30 bg-[#0d0d12] shadow-2xl shadow-red-500/5 overflow-hidden"
+              >
+                <div className="flex items-center justify-between px-6 py-4 border-b border-border-subtle bg-[#0d0d14]">
+                  <div className="flex items-center gap-2.5 text-red-400">
+                    <ShieldAlert className="w-4 h-4" />
+                    <span className="text-sm font-extrabold">Confirm Broadcast Campaign</span>
+                  </div>
+                  <button
+                    onClick={() => setShowSendConfirmation(false)}
+                    className="text-gray-500 hover:text-white transition-colors cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="p-6 space-y-4">
+                  <p className="text-xs text-gray-300 leading-relaxed">
+                    You are about to broadcast this newsletter to all{" "}
+                    <strong className="text-emerald-400 font-extrabold">
+                      {subscribersList.filter((s) => s.isActive).length}
+                    </strong>{" "}
+                    active subscribers. This action will add delivery jobs to the mailing queue and cannot be undone.
+                  </p>
+                  
+                  <div className="rounded-xl border border-white/5 bg-[#05050f] p-3 text-[11px] text-gray-400 font-semibold">
+                    <span className="text-gray-500">Subject: </span>
+                    <span className="text-white font-bold">{newsletterSubject}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border-subtle bg-[#0d0d14]">
+                  <button
+                    onClick={() => setShowSendConfirmation(false)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold border border-border-subtle text-gray-400 hover:text-white hover:border-gray-600 transition-all cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSendNewsletter}
+                    disabled={sendingNewsletter}
+                    className="flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-700 text-white disabled:opacity-50 transition-all cursor-pointer shadow-lg shadow-red-600/20"
+                  >
+                    {sendingNewsletter ? (
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-3.5 h-3.5" />
+                    )}
+                    Launch Dispatch
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+
+          {/* VIEW NEWSLETTER CONTENT MODAL */}
+          {viewHistoryModalItem && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(10px)" }}
+              onClick={(e) => { if (e.target === e.currentTarget) setViewHistoryModalItem(null); }}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.93, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.93, y: 20 }}
+                transition={{ duration: 0.2 }}
+                className="w-full max-w-2xl rounded-2xl border border-border-subtle bg-[#0d0d12] shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+              >
+                <div className="flex items-center justify-between px-6 py-4 border-b border-border-subtle bg-[#0d0d14]">
+                  <div className="flex items-center gap-2.5">
+                    <Mail className="w-4 h-4 text-brand-cyan" />
+                    <span className="text-sm font-extrabold text-white">Campaign Details</span>
+                  </div>
+                  <button
+                    onClick={() => setViewHistoryModalItem(null)}
+                    className="text-gray-500 hover:text-white transition-colors cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="p-6 space-y-4 overflow-y-auto flex-1 custom-scrollbar">
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-bold text-gray-500 uppercase">Subject Line</p>
+                    <h4 className="text-sm font-bold text-white">{viewHistoryModalItem.subject}</h4>
+                  </div>
+                  <div className="flex gap-6 text-[10px] font-bold text-gray-500 uppercase border-y border-white/5 py-2">
+                    <div>
+                      <span>Sent On: </span>
+                      <span className="text-gray-300 font-semibold">{new Date(viewHistoryModalItem.sentAt).toLocaleString()}</span>
+                    </div>
+                    <div>
+                      <span>Recipients: </span>
+                      <span className="text-emerald-400 font-semibold">{viewHistoryModalItem.sentTo} subscribers</span>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-bold text-gray-500 uppercase">Newsletter Body</p>
+                    <div className="rounded-xl border border-white/5 bg-[#05050f] p-4 text-xs text-gray-300 overflow-y-auto max-h-[40vh] custom-scrollbar">
+                      <div dangerouslySetInnerHTML={{ __html: viewHistoryModalItem.content }} />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end px-6 py-4 border-t border-border-subtle bg-[#0d0d14]">
+                  <button
+                    onClick={() => setViewHistoryModalItem(null)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold border border-border-subtle text-gray-400 hover:text-white hover:border-gray-600 transition-all cursor-pointer"
+                  >
+                    Close Window
+                  </button>
+                </div>
+              </motion.div>
+            </div>
           )}
 
           {/* EDIT REVIEW MODAL */}

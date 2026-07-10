@@ -161,4 +161,23 @@ export class MailProvider {
       html,
     });
   }
+
+  async sendCustomNewsletterEmail(
+    email: string,
+    subject: string,
+    content: string,
+  ) {
+    const html = this.loadTemplate('custom-newsletter', {
+      subject,
+      content,
+      email,
+    });
+
+    return this.resendService.client.emails.send({
+      from: process.env.EMAIL_FROM!,
+      to: email,
+      subject: subject,
+      html,
+    });
+  }
 }

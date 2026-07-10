@@ -23,4 +23,35 @@ export class NewsletterRepository {
       data: { isActive },
     });
   }
+
+  async findAllSubscribers() {
+    return this.prisma.newsletterSubscription.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async updateStatusById(id: string, isActive: boolean) {
+    return this.prisma.newsletterSubscription.update({
+      where: { id },
+      data: { isActive },
+    });
+  }
+
+  async deleteSubscriberById(id: string) {
+    return this.prisma.newsletterSubscription.delete({
+      where: { id },
+    });
+  }
+
+  async createNewsletterRecord(subject: string, content: string, sentTo: number) {
+    return this.prisma.newsletter.create({
+      data: { subject, content, sentTo },
+    });
+  }
+
+  async getNewsletterHistory() {
+    return this.prisma.newsletter.findMany({
+      orderBy: { sentAt: 'desc' },
+    });
+  }
 }
