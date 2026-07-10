@@ -193,10 +193,7 @@ const PublicProfilePage = () => {
   };
 
   const displayName = formatDisplayName(profile);
-  const subtitle =
-    profile?.bio?.trim() ||
-    (profile?.username ? `@${profile.username}` : '') ||
-    'NovaBlog writer';
+  const subtitle = profile?.bio?.trim() || '';
   const joinedLine = formatJoined(profile?.createdAt);
   const initials =
     `${profile?.firstname?.[0] || ''}${profile?.lastname?.[0] || ''}`.toUpperCase() ||
@@ -313,25 +310,34 @@ const PublicProfilePage = () => {
               </span>
             )}
           </button>
-          <span 
-            className="absolute -bottom-1.5 -right-1.5 px-2.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider text-white shadow-lg border"
-            style={{
-              backgroundColor: currentAccent,
-              borderColor: 'rgba(255,255,255,0.15)',
-              boxShadow: `0 2px 8px ${currentAccent}40`
-            }}
-          >
-            {profile?.isVerified ? 'Verified' : roleLabel}
-          </span>
         </div>
 
         {/* Details & Actions block */}
         <div className="flex-1 flex flex-col md:flex-row md:items-center md:justify-between gap-6 w-full text-center md:text-left min-w-0">
           <div className="space-y-1.5">
-            <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight flex flex-wrap items-center justify-center md:justify-start gap-2">
               {displayName}
+              {profile?.isVerified ? (
+                <CheckCircle2 
+                  className="w-5 h-5 text-brand-cyan fill-brand-cyan/10 shrink-0" 
+                  style={{ color: currentAccent }}
+                />
+              ) : (
+                roleLabel && (
+                  <span 
+                    className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider text-white border select-none"
+                    style={{
+                      backgroundColor: `${currentAccent}12`,
+                      borderColor: `${currentAccent}35`,
+                      color: currentAccent
+                    }}
+                  >
+                    {roleLabel}
+                  </span>
+                )
+              )}
             </h1>
-            <p className="text-gray-400 text-xs md:text-sm font-semibold tracking-wide uppercase">
+            <p className="text-xs md:text-sm font-semibold tracking-wide uppercase" style={{ color: currentAccent }}>
               @{profile?.username}
             </p>
             {subtitle && (
