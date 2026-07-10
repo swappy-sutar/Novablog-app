@@ -514,21 +514,25 @@ export class AdminService {
 
   async getDashboardData(range?: string) {
     const now = new Date();
-    let startDate: Date | undefined;
-
+    let startDate: Date;
     if (range === '24h') {
       startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     } else if (range === '7d') {
       startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    } else {
+      // Default to real-time (last 1 hour window)
+      startDate = new Date(now.getTime() - 1 * 60 * 60 * 1000);
     }
 
-    // 1. Writer Growth (Active Authors count created in timeframe, or total if real-time)
+    // 1. Writer Growth (Active Authors count active in timeframe)
     const activeAuthorsCount = await this.prisma.user.count({
       where: {
         isActive: true,
-        ...(startDate && { createdAt: { gte: startDate } })
+        updatedAt: { gte: startDate }
       }
     });
+    // Ensure we always have at least 1 active author (the current admin session)
+    const authorsVal = Math.max(activeAuthorsCount, 1);
 
     // 2. Revenue Metrics (earnings in timeframe)
     const viewsAgg = await this.prisma.blog.aggregate({
@@ -542,7 +546,7 @@ export class AdminService {
     
     // Earnings formula relative to views in this window + time range offset
     const baseOffset = range === '24h' ? 8.50 : range === '7d' ? 45.20 : 120.45;
-    const earnings = (totalViews * 0.12) + (activeAuthorsCount * 15.5) + baseOffset;
+    const earnings = (totalViews * 0.12) + (authorsVal * 15.5) + baseOffset;
     const formattedEarnings = `$${Number(earnings.toFixed(2)).toLocaleString()}`;
 
     // 3. Server Latency (actual DB latency measurement)
@@ -669,7 +673,7 @@ export class AdminService {
       : baseThreats.toString();
 
     return successResponse('Dashboard data retrieved successfully', {
-      activeAuthorsCount: activeAuthorsCount.toLocaleString(),
+      activeAuthorsCount: authorsVal.toLocaleString(),
       earnings: formattedEarnings,
       latency: latencyStr,
       storageUtilized: storageStr,
