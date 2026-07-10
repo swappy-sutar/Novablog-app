@@ -41,6 +41,7 @@ import {
   UserX,
 } from "lucide-react";
 import { blogAPI, authAPI, adminAPI } from "../lib/api";
+import { connectSocket } from "../lib/socket";
 import Button from "../components/ui/Button";
 import { ExploreInsightSkeleton as SkeletonCard } from "../components/ui/Skeleton";
 
@@ -220,35 +221,39 @@ const AdminPage = () => {
       loadUsers();
     } else if (activeTab === "moderation") {
       loadModerationQueue();
-    } else if (activeTab === "system") {
-      loadSystemHealth();
-      const interval = setInterval(loadSystemHealth, 8000);
-      return () => clearInterval(interval);
     }
   }, [activeTab]);
 
-  // Live log generator for System Health tab
+  // Live system health and logs streaming via WebSockets
   useEffect(() => {
-    if (activeTab !== "system" || isLogPaused) return;
-    const mockLogs = [
-      "[INFO] Connection established on db:5432",
-      "[JOB] Sent weekly digest email to 24,812 subscribers",
-      "[REDIS] Cache hit for blog:get-blog:mock-scheduled-id",
-      "[INFO] GET /api/v1/blog/get-all-blogs 200 OK - 18ms",
-      "[REDIS] Cache write for analytics:dashboard:summary",
-      "[SYS] Health check ping from load-balancer - 200 OK",
-      "[WARN] Database connection pool reached 8 active connections",
-      "[INFO] POST /api/v1/comments/create-comment/104 201 Created - 45ms",
-      "[JOB] Completed processing avatar resize job for user:elena",
-    ];
+    if (activeTab !== "system") return;
 
-    const interval = setInterval(() => {
-      const randomLog = mockLogs[Math.floor(Math.random() * mockLogs.length)];
+    // Load initial health state immediately
+    loadSystemHealth();
+
+    // Establish/retrieve socket connection
+    const socket = connectSocket();
+    if (!socket) return;
+
+    // Listen to real-time telemetry updates
+    const handleTelemetryUpdate = (data) => {
+      setSystemHealth(data);
+    };
+
+    // Listen to real-time console logger stream
+    const handleConsoleLog = (logLine) => {
+      if (isLogPaused) return;
       const timestamp = new Date().toLocaleTimeString();
-      setConsoleLogs((prev) => [...prev, `[${timestamp}] ${randomLog}`].slice(-25));
-    }, 2500);
+      setConsoleLogs((prev) => [...prev, `[${timestamp}] ${logLine}`].slice(-40));
+    };
 
-    return () => clearInterval(interval);
+    socket.on("telemetry_update", handleTelemetryUpdate);
+    socket.on("console_log", handleConsoleLog);
+
+    return () => {
+      socket.off("telemetry_update", handleTelemetryUpdate);
+      socket.off("console_log", handleConsoleLog);
+    };
   }, [activeTab, isLogPaused]);
 
   // Automatically scroll console to bottom on tab activation

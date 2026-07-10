@@ -5,8 +5,11 @@ import { NotificationsGateway } from './notifications.gateway';
 import { NotificationsService } from './notifications.service';
 import { NotificationsController } from './notifications.controller';
 
+import { AdminModule } from '../admin/admin.module';
+
 @Module({
   imports: [
+    AdminModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
