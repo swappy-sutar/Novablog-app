@@ -243,17 +243,21 @@ export class BlogService {
       }
     }
 
-    const { tags: uTags, 'tags[]': uTagsArr, ...restUpdateDto } = updateBlogDto;
+    const { tags: uTags, 'tags[]': uTagsArr, categoryId, ...restUpdateDto } = updateBlogDto;
 
     const updatedBlog = await this.blogsRepository.update(blogId, {
       ...restUpdateDto,
 
-      ...(slug && {
-        slug,
+      ...(slug && { slug }),
+
+      ...(thumbnail && { thumbnail }),
+
+      ...(updateBlogDto.content && {
+        readTime: Math.ceil(updateBlogDto.content.split(' ').length / 200),
       }),
 
-      ...(thumbnail && {
-        thumbnail,
+      ...(categoryId && {
+        category: { connect: { id: categoryId } },
       }),
 
       ...(updateBlogDto.status === 'PUBLISHED' && {
@@ -464,6 +468,7 @@ export class BlogService {
     const tags = await this.blogsRepository.getAllTags();
     return successResponse('Tags fetched successfully', tags);
   }
+
 
   async getTopContributors() {
     const users = await this.prisma.user.findMany({

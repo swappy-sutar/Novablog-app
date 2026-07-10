@@ -237,11 +237,21 @@ export class BlogsRepository {
 
   async update(id: string, data: Prisma.BlogUpdateInput) {
     return this.prisma.blog.update({
-      where: {
-        id,
-      },
-
+      where: { id },
       data,
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstname: true,
+            lastname: true,
+            username: true,
+            avatar: true,
+          },
+        },
+        category: true,
+        tags: { include: { tag: true } },
+      },
     });
   }
 
