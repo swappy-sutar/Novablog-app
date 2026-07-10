@@ -38,7 +38,7 @@ const Navbar = () => {
   const isFeed = location.pathname === "/feed";
   const isExplore = location.pathname === "/explore";
   const isAbout = location.pathname === "/about";
-  const isManifesto = location.pathname === "/manifesto";
+ 
 
   useEffect(() => {
     const timer = setTimeout(() => {

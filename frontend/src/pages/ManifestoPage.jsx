@@ -22,10 +22,10 @@ const ManifestoPage = () => {
   const [activeSection, setActiveSection] = useState("overview");
 
   return (
-    <div className="min-h-screen bg-[#07070d] text-white pt-24 pb-20 relative overflow-hidden">
+    <div className="min-h-screen bg-bg-base text-white pt-24 pb-20 relative overflow-hidden">
       {/* Background radial effects */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-brand-purple/10 rounded-full blur-[140px] pointer-events-none -z-10" />
-      <div className="absolute bottom-10 right-1/4 w-[600px] h-[600px] bg-brand-cyan/5 rounded-full blur-[160px] pointer-events-none -z-10" />
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-brand-purple/10 rounded-full blur-[140px] pointer-events-none -z-10 opacity-60 dark:opacity-100" />
+      <div className="absolute bottom-10 right-1/4 w-[600px] h-[600px] bg-brand-cyan/5 rounded-full blur-[160px] pointer-events-none -z-10 opacity-60 dark:opacity-100" />
 
       {/* Cinematic dot matrix layout */}
       <div 
@@ -36,11 +36,11 @@ const ManifestoPage = () => {
       <div className="max-w-7xl mx-auto px-6">
         {/* Page title */}
         <div className="mb-12 text-center md:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-purple/30 bg-brand-purple/10 text-xs text-[#a78bfa] font-bold mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-purple/30 bg-brand-purple/10 text-xs text-[#a78bfa] dark:text-[#a78bfa] font-bold mb-4">
             <Sparkles className="w-3.5 h-3.5" />
             NovaBlog Manifesto
           </div>
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
             Our <span className="text-gradient">Manifesto</span>
           </h1>
           <p className="text-gray-400 text-sm sm:text-base mt-2 max-w-2xl">
@@ -64,7 +64,7 @@ const ManifestoPage = () => {
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                     isActive
                       ? "bg-gradient-to-r from-brand-purple/20 to-brand-cyan/20 border border-brand-purple/30 text-white shadow-md shadow-brand-purple/5"
-                      : "border border-transparent text-gray-400 hover:text-white hover:bg-white/[0.03]"
+                      : "border border-transparent text-gray-400 hover:text-white hover:bg-bg-input"
                   }`}
                 >
                   <Icon className={`w-4 h-4 ${isActive ? "text-[#a78bfa]" : "text-gray-500"}`} />
@@ -89,7 +89,7 @@ const ManifestoPage = () => {
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-                  <div className="p-5 rounded-2xl border border-border-subtle bg-[#0a0a14] space-y-2">
+                  <div className="p-5 rounded-2xl border border-border-subtle bg-bg-card-sub space-y-2">
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-emerald-500" />
                       Clean Web Interface
@@ -98,7 +98,7 @@ const ManifestoPage = () => {
                       Built for modern browsers using React 19 and Vite. Responsively scales from smartphones to ultra-wide displays.
                     </p>
                   </div>
-                  <div className="p-5 rounded-2xl border border-border-subtle bg-[#0a0a14] space-y-2">
+                  <div className="p-5 rounded-2xl border border-border-subtle bg-bg-card-sub space-y-2">
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-blue-500" />
                       Scalable Services
@@ -112,25 +112,25 @@ const ManifestoPage = () => {
                 <div className="pt-6 space-y-4">
                   <h3 className="text-base font-bold text-white uppercase tracking-wider text-gray-400">Core Platform Features</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="p-4 rounded-xl border border-border-subtle bg-white/[0.01] space-y-1.5">
-                      <h4 className="text-xs font-bold text-[#818cf8]">🔒 Auth & 2FA Security</h4>
+                    <div className="p-4 rounded-xl border border-border-subtle bg-bg-card-sub-light space-y-1.5">
+                      <h4 className="text-xs font-bold text-[#818cf8] dark:text-[#a78bfa]">🔒 Auth & 2FA Security</h4>
                       <p className="text-[10px] text-gray-400 leading-relaxed font-medium">
                         JWT Token rotation, password lockout security parameters, and strict Google Authenticator 2FA integrations keep profiles completely secured.
                       </p>
                     </div>
-                    <div className="p-4 rounded-xl border border-border-subtle bg-white/[0.01] space-y-1.5">
+                    <div className="p-4 rounded-xl border border-border-subtle bg-bg-card-sub-light space-y-1.5">
                       <h4 className="text-xs font-bold text-brand-cyan">✍️ TipTap Canvas</h4>
                       <p className="text-[10px] text-gray-400 leading-relaxed font-medium">
                         An immersive WYSIWYG editor containing clean code highlighting, link cleaning mechanisms, header layout triggers, and S3 media upload pipelines.
                       </p>
                     </div>
-                    <div className="p-4 rounded-xl border border-border-subtle bg-white/[0.01] space-y-1.5">
-                      <h4 className="text-xs font-bold text-[#818cf8]">💬 Social Engagement</h4>
+                    <div className="p-4 rounded-xl border border-border-subtle bg-bg-card-sub-light space-y-1.5">
+                      <h4 className="text-xs font-bold text-[#818cf8] dark:text-[#a78bfa]">💬 Social Engagement</h4>
                       <p className="text-[10px] text-gray-400 leading-relaxed font-medium">
                         A dynamic comments ecosystem featuring threaded replies, instant bookmark lists, post like counters, and automated real-time notification gates.
                       </p>
                     </div>
-                    <div className="p-4 rounded-xl border border-border-subtle bg-white/[0.01] space-y-1.5">
+                    <div className="p-4 rounded-xl border border-border-subtle bg-bg-card-sub-light space-y-1.5">
                       <h4 className="text-xs font-bold text-brand-cyan">🏆 Progression Badging</h4>
                       <p className="text-[10px] text-gray-400 leading-relaxed font-medium">
                         Calculates active reading behaviors, unlocking six distinct tier achievements shown proudly on author profile headers.
@@ -156,21 +156,21 @@ const ManifestoPage = () => {
                   <h3 className="text-base font-bold text-white">We created NovaBlog to satisfy three core principles:</h3>
                   <ul className="space-y-4 text-xs text-gray-300">
                     <li className="flex gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
                       <div>
                         <strong className="text-white block mb-0.5">Readability First</strong>
                         We utilize selected modern typography, soft ambient glass background frames, and structured spacing rules to let readers concentrate fully on technical insights.
                       </div>
                     </li>
                     <li className="flex gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
                       <div>
                         <strong className="text-white block mb-0.5">High Performance</strong>
                         Every asset loads immediately. By utilizing server-side pagination, structured database indexes, and Redis caching layers, NovaBlog ensures latency is kept to a minimum.
                       </div>
                     </li>
                     <li className="flex gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
                       <div>
                         <strong className="text-white block mb-0.5">Writer Empowerment</strong>
                         Writers should focus on writing, not markdown formatting errors. Our rich text canvas automatically cleans inputs, processes images seamlessly via S3 storage, and tracks post lifecycles accurately.
@@ -292,7 +292,7 @@ const ManifestoPage = () => {
                 {/* Architecture visualization in boxy ASCII format */}
                 <div className="pt-4 space-y-2">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">System Flow Map</h4>
-                  <div className="p-4 rounded-xl border border-border-subtle bg-[#08080f] font-mono text-[10px] text-emerald-400 overflow-x-auto whitespace-pre leading-relaxed">
+                  <div className="p-4 rounded-xl border border-border-subtle bg-bg-card-sub font-mono text-[10px] text-emerald-600 dark:text-emerald-400 overflow-x-auto whitespace-pre leading-relaxed">
 {`┌─────────────────────────────────────────────────────┐
 │                     Client Browser                  │
 │              React 19 + Vite (Tailwind CSS)          │
