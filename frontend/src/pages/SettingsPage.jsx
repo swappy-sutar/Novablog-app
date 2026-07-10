@@ -734,21 +734,7 @@ const SettingsPage = () => {
           </button>
         </nav>
 
-        {/* Upgrade Pro Sidebar Card */}
-        <div className="hidden lg:block relative overflow-hidden rounded-2xl border border-brand-purple/20 bg-gradient-to-b from-brand-purple/10 to-transparent p-5">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-brand-cyan/10 rounded-full blur-2xl" />
-          <Sparkles className="w-5 h-5 text-brand-cyan mb-3" />
-          <p className="text-xs font-medium text-gray-400 leading-relaxed">
-            Unlock team accounts and advanced SEO features.
-          </p>
-          <button 
-            type="button"
-            onClick={() => toast("Upgrade request received")}
-            className="w-full mt-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-gradient-premium shadow-lg shadow-brand-purple/20 hover:opacity-95 transition-opacity"
-          >
-            Upgrade to Pro
-          </button>
-        </div>
+
       </aside>
 
       {/* Main Content Area: Stacked Sections */}
