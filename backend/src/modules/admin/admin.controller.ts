@@ -43,4 +43,15 @@ export class AdminController {
   async rejectPost(@Param('id') id: string) {
     return this.adminService.rejectPost(id);
   }
+
+  @Get('system/health')
+  async getSystemHealth() {
+    return this.adminService.getSystemHealth();
+  }
+
+  @Post('system/ping')
+  async pingService(@Body('service') service: string) {
+    return this.adminService.pingService(service);
+  }
 }
+

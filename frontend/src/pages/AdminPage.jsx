@@ -97,6 +97,7 @@ const AdminPage = () => {
   const isAtBottomRef = useRef(true);
   const [isLogPaused, setIsLogPaused] = useState(false);
   const [pingingServices, setPingingServices] = useState({});
+  const [systemHealth, setSystemHealth] = useState(null);
 
   const handleConsoleScroll = (e) => {
     const container = e.currentTarget;
@@ -105,35 +106,30 @@ const AdminPage = () => {
     isAtBottomRef.current = isAtBottom;
   };
 
-  const handlePingService = (idx, name) => {
+  const handlePingService = async (idx, name) => {
     setPingingServices((prev) => ({ ...prev, [idx]: true }));
-    
-    // Simulate network delay
-    setTimeout(() => {
-      const latencies = {
-        0: Math.floor(Math.random() * 12) + 4, // NestJS
-        1: Math.floor(Math.random() * 5) + 1,  // PostgreSQL
-        2: Math.floor(Math.random() * 2) + 1,  // Redis
-        3: Math.floor(Math.random() * 20) + 10 // BullMQ
-      };
-      const latency = latencies[idx] || (Math.floor(Math.random() * 15) + 5);
-      
-      toast.success(`${name} connected. Latency: ${latency}ms`, {
-        style: {
-          background: '#0c0c1e',
-          color: '#fff',
-          border: '1px solid rgba(6, 182, 212, 0.2)',
-          fontSize: '11px',
-          fontWeight: 'bold',
-        },
-        iconTheme: {
-          primary: '#06b6d4',
-          secondary: '#0c0c1e',
-        }
-      });
-      
+    try {
+      const res = await adminAPI.pingService(name);
+      if (res.success && res.data) {
+        toast.success(`${name} connected. Latency: ${res.data.latency}ms`, {
+          style: {
+            background: '#0c0c1e',
+            color: '#fff',
+            border: '1px solid rgba(6, 182, 212, 0.2)',
+            fontSize: '11px',
+            fontWeight: 'bold',
+          },
+          iconTheme: {
+            primary: '#06b6d4',
+            secondary: '#0c0c1e',
+          }
+        });
+      }
+    } catch (e) {
+      toast.error(`Failed to ping ${name}.`);
+    } finally {
       setPingingServices((prev) => ({ ...prev, [idx]: false }));
-    }, 1000);
+    }
   };
 
   // Moderation state
@@ -144,6 +140,17 @@ const AdminPage = () => {
   const [userSearch, setUserSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const loadSystemHealth = async () => {
+    try {
+      const res = await adminAPI.getSystemHealth();
+      if (res.success && res.data) {
+        setSystemHealth(res.data);
+      }
+    } catch (e) {
+      console.error("Failed to load system health", e);
+    }
+  };
 
   const loadUsers = async () => {
     try {
@@ -213,6 +220,10 @@ const AdminPage = () => {
       loadUsers();
     } else if (activeTab === "moderation") {
       loadModerationQueue();
+    } else if (activeTab === "system") {
+      loadSystemHealth();
+      const interval = setInterval(loadSystemHealth, 8000);
+      return () => clearInterval(interval);
     }
   }, [activeTab]);
 
@@ -1370,12 +1381,12 @@ const AdminPage = () => {
 
               {/* Telemetry Metrics Row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in">
-                {[
+                {(systemHealth?.metrics || [
                   { title: "CPU Utilization", val: "42.5%", status: "NORMAL", color: "text-emerald-500" },
                   { title: "Memory Allocation", val: "68.2%", status: "HIGH", color: "text-amber-500" },
                   { title: "Network Bandwidth", val: "1.4 GB/s", status: "STABLE", color: "text-brand-cyan" },
                   { title: "Database Pools", val: "8 / 20 active", status: "HEALTHY", color: "text-emerald-500" },
-                ].map((item, idx) => (
+                ]).map((item, idx) => (
                   <div key={idx} className="border border-border-subtle bg-bg-card backdrop-blur-xl p-5 rounded-2xl space-y-4 shadow-sm hover:bg-bg-card-hover transition-colors duration-350">
                     <div>
                       <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider">{item.title}</p>
@@ -1398,12 +1409,12 @@ const AdminPage = () => {
                   <h3 className="text-xs font-bold text-white uppercase tracking-wide">Infrastructure Clusters</h3>
                   
                   <div className="flex flex-col gap-4">
-                    {[
+                    {(systemHealth?.services || [
                       { name: "NestJS core API", endpoint: "localhost:3000/api/v1", status: "Operational", color: "bg-emerald-500" },
                       { name: "PostgreSQL Instance", endpoint: "db:5432/blog_app", status: "Operational", color: "bg-emerald-500" },
                       { name: "Redis Core Cache", endpoint: "redis:6379", status: "Operational", color: "bg-emerald-500" },
                       { name: "BullMQ Email Engine", endpoint: "background:queue", status: "Operational", color: "bg-emerald-500" },
-                    ].map((svc, idx) => (
+                    ]).map((svc, idx) => (
                       <div key={idx} className="flex justify-between items-center border-b border-border-subtle pb-3 last:border-b-0 last:pb-0">
                         <div className="space-y-0.5">
                           <h4 className="text-[11px] font-bold text-white">{svc.name}</h4>

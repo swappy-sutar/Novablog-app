@@ -287,6 +287,14 @@ export const adminAPI = {
   rejectPost: async (id) => {
     const response = await api.delete(`/admin/moderation/${id}/reject`);
     return response.data;
+  },
+  getSystemHealth: async () => {
+    const response = await api.get('/admin/system/health');
+    return response.data;
+  },
+  pingService: async (service) => {
+    const response = await api.post('/admin/system/ping', { service });
+    return response.data;
   }
 };
 
