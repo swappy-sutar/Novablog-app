@@ -22,6 +22,7 @@ import CookiePage from "./pages/CookiePage";
 import TermsPage from "./pages/TermsPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AdminPage from "./pages/AdminPage";
+import AdminLoginPage from "./pages/AdminLoginPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
@@ -102,7 +103,7 @@ function App() {
           />
 
           <Route
-            path="/admin"
+            path="/admin/dashboard"
             element={
               <ProtectedRoute>
                 <AdminPage />
@@ -135,6 +136,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Admin Login — standalone, no MainLayout or ProtectedRoute */}
+        <Route path="/admin" element={<AdminLoginPage />} />
       </Routes>
     </Router>
   );
