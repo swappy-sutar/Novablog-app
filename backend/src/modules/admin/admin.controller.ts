@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, Query, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AdminGuard } from './guards/admin.guard';
@@ -52,6 +52,29 @@ export class AdminController {
   @Post('system/ping')
   async pingService(@Body('service') service: string) {
     return this.adminService.pingService(service);
+  }
+
+  @Get('blogs')
+  async getAllBlogs(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+    @Query('status') status?: string,
+  ) {
+    return this.adminService.getAllBlogs(page, limit, search, status);
+  }
+
+  @Patch('blogs/:id/status')
+  async toggleBlogStatus(
+    @Param('id') id: string,
+    @Body('status') status: string,
+  ) {
+    return this.adminService.toggleBlogStatus(id, status);
+  }
+
+  @Delete('blogs/:id')
+  async deleteBlog(@Param('id') id: string) {
+    return this.adminService.deleteBlog(id);
   }
 }
 

@@ -295,6 +295,18 @@ export const adminAPI = {
   pingService: async (service) => {
     const response = await api.post('/admin/system/ping', { service });
     return response.data;
+  },
+  getBlogs: async (params = { page: 1, limit: 100 }) => {
+    const response = await api.get('/admin/blogs', { params });
+    return response.data;
+  },
+  updateBlogStatus: async (id, status) => {
+    const response = await api.patch(`/admin/blogs/${id}/status`, { status });
+    return response.data;
+  },
+  deleteBlog: async (id) => {
+    const response = await api.delete(`/admin/blogs/${id}`);
+    return response.data;
   }
 };
 

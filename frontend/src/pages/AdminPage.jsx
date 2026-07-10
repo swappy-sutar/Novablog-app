@@ -179,7 +179,7 @@ const AdminPage = () => {
   const loadAllBlogs = async () => {
     setLoading(true);
     try {
-      const res = await blogAPI.getAllBlogs({ page: 1, limit: 100 });
+      const res = await adminAPI.getBlogs({ page: 1, limit: 100 });
       if (res.success && res.data) {
         setBlogs(res.data.blogs || []);
         setDisplayBlogs(res.data.blogs || []);
@@ -281,7 +281,7 @@ const AdminPage = () => {
   const handleToggleStatus = async (blogId, currentStatus) => {
     const nextStatus = currentStatus === "PUBLISHED" ? "DRAFT" : "PUBLISHED";
     try {
-      const res = await blogAPI.updateBlog(blogId, { status: nextStatus });
+      const res = await adminAPI.updateBlogStatus(blogId, nextStatus);
       if (res.success) {
         toast.success(`Post status updated to ${nextStatus.toLowerCase()}.`);
         loadAllBlogs();
@@ -294,7 +294,7 @@ const AdminPage = () => {
   const handleDeleteBlog = async (blogId) => {
     if (!window.confirm("Are you sure you want to delete this post as an administrator?")) return;
     try {
-      const res = await blogAPI.deleteBlog(blogId);
+      const res = await adminAPI.deleteBlog(blogId);
       if (res.success) {
         toast.success("Post successfully deleted.");
         loadAllBlogs();

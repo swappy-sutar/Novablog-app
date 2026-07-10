@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RedisService } from 'src/config/redis/redis.service';
+import { CacheService } from 'src/config/redis/cache.service';
 import { successResponse } from 'src/common/helpers/response.helper';
 import * as os from 'os';
 import * as fs from 'fs';
@@ -15,6 +16,7 @@ export class AdminService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly redisService: RedisService,
+    private readonly cacheService: CacheService,
   ) {}
 
 
@@ -287,6 +289,116 @@ export class AdminService {
       console.error(`Error pinging service ${service}:`, e);
       throw new BadRequestException(`Failed to ping service: ${service}`);
     }
+  }
+
+  async getAllBlogs(page: number = 1, limit: number = 100, search?: string, status?: string) {
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const where: any = {
+      ...(status && status !== 'all' && { status: status.toUpperCase() }),
+      ...(search && {
+        OR: [
+          { title: { contains: search, mode: 'insensitive' } },
+          { content: { contains: search, mode: 'insensitive' } },
+        ]
+      })
+    };
+
+    const [blogs, total] = await Promise.all([
+      this.prisma.blog.findMany({
+        where,
+        skip,
+        take: Number(limit),
+        orderBy: { createdAt: 'desc' },
+        include: {
+          author: {
+            select: {
+              id: true,
+              firstname: true,
+              lastname: true,
+              username: true,
+              avatar: true,
+            }
+          },
+          category: true,
+        }
+      }),
+      this.prisma.blog.count({ where })
+    ]);
+
+    return successResponse('All platform blogs retrieved successfully', {
+      meta: {
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / Number(limit)),
+      },
+      blogs,
+    });
+  }
+
+  async toggleBlogStatus(id: string, status: string) {
+    const blog = await this.prisma.blog.findUnique({
+      where: { id },
+    });
+
+    if (!blog) {
+      throw new NotFoundException('Blog post not found');
+    }
+
+    const updated = await this.prisma.blog.update({
+      where: { id },
+      data: { status: status.toUpperCase() as any },
+    });
+
+    // Clear caches
+    await this.cacheService.deleteByPattern('blog:*');
+
+    return successResponse(`Blog post status updated to ${status} successfully`, updated);
+  }
+
+  async deleteBlog(id: string) {
+    const blog = await this.prisma.blog.findUnique({
+      where: { id },
+    });
+
+    if (!blog) {
+      throw new NotFoundException('Blog post not found');
+    }
+
+    // Delete related blogTags first
+    await this.prisma.blogTag.deleteMany({
+      where: { blogId: id },
+    });
+
+    // Delete comments
+    await this.prisma.comment.deleteMany({
+      where: { blogId: id },
+    });
+
+    // Delete likes
+    await this.prisma.like.deleteMany({
+      where: { blogId: id },
+    });
+
+    // Delete bookmarks
+    await this.prisma.bookmark.deleteMany({
+      where: { blogId: id },
+    });
+
+    // Delete reviews
+    await this.prisma.review.deleteMany({
+      where: { blogId: id },
+    });
+
+    await this.prisma.blog.delete({
+      where: { id },
+    });
+
+    // Clear caches
+    await this.cacheService.deleteByPattern('blog:*');
+
+    return successResponse('Blog post deleted successfully');
   }
 }
 
