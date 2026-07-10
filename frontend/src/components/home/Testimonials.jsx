@@ -70,7 +70,6 @@ const Testimonials = () => {
     name: '',
     location: '',
     stars: 0,
-    title: '',
     text: '',
   });
 
@@ -98,8 +97,10 @@ const Testimonials = () => {
     setSubmitting(true);
     try {
       const payload = {
-        ...form,
-        avatar: defaultAvatar,
+        name: form.name,
+        location: form.location,
+        stars: form.stars,
+        text: form.text,
       };
       const res = await reviewAPI.createReview(payload);
       if (res.success) {
@@ -109,7 +110,6 @@ const Testimonials = () => {
           name: '',
           location: '',
           stars: 0,
-          title: '',
           text: '',
         });
         loadReviews();
@@ -211,11 +211,6 @@ const Testimonials = () => {
                 <GlassCard className="p-4 flex flex-col justify-between border border-border-subtle bg-white dark:bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <img
-                        src={card.avatar || defaultAvatar}
-                        alt={card.name}
-                        className="w-8 h-8 rounded-full object-cover border border-border-subtle shadow-sm"
-                      />
                       <div className="min-w-0">
                         <h4 className="text-xs font-bold text-text-input truncate">
                           {card.name}
@@ -237,10 +232,6 @@ const Testimonials = () => {
                         />
                       ))}
                     </div>
-
-                    <h5 className="text-xs font-bold text-text-input mb-1 leading-snug line-clamp-1">
-                      {card.title}
-                    </h5>
 
                     <p className="text-[11px] text-text-muted leading-relaxed line-clamp-2">
                       {card.text}
@@ -259,11 +250,6 @@ const Testimonials = () => {
                 <GlassCard className="p-4 flex flex-col justify-between border border-border-subtle bg-white dark:bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <img
-                        src={card.avatar || defaultAvatar}
-                        alt={card.name}
-                        className="w-8 h-8 rounded-full object-cover border border-border-subtle shadow-md"
-                      />
                       <div className="min-w-0">
                         <h4 className="text-xs font-bold text-text-input truncate">
                           {card.name}
@@ -285,10 +271,6 @@ const Testimonials = () => {
                         />
                       ))}
                     </div>
-
-                    <h5 className="text-xs font-bold text-text-input mb-1 leading-snug line-clamp-1">
-                      {card.title}
-                    </h5>
 
                     <p className="text-[11px] text-text-muted leading-relaxed line-clamp-2">
                       {card.text}
@@ -398,19 +380,7 @@ const Testimonials = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-[10px] uppercase font-bold text-text-muted tracking-wider mb-1.5">
-                      Review Title
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g., Highly informative and beautifully built!"
-                      value={form.title}
-                      onChange={(e) => setForm(prev => ({ ...prev, title: e.target.value }))}
-                      className="w-full bg-white dark:bg-bg-input border border-border-subtle rounded-xl px-4 py-2.5 text-xs text-text-input placeholder-text-muted/60 focus:outline-none focus:border-brand-purple transition-all"
-                    />
-                  </div>
+
 
                   <div>
                     <label className="block text-[10px] uppercase font-bold text-text-muted tracking-wider mb-1.5">
