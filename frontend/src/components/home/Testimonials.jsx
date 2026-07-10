@@ -129,6 +129,9 @@ const Testimonials = () => {
   const row1Doubled = [...row1, ...row1, ...row1, ...row1, ...row1, ...row1];
   const row2Doubled = [...row2, ...row2, ...row2, ...row2, ...row2, ...row2];
 
+  const row1Duration = Math.max(30, Math.round((row1Doubled.length * 320) / 2 / 20)); // Slower speed: 20px/s
+  const row2Duration = Math.max(30, Math.round((row2Doubled.length * 320) / 2 / 20));
+
   return (
     <section className="max-w-7xl mx-auto px-6 mb-24 overflow-visible relative">
       <style dangerouslySetInnerHTML={{ __html: `
@@ -205,7 +208,10 @@ const Testimonials = () => {
         />
 
         <div className="flex w-full overflow-hidden py-1">
-          <div className="flex gap-6 animate-marquee-ltr hover-pause select-none">
+          <div 
+            className="flex gap-6 animate-marquee-ltr hover-pause select-none"
+            style={{ animationDuration: `${row1Duration}s` }}
+          >
             {row1Doubled.map((card, idx) => (
               <div key={`${card.name}-${idx}`} className="w-[260px] sm:w-[320px] shrink-0">
                 <GlassCard className="p-4 flex flex-col justify-between border border-border-subtle bg-white dark:bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
@@ -247,7 +253,10 @@ const Testimonials = () => {
         </div>
 
         <div className="flex w-full overflow-hidden py-1">
-          <div className="flex gap-6 animate-marquee-rtl hover-pause select-none">
+          <div 
+            className="flex gap-6 animate-marquee-rtl hover-pause select-none"
+            style={{ animationDuration: `${row2Duration}s` }}
+          >
             {row2Doubled.map((card, idx) => (
               <div key={`${card.name}-${idx}`} className="w-[280px] sm:w-[320px] shrink-0">
                 <GlassCard className="p-4 flex flex-col justify-between border border-border-subtle bg-white dark:bg-bg-card hover:border-brand-purple/20 hover:bg-white/[0.01] transition-all duration-300 h-full">
