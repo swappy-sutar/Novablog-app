@@ -58,7 +58,7 @@ const UnsubscribePage = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center p-4 bg-[#05050f]">
+    <div className="min-h-[80vh] flex items-center justify-center p-4 bg-bg-base">
       <div className="w-full max-w-md">
         <AnimatePresence mode="wait">
           {status === "loading" && (
@@ -111,7 +111,7 @@ const UnsubscribePage = () => {
                 <button
                   onClick={handleResubscribe}
                   disabled={isResubscribing}
-                  className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#6366f1] hover:bg-[#4f46e5] text-white disabled:opacity-50 transition-all cursor-pointer shadow-lg shadow-[#6366f1]/20"
+                  className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#6366f1] hover:bg-[#4f46e5] text-[#ffffff] disabled:opacity-50 transition-all cursor-pointer shadow-lg shadow-[#6366f1]/20"
                 >
                   {isResubscribing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
                   Resubscribe {email}
@@ -185,7 +185,7 @@ const UnsubscribePage = () => {
               <div className="pt-4 flex flex-col gap-3">
                 <Link
                   to="/"
-                  className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#6366f1] hover:bg-[#4f46e5] text-white transition-all shadow-lg"
+                  className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#6366f1] hover:bg-[#4f46e5] text-[#ffffff] transition-all shadow-lg"
                 >
                   Go to Homepage
                 </Link>
