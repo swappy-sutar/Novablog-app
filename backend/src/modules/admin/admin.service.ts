@@ -386,11 +386,6 @@ export class AdminService {
       where: { blogId: id },
     });
 
-    // Delete reviews
-    await this.prisma.review.deleteMany({
-      where: { blogId: id },
-    });
-
     await this.prisma.blog.delete({
       where: { id },
     });
