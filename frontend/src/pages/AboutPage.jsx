@@ -474,7 +474,7 @@ const AboutPage = () => {
                     Create Account
                   </Button>
                 </Link>
-                <Link to="/docs">
+                <Link to="/explore">
                   <Button
                     variant="secondary"
                     className="!rounded-xl !py-3.5 !px-8 text-xs sm:text-sm border border-border-subtle hover:bg-white/[0.04] text-white font-semibold hover:scale-105 transition-transform cursor-pointer"

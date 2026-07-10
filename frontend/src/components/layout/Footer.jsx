@@ -37,7 +37,7 @@ const Footer = () => {
 
       <div className="max-w-7xl mx-auto px-4 relative z-10">
         <div className="grid grid-cols-2 md:grid-cols-12 gap-x-8 gap-y-10 pb-10">
-          
+
           {/* Brand & Description */}
           <div className="col-span-2 md:col-span-4 flex flex-col justify-between gap-6 md:gap-0">
             <div>
@@ -49,13 +49,13 @@ const Footer = () => {
                 Building the future of technical writing. A premium workspace for developers where code precision meets storytelling clarity.
               </p>
             </div>
-            
+
             {/* Social Links */}
             <div className="flex items-center gap-3">
-              <a 
-                href="https://github.com" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://github.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 rounded-xl bg-bg-input border border-border-subtle flex items-center justify-center text-text-muted hover:text-white hover:bg-brand-purple/10 hover:border-brand-purple/35 transition-all duration-300 shadow-sm"
                 aria-label="GitHub"
               >
@@ -64,10 +64,10 @@ const Footer = () => {
                   <path d="M9 18c-4.51 2-5-2-7-2" />
                 </svg>
               </a>
-              <a 
-                href="https://twitter.com" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 rounded-xl bg-bg-input border border-border-subtle flex items-center justify-center text-text-muted hover:text-brand-cyan hover:bg-brand-cyan/10 hover:border-brand-cyan/35 transition-all duration-300 shadow-sm"
                 aria-label="Twitter"
               >
@@ -75,10 +75,10 @@ const Footer = () => {
                   <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
                 </svg>
               </a>
-              <a 
-                href="https://linkedin.com" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://linkedin.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 rounded-xl bg-bg-input border border-border-subtle flex items-center justify-center text-text-muted hover:text-brand-blue hover:bg-brand-blue/10 hover:border-brand-blue/35 transition-all duration-300 shadow-sm"
                 aria-label="LinkedIn"
               >
@@ -108,11 +108,6 @@ const Footer = () => {
               <li>
                 <Link to="/about" className="hover:text-brand-cyan hover:translate-x-1 inline-block transition-all duration-200">
                   About Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/docs" className="hover:text-brand-cyan hover:translate-x-1 inline-block transition-all duration-200">
-                  Developer Docs
                 </Link>
               </li>
             </ul>

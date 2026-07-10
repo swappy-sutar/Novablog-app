@@ -5,25 +5,19 @@ import {
   Terminal, 
   Database, 
   Globe, 
-  ShieldCheck, 
-  Settings, 
-  Copy, 
-  Check, 
   Search, 
   Code,
-  FileCode2,
-  Server,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  Check,
+  Copy
 } from "lucide-react";
 import GlassCard from "../components/ui/GlassCard";
-import Button from "../components/ui/Button";
 
 const DOCS_SECTIONS = [
   { id: "overview", label: "Overview", icon: BookOpen },
   { id: "architecture", label: "Architecture", icon: Layers },
   { id: "setup", label: "Setup Guide", icon: Terminal },
-  { id: "env", label: "Environment Variables", icon: Settings },
   { id: "api", label: "API Reference", icon: Database },
   { id: "routes", label: "Frontend Routes", icon: Globe },
 ];
@@ -74,32 +68,6 @@ const FRONTEND_ROUTES = [
   { path: "/settings", scope: "Protected User", desc: "Manage name, profile images, tech stack tags, and configure 2FA" },
   { path: "/admin/dashboard", scope: "Protected Admin", desc: "Interactive server analytics logs, review/content deletion suite" },
 ];
-
-const ENV_CONFIG = `
-# PostgreSQL Database Connection
-DATABASE_URL="postgresql://postgres:password@localhost:5432/blog_app"
-
-# Redis Server (Caching & Queues)
-REDIS_HOST="127.0.0.1"
-REDIS_PORT=6379
-REDIS_PASSWORD=""
-
-# Token Cryptography & Secrets
-JWT_ACCESS_SECRET="super-secure-access-key-goes-here"
-JWT_REFRESH_SECRET="super-secure-refresh-key-goes-here"
-ACCESS_TOKEN_EXPIRES_IN="15m"
-REFRESH_TOKEN_EXPIRES_IN="7d"
-
-# AWS S3 Storage Config
-AWS_REGION="ap-south-1"
-AWS_ACCESS_KEY_ID="AKIAIOSFODNN7EXAMPLE"
-AWS_SECRET_ACCESS_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-AWS_BUCKET_NAME="novablog-storage"
-
-# Resend Email Integration
-RESEND_API_KEY="re_123456789"
-EMAIL_FROM="NovaBlog <hello@novablog.space>"
-`;
 
 const DocsPage = () => {
   const [activeSection, setActiveSection] = useState("overview");
@@ -290,7 +258,7 @@ const DocsPage = () => {
                   {/* Step 1 */}
                   <div className="space-y-2">
                     <span className="text-xs font-bold text-[#818cf8]">STEP 1: Clone and Configure Env</span>
-                    <p className="text-xs text-gray-400">Clone the codebase from GitHub and copy the env example config to the root directory.</p>
+                    <p className="text-xs text-gray-400">Clone the codebase from GitHub and copy the env template config to the root directory.</p>
                     <div className="relative">
                       <pre className="p-4 rounded-xl bg-[#08080f] border border-border-subtle font-mono text-xs text-gray-300 overflow-x-auto">
                         {`git clone https://github.com/swappy-sutar/Novablog-app.git\ncd Novablog-app\ncp .env.example .env`}
@@ -337,43 +305,6 @@ const DocsPage = () => {
                       </button>
                     </div>
                   </div>
-                </div>
-              </div>
-            )}
-
-            {/* ENVIRONMENT VARIABLES SECTION */}
-            {activeSection === "env" && (
-              <div className="space-y-6">
-                <div className="flex items-center justify-between border-b border-border-subtle pb-3">
-                  <h2 className="text-2xl font-black text-white flex items-center gap-3">
-                    <Settings className="w-6 h-6 text-[#a78bfa]" />
-                    Environment Variables
-                  </h2>
-                  <button
-                    onClick={() => handleCopy(ENV_CONFIG.trim(), "env_config")}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border-subtle hover:bg-white/5 text-xs text-gray-400 hover:text-white transition-colors cursor-pointer"
-                  >
-                    {copiedText === "env_config" ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 text-emerald-400" />
-                        Copied
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3.5 h-3.5" />
-                        Copy File
-                      </>
-                    )}
-                  </button>
-                </div>
-                <p className="text-gray-300 text-sm leading-relaxed">
-                  Configure local database connection strings, S3 buckets, and third-party API keys within your root `.env` file.
-                </p>
-
-                <div className="relative">
-                  <pre className="p-4 rounded-xl bg-[#08080f] border border-border-subtle font-mono text-[11px] text-gray-300 overflow-x-auto max-h-[450px]">
-                    {ENV_CONFIG.trim()}
-                  </pre>
                 </div>
               </div>
             )}
