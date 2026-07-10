@@ -438,6 +438,10 @@ export const newsletterAPI = {
     const response = await api.post('/newsletter/subscribe', { email });
     return response.data;
   },
+  unsubscribe: async (email) => {
+    const response = await api.get('/newsletter/unsubscribe', { params: { email } });
+    return response.data;
+  },
   getSubscribers: async () => {
     const response = await api.get('/newsletter/subscribers');
     return response.data;

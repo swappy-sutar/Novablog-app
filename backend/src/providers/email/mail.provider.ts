@@ -167,10 +167,13 @@ export class MailProvider {
     subject: string,
     content: string,
   ) {
+    const frontendUrl = process.env.FRONTEND_URL || 'https://novablog.space';
+    const unsubscribeLink = `${frontendUrl}/newsletter/unsubscribe?email=${encodeURIComponent(email)}`;
+
     const html = this.loadTemplate('custom-newsletter', {
       subject,
       content,
-      email,
+      unsubscribeLink,
     });
 
     return this.resendService.client.emails.send({

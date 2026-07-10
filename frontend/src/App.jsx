@@ -26,6 +26,7 @@ import AdminLoginPage from "./pages/AdminLoginPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ManifestoPage from "./pages/ManifestoPage";
+import UnsubscribePage from "./pages/UnsubscribePage";
 
 function App() {
   useEffect(() => {
@@ -116,6 +117,7 @@ function App() {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/cookie-policy" element={<CookiePage />} />
           <Route path="/terms" element={<TermsPage />} />
+          <Route path="/newsletter/unsubscribe" element={<UnsubscribePage />} />
 
           {/* Protected Routes sharing MainLayout */}
           <Route
