@@ -40,11 +40,6 @@ const getRedisConnectionOptions = () => {
           delay: 5000,
         },
       },
-      settings: {
-        stalledInterval: 5 * 60 * 1000,  // check stalled jobs every 5 min (default: 30s)
-        lockDuration: 5 * 60 * 1000,     // worker lock lasts 5 min (default: 30s)
-        maxStalledCount: 1,               // mark stalled after 1 check
-      },
     }),
   ],
 
