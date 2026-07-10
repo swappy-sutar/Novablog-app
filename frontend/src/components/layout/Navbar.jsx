@@ -511,13 +511,27 @@ const Navbar = () => {
                     </Link>
 
                      <div className="relative" ref={profileDropdownRef}>
-                       <button
-                         onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                         className="w-8 h-8 rounded-full bg-brand-purple/20 border border-brand-purple flex items-center justify-center text-brand-purple font-bold text-xs hover:bg-brand-purple/40 transition-colors cursor-pointer focus:outline-none"
-                         aria-label="Toggle profile dropdown"
-                       >
-                         {user.firstname?.[0]?.toUpperCase() || "U"}
-                       </button>
+                       <div className="group relative inline-block">
+                         <button
+                           onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                           className="w-8 h-8 rounded-full bg-brand-purple/20 border border-brand-purple flex items-center justify-center text-brand-purple font-bold text-xs hover:bg-brand-purple/40 transition-colors cursor-pointer focus:outline-none"
+                           aria-label="Toggle profile dropdown"
+                         >
+                           {user.firstname?.[0]?.toUpperCase() || "U"}
+                         </button>
+                         {/* Tooltip */}
+                         {!showProfileDropdown && (
+                           <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+                             <div className="bg-gray-900 border border-white/10 text-white text-[10px] font-semibold px-2.5 py-1 rounded-lg shadow-xl whitespace-nowrap">
+                               {user.firstname && user.lastname
+                                 ? `${user.firstname} ${user.lastname}`
+                                 : user.firstname || user.username || 'Account'}
+                             </div>
+                             {/* Arrow */}
+                             <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-gray-900" />
+                           </div>
+                         )}
+                       </div>
 
                        <AnimatePresence>
                          {showProfileDropdown && (
