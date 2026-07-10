@@ -92,6 +92,31 @@ const TerminalMockup = () => {
   };
 
   const script = [
+    // 1. Database & Cache tuning
+    { type: 'input', text: 'novablog db --optimize' },
+    { type: 'output', text: '# Analyzing slow query logs...', color: 'text-[#64748b]' },
+    { type: 'output', text: '✓ Added indexes on post_slug (saved 140ms)', color: 'text-[#818cf8]' },
+    { type: 'output', text: '✓ Eviction rate down 12% via Redis Cluster', color: 'text-[#818cf8]' },
+
+    // 2. DevOps & Kubernetes Infrastructure
+    { type: 'input', text: 'novablog infra --apply' },
+    { type: 'output', text: '# Initializing Terraform state...', color: 'text-[#64748b]' },
+    { type: 'output', text: '✓ Reconfigured load balancers in US-East-1', color: 'text-[#818cf8]' },
+    { type: 'output', text: '✓ Scaled node group to 15 replica pods', color: 'text-[#818cf8]' },
+
+    // 3. AI & Search Enrichment
+    { type: 'input', text: 'novablog ai --embed-all' },
+    { type: 'output', text: '# Generating vectors with text-embedding-3...', color: 'text-[#64748b]' },
+    { type: 'output', text: '✓ Upgraded semantic search model to v2.4', color: 'text-[#818cf8]' },
+    { type: 'output', text: '✓ 52k blog posts indexed in Qdrant DB', color: 'text-[#818cf8]' },
+
+    // 4. Cloud Deployment & Health check
+    { type: 'input', text: 'novablog cloud --status' },
+    { type: 'output', text: '# Inspecting AWS & Render endpoints...', color: 'text-[#64748b]' },
+    { type: 'output', text: '✓ API gateway response time: 24ms (uptime: 99.98%)', color: 'text-[#818cf8]' },
+    { type: 'output', text: '✓ SSL certificate auto-renewed successfully', color: 'text-[#818cf8]' },
+
+    // 5. User original telemetry / search query
     { type: 'input', text: 'novablog search "ai databases"' },
     { type: 'output', text: '# Searching 50k+ articles...', color: 'text-[#64748b]' },
     { type: 'output', text: '✓ Found 189 results in cloud & databases', color: 'text-[#818cf8]' },
@@ -116,6 +141,12 @@ const TerminalMockup = () => {
 
     const runScript = () => {
       if (scriptIdx >= script.length) {
+        timer = setTimeout(() => {
+          setHistory([]);
+          scriptIdx = 0;
+          charIdx = 0;
+          runScript();
+        }, 3500);
         return;
       }
 
