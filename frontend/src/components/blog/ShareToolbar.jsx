@@ -6,7 +6,7 @@ import { Heart, MessageCircle, Share2, Link2, Bookmark } from 'lucide-react';
 const ShareToolbar = ({ blog, likeCount, userLiked, onToggleLike, userBookmarked, onToggleBookmark }) => {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const shareMenuRef = useRef(null);
-  const isLoggedIn = !!localStorage.getItem('token');
+  const isLoggedIn = !!localStorage.getItem('accessToken');
 
   const scrollToComments = () => {
     document.getElementById("discussion-section")?.scrollIntoView({ behavior: "smooth" });
