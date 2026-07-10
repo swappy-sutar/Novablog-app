@@ -217,10 +217,6 @@ const AdminPage = () => {
   };
 
   useEffect(() => {
-    loadAllBlogs();
-    loadAnalytics();
-    loadDashboardData("real-time");
-    
     // Sync current user from local storage
     const storedUser = localStorage.getItem("user");
     if (storedUser && storedUser !== "undefined") {
