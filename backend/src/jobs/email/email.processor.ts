@@ -4,7 +4,13 @@ import type { Job } from 'bullmq';
 
 import { MailProvider } from '../../providers/email/mail.provider';
 
-@Processor('email')
+@Processor('email', {
+  // When the queue is empty, wait 5s before checking again (default: 5ms).
+  // This drastically reduces idle Redis commands on Upstash free tier.
+  drainDelay: 5000,
+  // Concurrency: process 1 job at a time to avoid burst Redis usage.
+  concurrency: 1,
+})
 export class EmailProcessor extends WorkerHost {
   constructor(private readonly mailProvider: MailProvider) {
     super();
