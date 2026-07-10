@@ -530,23 +530,6 @@ const AdminPage = () => {
           })}
         </nav>
 
-        {/* Upgrade Cluster Card */}
-        <div className="hidden lg:block relative overflow-hidden rounded-2xl border border-brand-purple/20 bg-gradient-to-b from-brand-purple/10 to-transparent p-5">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-brand-cyan/10 rounded-full blur-2xl" />
-          <div className="flex items-center gap-2 text-brand-cyan mb-2">
-            <Sparkles className="w-4 h-4" />
-            <span className="text-[10px] font-extrabold tracking-wider uppercase">Upgrade Cluster</span>
-          </div>
-          <p className="text-xs font-medium text-gray-400 leading-relaxed">
-            Unlock advanced neural analytics & custom hostnames.
-          </p>
-          <button
-            onClick={() => toast.success("Cluster upgrade request submitted.")}
-            className="w-full mt-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-brand-purple hover:opacity-90 transition-all shadow-md shadow-brand-purple/20 cursor-pointer"
-          >
-            Upgrade Cluster
-          </button>
-        </div>
 
         {/* Quick Docs & Logout links */}
         <div className="flex flex-col gap-1 border-t border-border-subtle pt-4">
