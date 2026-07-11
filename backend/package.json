@@ -46,7 +46,7 @@
     "helmet": "^8.2.0",
     "ioredis": "^5.10.1",
     "joi": "^18.2.1",
-    "multer": "^2.1.1",
+    "multer": "^2.2.0",
     "nanoid": "^5.1.11",
     "otplib": "^13.4.1",
     "passport": "^0.7.0",
@@ -106,5 +106,10 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "overrides": {
+    "form-data": "^4.0.6",
+    "qs": "^6.15.2",
+    "js-yaml": "^4.1.2"
   }
 }
