@@ -4,12 +4,12 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsString()
   @MinLength(1, { message: 'First name cannot be empty' })
-  @MaxLength(100)
+  @MaxLength(50)
   firstname?: string;
 
   @IsOptional()
   @IsString()
-  @MaxLength(100)
+  @MaxLength(50)
   lastname?: string;
 
   @IsOptional()
