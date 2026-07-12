@@ -819,7 +819,7 @@ const Navbar = () => {
             {/* Actions: Theme toggle, write button, profile/signin */}
             <div className="border-t border-border-subtle/30 pt-4 flex flex-col gap-4">
               {user ? (
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3">
                   <Link
                     to="/write"
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -837,31 +837,34 @@ const Navbar = () => {
                         setShowMobileNotifications(true);
                       }, 200);
                     }}
-                    className="flex items-center justify-between w-full text-left py-2 text-sm text-gray-400 hover:text-white transition-colors cursor-pointer border-t border-border-subtle/20 pt-2"
+                    className="flex items-center justify-between w-full p-3 rounded-xl bg-border-subtle/10 hover:bg-border-subtle/20 transition-all border border-border-subtle/20 cursor-pointer text-left"
                   >
                     <div className="flex items-center gap-3">
-                      <Bell className="w-5 h-5 text-gray-400" />
-                      <span className="font-medium text-white">Notifications</span>
+                      <Bell className="w-4 h-4 text-brand-purple" />
+                      <span className="text-sm font-semibold text-text-input">Notifications</span>
                     </div>
                     {notifications.some((n) => !n.isRead) && (
                       <span className="bg-brand-purple text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-[0_0_8px_#8b5cf6]">
-                        {notifications.filter((n) => !n.isRead).length}
+                        {notifications.filter((n) => !n.isRead).length} new
                       </span>
                     )}
                   </button>
 
-                  <div className="flex items-center justify-between border-t border-border-subtle/20 pt-4">
-                    <Link
-                      to="/profile"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 text-sm text-white font-medium"
-                    >
-                      <div className="w-9 h-9 rounded-full bg-brand-purple/20 border border-brand-purple flex items-center justify-center text-brand-purple font-bold text-sm">
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center justify-between w-full p-3 rounded-xl bg-border-subtle/10 hover:bg-border-subtle/20 transition-all border border-border-subtle/20"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-brand-purple/20 border border-brand-purple flex items-center justify-center text-brand-purple font-bold text-xs">
                         {user.firstname?.[0]?.toUpperCase() || "U"}
                       </div>
-                      <span>{user.firstname} {user.lastname || ""}</span>
-                    </Link>
-                  </div>
+                      <span className="text-sm font-semibold text-text-input">
+                        {user.firstname} {user.lastname || ""}
+                      </span>
+                    </div>
+                    <span className="text-xs text-text-muted">Profile →</span>
+                  </Link>
                 </div>
               ) : (
                 <div className="flex items-center gap-4 w-full">
