@@ -19,6 +19,7 @@ import { ImageUpload } from 'src/common/decorator/image-upload.decorator';
 import { QueryBlogDto } from './dto/query-blog.dto';
 import { QueryFeedDto } from './dto/query-feed.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
+import { ImageSignatureValidationPipe } from 'src/common/pipes/image-signature-validation.pipe';
 
 @Controller('blog')
 export class BlogController {
@@ -29,7 +30,7 @@ export class BlogController {
   @ImageUpload('thumbnail')
   async create(
     @Body() createBlogDto: CreateBlogDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(ImageSignatureValidationPipe) file: Express.Multer.File,
     @CurrentUser() user: any,
   ) {
     return this.blogService.createBlog(user.id, createBlogDto, file);
@@ -79,7 +80,7 @@ export class BlogController {
   async updateBlog(
     @Param('id') id: string,
     @Body() updateBlogDto: UpdateBlogDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(ImageSignatureValidationPipe) file: Express.Multer.File,
     @CurrentUser() user: any,
   ) {
     return this.blogService.updateBlog(id, user.id, updateBlogDto, file);

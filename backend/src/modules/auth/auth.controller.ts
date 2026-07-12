@@ -29,6 +29,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from './guards/optional-jwt.guard';
 import { CurrentUser } from 'src/common/decorator/current-user.decorator';
 import { ImageUpload } from 'src/common/decorator/image-upload.decorator';
+import { ImageSignatureValidationPipe } from 'src/common/pipes/image-signature-validation.pipe';
 
 @Controller('auth')
 export class AuthController {
@@ -129,7 +130,7 @@ export class AuthController {
   @Post('upload-profile')
   @ImageUpload('image')
   async uploadProfilePic(
-    @UploadedFile()
+    @UploadedFile(ImageSignatureValidationPipe)
     file: Express.Multer.File,
     @CurrentUser() user: any,
   ) {
