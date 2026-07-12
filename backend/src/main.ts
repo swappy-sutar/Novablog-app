@@ -47,7 +47,7 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT || 8000);
 
-  console.log(`Server running on port http://localhost:${process.env.PORT}`);
+  console.log(`NovaBlog API running on port ${process.env.PORT}`);
 }
 
 bootstrap();
