@@ -43,6 +43,7 @@ const Navbar = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsMobileMenuOpen(false);
+      setShowMobileNotifications(false);
     }, 0);
     return () => clearTimeout(timer);
   }, [location.pathname]);
@@ -129,6 +130,9 @@ const Navbar = () => {
   const notificationsRef = useRef(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
+
+  const mobileNotificationsRef = useRef(null);
+  const [showMobileNotifications, setShowMobileNotifications] = useState(false);
 
   const profileDropdownRef = useRef(null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -221,6 +225,21 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, [showNotifications]);
+
+  // Click outside to close mobile notifications dropdown
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (mobileNotificationsRef.current && !mobileNotificationsRef.current.contains(e.target)) {
+        setShowMobileNotifications(false);
+      }
+    };
+    if (showMobileNotifications) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [showMobileNotifications]);
 
   const handleMarkAllRead = async () => {
     try {
@@ -371,6 +390,92 @@ const Navbar = () => {
               className="bg-border-subtle/30 border border-border-subtle focus:border-brand-cyan/50 rounded-full py-2 pl-10 pr-4 text-sm text-text-input placeholder-text-muted/50 w-64 transition-all duration-300 focus:w-80 focus:outline-none focus:bg-border-subtle/50 focus:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
             />
           </form>
+
+          {/* Mobile Notifications (Visible on mobile only, if logged in) */}
+          {user && (
+            <div className="sm:hidden relative flex items-center" ref={mobileNotificationsRef}>
+              <button
+                onClick={() => {
+                  setShowMobileNotifications(!showMobileNotifications);
+                  setIsMobileMenuOpen(false);
+                }}
+                className="relative w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors rounded-full hover:bg-border-subtle cursor-pointer"
+                aria-label="Notifications"
+              >
+                <Bell className="w-5 h-5" />
+                {notifications.some((n) => !n.isRead) && (
+                  <span className="absolute top-2 right-2.5 w-2 h-2 bg-brand-purple rounded-full shadow-[0_0_8px_#8b5cf6] animate-pulse" />
+                )}
+              </button>
+
+              <AnimatePresence>
+                {showMobileNotifications && (
+                  <>
+                    {/* Backdrop */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      onClick={() => setShowMobileNotifications(false)}
+                      className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm sm:hidden"
+                    />
+
+                    {/* Notification Dropdown List */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                      className="fixed top-22 left-4 right-4 z-50 bg-bg-dropdown border border-border-subtle/80 rounded-2xl flex flex-col gap-3 p-4 shadow-2xl max-h-[75vh]"
+                    >
+                      <div className="flex items-center justify-between border-b border-border-subtle/60 pb-2">
+                        <h3 className="text-sm font-bold text-white">Notifications</h3>
+                        {notifications.some((n) => !n.isRead) && (
+                          <button
+                            onClick={handleMarkAllRead}
+                            className="text-[10px] font-bold text-brand-purple hover:underline uppercase tracking-wider cursor-pointer"
+                          >
+                            Mark read
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex flex-col gap-2 overflow-y-auto custom-scrollbar pr-1">
+                        {notifications.length === 0 ? (
+                          <div className="text-center py-6 text-gray-500 text-xs">
+                            No new notifications
+                          </div>
+                        ) : (
+                          notifications.map((n) => (
+                            <div
+                              key={n.id}
+                              onClick={() => !n.isRead && handleMarkSingleRead(n.id)}
+                              className={`p-2.5 rounded-xl border transition-colors flex flex-col gap-1 text-left ${
+                                !n.isRead
+                                  ? "bg-brand-purple/5 border-brand-purple/20 cursor-pointer hover:bg-brand-purple/10"
+                                  : "bg-white/[0.01] border-transparent hover:bg-white/[0.03]"
+                              }`}
+                            >
+                              <div className="flex justify-between items-start">
+                                <span className={`text-xs font-bold ${!n.isRead ? "text-white" : "text-gray-300"}`}>
+                                  {n.title}
+                                </span>
+                                <span className="text-[9px] text-gray-500 font-medium tracking-tight">
+                                  {formatRelativeTime(n.createdAt)}
+                                </span>
+                              </div>
+                              <p className="text-xs text-gray-400 leading-normal">
+                                {n.message}
+                              </p>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
 
           <button
             onClick={toggleTheme}
@@ -724,6 +829,27 @@ const Navbar = () => {
                       Write new post
                     </Button>
                   </Link>
+
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setTimeout(() => {
+                        setShowMobileNotifications(true);
+                      }, 200);
+                    }}
+                    className="flex items-center justify-between w-full text-left py-2 text-sm text-gray-400 hover:text-white transition-colors cursor-pointer border-t border-border-subtle/20 pt-2"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Bell className="w-5 h-5 text-gray-400" />
+                      <span className="font-medium text-white">Notifications</span>
+                    </div>
+                    {notifications.some((n) => !n.isRead) && (
+                      <span className="bg-brand-purple text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-[0_0_8px_#8b5cf6]">
+                        {notifications.filter((n) => !n.isRead).length}
+                      </span>
+                    )}
+                  </button>
+
                   <div className="flex items-center justify-between border-t border-border-subtle/20 pt-4">
                     <Link
                       to="/profile"
