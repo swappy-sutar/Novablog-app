@@ -327,11 +327,11 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 w-full z-50 glass-panel !rounded-none border-t-0 border-x-0 bg-bg-base/70">
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center">
-          <img src="/svg/novablog-lockup-dark.svg" alt="NovaBlog" className="h-12 logo-lockup-dark" />
-          <img src="/svg/novablog-lockup-light.svg" alt="NovaBlog" className="h-12 logo-lockup-light" />
+          <img src="/svg/novablog-lockup-dark.svg" alt="NovaBlog" className="h-8 md:h-12 logo-lockup-dark" />
+          <img src="/svg/novablog-lockup-light.svg" alt="NovaBlog" className="h-8 md:h-12 logo-lockup-light" />
         </Link>
 
         {/* Desktop Nav */}
@@ -399,12 +399,12 @@ const Navbar = () => {
                   setShowMobileNotifications(!showMobileNotifications);
                   setIsMobileMenuOpen(false);
                 }}
-                className="relative w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors rounded-full hover:bg-border-subtle cursor-pointer"
+                className="relative w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors rounded-full hover:bg-border-subtle cursor-pointer"
                 aria-label="Notifications"
               >
-                <Bell className="w-5 h-5" />
+                <Bell className="w-4.5 h-4.5 md:w-5 md:h-5" />
                 {notifications.some((n) => !n.isRead) && (
-                  <span className="absolute top-2 right-2.5 w-2 h-2 bg-brand-purple rounded-full shadow-[0_0_8px_#8b5cf6] animate-pulse" />
+                  <span className="absolute top-1.5 right-2 w-2 h-2 bg-brand-purple rounded-full shadow-[0_0_8px_#8b5cf6] animate-pulse" />
                 )}
               </button>
 
@@ -426,7 +426,7 @@ const Navbar = () => {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="fixed top-22 left-4 right-4 z-50 bg-bg-dropdown border border-border-subtle/80 rounded-2xl flex flex-col gap-3 p-4 shadow-2xl max-h-[75vh]"
+                      className="fixed top-18 sm:top-22 left-4 right-4 z-50 bg-bg-dropdown border border-border-subtle/80 rounded-2xl flex flex-col gap-3 p-4 shadow-2xl max-h-[75vh]"
                     >
                       <div className="flex items-center justify-between border-b border-border-subtle/60 pb-2">
                         <h3 className="text-sm font-bold text-white">Notifications</h3>
@@ -479,7 +479,7 @@ const Navbar = () => {
 
           <button
             onClick={toggleTheme}
-            className="relative w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors rounded-full hover:bg-border-subtle"
+            className="relative w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors rounded-full hover:bg-border-subtle"
             aria-label="Toggle Theme"
           >
             <AnimatePresence mode="wait">
@@ -702,12 +702,12 @@ const Navbar = () => {
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden text-gray-400 hover:text-gray-200 ml-2 cursor-pointer focus:outline-none"
+            className="md:hidden text-gray-400 hover:text-gray-200 ml-1.5 cursor-pointer focus:outline-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-border-subtle"
             aria-label="Toggle Mobile Menu"
           >
             {isMobileMenuOpen ? (
               <svg
-                className="w-6 h-6"
+                className="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -721,7 +721,7 @@ const Navbar = () => {
               </svg>
             ) : (
               <svg
-                className="w-6 h-6"
+                className="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -746,7 +746,7 @@ const Navbar = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden border-t border-border-subtle/40 bg-bg-base/95 backdrop-blur-lg overflow-hidden flex flex-col px-6 py-5 gap-5 shadow-2xl"
+            className="md:hidden border-t border-border-subtle/40 bg-bg-base/95 backdrop-blur-lg overflow-hidden flex flex-col px-5 py-4 gap-4 shadow-2xl"
           >
             {/* Search Form for Mobile */}
             <form onSubmit={handleSearchSubmit} className="relative flex items-center group w-full">
@@ -768,19 +768,19 @@ const Navbar = () => {
                 placeholder={placeholder}
                 value={searchVal}
                 onChange={(e) => setSearchVal(e.target.value)}
-                className="w-full bg-border-subtle/30 border border-border-subtle focus:border-brand-cyan/50 rounded-full py-2.5 pl-10 pr-4 text-xs text-gray-200 placeholder-gray-400 focus:outline-none focus:bg-border-subtle/50"
+                className="w-full bg-border-subtle/30 border border-border-subtle focus:border-brand-cyan/50 rounded-full py-2 pl-9 pr-4 text-xs text-gray-200 placeholder-gray-400 focus:outline-none focus:bg-border-subtle/50"
               />
             </form>
 
             {/* Navigation Links */}
-            <div className="flex flex-col gap-4 text-base font-semibold">
+            <div className="flex flex-col gap-3 text-sm font-semibold">
               <Link
                 to="/feed"
                 onClick={(e) => {
                   handleNavClick(e, "/feed");
                   setIsMobileMenuOpen(false);
                 }}
-                className={`py-1.5 ${isFeed ? "text-brand-cyan" : "text-gray-400 hover:text-gray-200"}`}
+                className={`py-1 ${isFeed ? "text-brand-cyan" : "text-gray-400 hover:text-gray-200"}`}
               >
                 Feed
               </Link>
@@ -790,7 +790,7 @@ const Navbar = () => {
                   handleNavClick(e, "/explore");
                   setIsMobileMenuOpen(false);
                 }}
-                className={`py-1.5 ${isExplore ? "text-brand-cyan" : "text-gray-400 hover:text-gray-200"}`}
+                className={`py-1 ${isExplore ? "text-brand-cyan" : "text-gray-400 hover:text-gray-200"}`}
               >
                 Explore
               </Link>
@@ -800,7 +800,7 @@ const Navbar = () => {
                   handleNavClick(e, "/my-blogs");
                   setIsMobileMenuOpen(false);
                 }}
-                className={`py-1.5 ${isMyBlogs ? "text-brand-cyan" : "text-gray-400 hover:text-gray-200"}`}
+                className={`py-1 ${isMyBlogs ? "text-brand-cyan" : "text-gray-400 hover:text-gray-200"}`}
               >
                 My Blogs
               </Link>
@@ -810,22 +810,22 @@ const Navbar = () => {
                   handleNavClick(e, "/about");
                   setIsMobileMenuOpen(false);
                 }}
-                className={`py-1.5 ${isAbout ? "text-brand-cyan" : "text-gray-400 hover:text-gray-200"}`}
+                className={`py-1 ${isAbout ? "text-brand-cyan" : "text-gray-400 hover:text-gray-200"}`}
               >
                 About Us
               </Link>
             </div>
 
             {/* Actions: Theme toggle, write button, profile/signin */}
-            <div className="border-t border-border-subtle/30 pt-4 flex flex-col gap-4">
+            <div className="border-t border-border-subtle/20 pt-3 flex flex-col gap-3">
               {user ? (
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-2.5">
                   <Link
                     to="/write"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="w-full"
                   >
-                    <Button variant="primary" className="py-2.5 w-full text-center text-sm">
+                    <Button variant="primary" className="py-2 w-full text-center text-xs">
                       Write new post
                     </Button>
                   </Link>
@@ -837,11 +837,11 @@ const Navbar = () => {
                         setShowMobileNotifications(true);
                       }, 200);
                     }}
-                    className="flex items-center justify-between w-full p-3 rounded-xl bg-border-subtle/10 hover:bg-border-subtle/20 transition-all border border-border-subtle/20 cursor-pointer text-left"
+                    className="flex items-center justify-between w-full p-2 px-3 rounded-lg bg-border-subtle/10 hover:bg-border-subtle/20 transition-all border border-border-subtle/20 cursor-pointer text-left"
                   >
                     <div className="flex items-center gap-3">
-                      <Bell className="w-4 h-4 text-brand-purple" />
-                      <span className="text-sm font-semibold text-text-input">Notifications</span>
+                      <Bell className="w-3.5 h-3.5 text-brand-purple" />
+                      <span className="text-xs font-semibold text-text-input">Notifications</span>
                     </div>
                     {notifications.some((n) => !n.isRead) && (
                       <span className="bg-brand-purple text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-[0_0_8px_#8b5cf6]">
@@ -853,25 +853,25 @@ const Navbar = () => {
                   <Link
                     to="/profile"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-between w-full p-3 rounded-xl bg-border-subtle/10 hover:bg-border-subtle/20 transition-all border border-border-subtle/20"
+                    className="flex items-center justify-between w-full p-2 px-3 rounded-lg bg-border-subtle/10 hover:bg-border-subtle/20 transition-all border border-border-subtle/20"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-brand-purple/20 border border-brand-purple flex items-center justify-center text-brand-purple font-bold text-xs">
+                      <div className="w-7 h-7 rounded-full bg-brand-purple/20 border border-brand-purple flex items-center justify-center text-brand-purple font-bold text-xs">
                         {user.firstname?.[0]?.toUpperCase() || "U"}
                       </div>
-                      <span className="text-sm font-semibold text-text-input">
+                      <span className="text-xs font-semibold text-text-input">
                         {user.firstname} {user.lastname || ""}
                       </span>
                     </div>
-                    <span className="text-xs text-text-muted">Profile →</span>
+                    <span className="text-[10px] text-text-muted">Profile →</span>
                   </Link>
                 </div>
               ) : (
-                <div className="flex items-center gap-4 w-full">
+                <div className="flex items-center gap-3 w-full">
                   <Link
                     to="/signin"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex-1 text-center py-2.5 rounded-xl border border-border-subtle text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                    className="flex-1 text-center py-2 rounded-lg border border-border-subtle text-xs font-medium text-gray-300 hover:text-white transition-colors"
                   >
                     Log In
                   </Link>
@@ -880,7 +880,7 @@ const Navbar = () => {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="flex-1"
                   >
-                    <Button variant="primary" className="py-2.5 w-full text-sm">
+                    <Button variant="primary" className="py-2 w-full text-xs">
                       Sign Up
                     </Button>
                   </Link>
