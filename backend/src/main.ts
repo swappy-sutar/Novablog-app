@@ -12,7 +12,7 @@ async function bootstrap() {
   app.use(helmet());
   app.use(cookieParser());
 
-  app.setGlobalPrefix('api/v1', { exclude: ['health', ''] });
+  app.setGlobalPrefix('api/v1', { exclude: ['health', '', 'favicon.ico'] });
 
   app.useGlobalInterceptors(new ResponseInterceptor());
 

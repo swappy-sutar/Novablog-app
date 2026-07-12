@@ -1,10 +1,8 @@
-import { Controller, Get, Post } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get, Res } from '@nestjs/common';
+import { Response } from 'express';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
   @Get()
   getRoot() {
     return {
@@ -22,5 +20,11 @@ export class AppController {
       status: 'ok',
       timestamp: new Date().toISOString(),
     };
+  }
+
+  @Get('favicon.ico')
+  favicon(@Res() res: Response) {
+    // Browsers auto-request favicon.ico — return 204 No Content to silence 404 logs.
+    res.status(204).end();
   }
 }
