@@ -6,8 +6,14 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  getRoot() {
+    return {
+      name: 'NovaBlog API',
+      version: 'v1',
+      status: 'running',
+      docs: '/api/v1',
+      health: '/health',
+    };
   }
 
   @Get('health')
